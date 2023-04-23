@@ -21,6 +21,8 @@ alpha	[a-zA-Z]
 alnum	[a-zA-Z0-9]
 alnumext [a-zA-Z0-9_]
 
+whitespace [ \t\r\f\n]+
+
 integer {digit}+
 variable {alpha}+{alnumext}*
 
@@ -38,10 +40,11 @@ variable {alpha}+{alnumext}*
 <SPECIAL_STATEMENT>{integer} 	{ return SIZE; }			/*aca le tengo que pasar la el integer posta */
 <SPECIAL_STATEMENT>"{" 			{ return EXPRESION_START; }
 <SPECIAL_STATEMENT>"}" 			{ return EXPRESION_END; }
+<SPECIAL_STATEMENT>{whitespace} { ; }
 
 <SPECIAL_STATEMENT>"}>"			{ BEGIN(INITIAL); return END_SPECIAL; }
 
-[ \t\r\f]+		{ ; }/* ignoro whitespace */
+{whitespace}	{ ; }/* ignoro whitespace */
 
 . 				{ return UnknownPatternAction(yytext, yyleng); }/* error */
 

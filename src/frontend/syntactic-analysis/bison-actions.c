@@ -47,6 +47,22 @@ void yyerror(const char * string) {
 // 	return value;
 // }
 
+void ProgramGrammarAction() {
+	/*
+	* "state" es una variable global que almacena el estado del compilador,
+	* cuyo campo "succeed" indica si la compilación fue o no exitosa, la cual
+	* es utilizada en la función "main".
+	*/
+	state.succeed = true;
+	/*
+	* Por otro lado, "result" contiene el resultado de aplicar el análisis
+	* sintáctico mediante Bison, y almacenar el nood raíz del AST construido
+	* en esta variable. Para el ejemplo de la calculadora, no hay AST porque
+	* la expresión se computa on-the-fly, y es la razón por la cual esta
+	* variable es un simple entero, en lugar de un nodo.
+	*/
+}
+
 // int AdditionExpressionGrammarAction(const int leftValue, const int rightValue) {
 // 	LogDebug("\tAdditionExpressionGrammarAction(%d, %d)", leftValue, rightValue);
 // 	return Add(leftValue, rightValue);

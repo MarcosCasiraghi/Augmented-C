@@ -39,7 +39,7 @@
 
 %%
 
-program: special_statement;
+program: special_statement { ProgramGrammarAction(); };
 special_statement : START_SPECIAL selector END_SPECIAL
 
 selector: REDUCE COMA reduce_statement | FILTER COMA filter_statement | FOREACH COMA foreach_statement | MAP COMA map_statement
