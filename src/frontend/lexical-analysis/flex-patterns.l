@@ -13,33 +13,37 @@
 /* Dispone una variable global "yylineno" con el número de línea actual. */
 %option yylineno
 
-/* Contextos de Flex. */
-%x COMMENT
 
-/* Patrones reutilizables. */
-digit			[0-9]
-endline			[\n]
-whitespace		[ \f\n\r\t\v]
+%x SPECIAL_STATEMENT
+
+digit	[0-9]
+alpha	[a-zA-Z]
+alnum	[a-zA-Z0-9]
+alnumext [a-zA-Z0-9_]
+
+integer {digit}+
+variable {alpha}+{alnumext}*
+
+asdfasdfasdfasfd
 
 %%
 
-"/*"										{ BEGIN(COMMENT); BeginCommentPatternAction(); }
-<COMMENT>.									{ ; }
-<COMMENT>{endline}							{ ; }
-<COMMENT>"*/"								{ EndCommentPatternAction(); BEGIN(INITIAL); }
+"<{"							{ BEGIN(SPECIAL_STATEMENT); return START_SPECIAL; } // deberia poder devolver el "<{"
 
-"+"											{ return AdditionOperatorPatternAction(yytext); }
-"-"											{ return SubtractionOperatorPatternAction(yytext); }
-"*"											{ return MultiplicationOperatorPatternAction(yytext); }
-"/"											{ return DivisionOperatorPatternAction(yytext); }
+<SPECIAL_STATEMENT>"REDUCE"		{ return REDUCE; }
+<SPECIAL_STATEMENT>"MAP" 		{ return MAP; }
+<SPECIAL_STATEMENT>"FILTER" 	{ return FILTER; }
+<SPECIAL_STATEMENT>"FOREACH" 	{ return FOREACH; }
+<SPECIAL_STATEMENT>"," 			{ return COMA; }
+<SPECIAL_STATEMENT>{variable} 	{ return VARIABLE_NAME; }	// aca le tengo que pasar la variable posta
+<SPECIAL_STATEMENT>{integer} 	{ return INTEGER; }			// aca le tengo que pasar la el integer posta
+<SPECIAL_STATEMENT>"{" 			{ return EXPRESION_START; }
+<SPECIAL_STATEMENT>"}" 			{ return EXPRESION_END; }
 
-"("											{ return OpenParenthesisPatternAction(yytext); }
-")"											{ return CloseParenthesisPatternAction(yytext); }
+<SPECIAL_STATEMENT>"}>"			{ BEGIN(INITIAL); return END_SPECIAL; }
 
-{digit}+									{ return IntegerPatternAction(yytext, yyleng); }
+[ \t\r\f]+		{ ; }// ignoro whitespace
 
-{whitespace}								{ IgnoredPatternAction(yytext, yyleng); }
-
-.											{ return UnknownPatternAction(yytext, yyleng); }
+. 				{ return UnknownPatternAction(yytext, yyleng); }// error
 
 %%
