@@ -24,26 +24,25 @@ alnumext [a-zA-Z0-9_]
 integer {digit}+
 variable {alpha}+{alnumext}*
 
-asdfasdfasdfasfd
 
 %%
 
-"<{"							{ BEGIN(SPECIAL_STATEMENT); return START_SPECIAL; } // deberia poder devolver el "<{"
+"<{"							{ BEGIN(SPECIAL_STATEMENT); return START_SPECIAL; } /* deberia poder devolver el "<{" */
 
 <SPECIAL_STATEMENT>"REDUCE"		{ return REDUCE; }
 <SPECIAL_STATEMENT>"MAP" 		{ return MAP; }
 <SPECIAL_STATEMENT>"FILTER" 	{ return FILTER; }
 <SPECIAL_STATEMENT>"FOREACH" 	{ return FOREACH; }
 <SPECIAL_STATEMENT>"," 			{ return COMA; }
-<SPECIAL_STATEMENT>{variable} 	{ return VARIABLE_NAME; }	// aca le tengo que pasar la variable posta
-<SPECIAL_STATEMENT>{integer} 	{ return INTEGER; }			// aca le tengo que pasar la el integer posta
+<SPECIAL_STATEMENT>{variable} 	{ return VARIABLE_NAME; }	/*aca le tengo que pasar la variable posta */
+<SPECIAL_STATEMENT>{integer} 	{ return SIZE; }			/*aca le tengo que pasar la el integer posta */
 <SPECIAL_STATEMENT>"{" 			{ return EXPRESION_START; }
 <SPECIAL_STATEMENT>"}" 			{ return EXPRESION_END; }
 
 <SPECIAL_STATEMENT>"}>"			{ BEGIN(INITIAL); return END_SPECIAL; }
 
-[ \t\r\f]+		{ ; }// ignoro whitespace
+[ \t\r\f]+		{ ; }/* ignoro whitespace */
 
-. 				{ return UnknownPatternAction(yytext, yyleng); }// error
+. 				{ return UnknownPatternAction(yytext, yyleng); }/* error */
 
 %%

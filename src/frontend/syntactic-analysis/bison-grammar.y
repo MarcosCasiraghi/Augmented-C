@@ -4,6 +4,28 @@
 
 %}
 
+// Tipos de dato utilizados en las variables semánticas ($$, $1, $2, etc.).
+%union {
+	// No-terminales (backend).
+	/*
+	Program program;
+	Expression expression;
+	Factor factor;
+	Constant constant;
+	...
+	*/
+
+	// No-terminales (frontend).
+	int program;
+	int expression;
+	int factor;
+	int constant;
+
+	// Terminales.
+	token token;
+	int integer;
+}
+
 // definicion de simbolos y otros
 
 %token REDUCE MAP FILTER FOREACH START_SPECIAL END_SPECIAL
@@ -15,8 +37,7 @@
 
 %start program
 
-asdfasdfasdfasfd
-
+%%
 
 program: special_statement;
 special_statement : START_SPECIAL selector END_SPECIAL
@@ -32,3 +53,5 @@ variable: VARIABLE_NAME
 size: SIZE
 
 expression: SIZE		// change
+
+%%
