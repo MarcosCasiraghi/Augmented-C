@@ -16,35 +16,48 @@
 
 %x SPECIAL_STATEMENT
 
+
+
 digit	[0-9]
 alpha	[a-zA-Z]
 alnum	[a-zA-Z0-9]
 alnumext [a-zA-Z0-9_]
+alphaext [a-zA-Z_]
 
 whitespace [ \t\r\f\n]+
 
-integer {digit}+
-variable {alpha}+{alnumext}*
+variable {alphaext}+{alnumext}*
+num_constant {digit}+|{digit}*"."{digit}+
 
 
 %%
 
-"<{"							{ BEGIN(SPECIAL_STATEMENT); return START_SPECIAL; } /* deberia poder devolver el "<{" */
+"<{"									{ BEGIN(SPECIAL_STATEMENT); return START_SPECIAL; } /* deberia poder devolver el "<{" */
 
-<SPECIAL_STATEMENT>"REDUCE"		{ return REDUCE; }
-<SPECIAL_STATEMENT>"MAP" 		{ return MAP; }
-<SPECIAL_STATEMENT>"FILTER" 	{ return FILTER; }
-<SPECIAL_STATEMENT>"FOREACH" 	{ return FOREACH; }
-<SPECIAL_STATEMENT>"," 			{ return COMA; }
-<SPECIAL_STATEMENT>{variable} 	{ return VARIABLE_NAME; }	/*aca le tengo que pasar la variable posta */
-<SPECIAL_STATEMENT>{integer} 	{ return SIZE; }			/*aca le tengo que pasar la el integer posta */
-<SPECIAL_STATEMENT>"{" 			{ return EXPRESION_START; }
-<SPECIAL_STATEMENT>"}" 			{ return EXPRESION_END; }
-<SPECIAL_STATEMENT>{whitespace} { ; }
+<SPECIAL_STATEMENT>"REDUCE"				{ return REDUCE; }
+<SPECIAL_STATEMENT>"MAP" 				{ return MAP; }
+<SPECIAL_STATEMENT>"FILTER" 			{ return FILTER; }
+<SPECIAL_STATEMENT>"FOREACH" 			{ return FOREACH; }
 
-<SPECIAL_STATEMENT>"}>"			{ BEGIN(INITIAL); return END_SPECIAL; }
+<SPECIAL_STATEMENT>"," 					{ return COMA; }
+<SPECIAL_STATEMENT>{num_constant} 		{ return NUM_CONSTANT; }				/*aca le tengo que pasar la el integer posta */
+<SPECIAL_STATEMENT>{variable} 			{ return VARIABLE_NAME; }				/*aca le tengo que pasar la variable posta */
 
-{whitespace}	{ ; }/* ignoro whitespace */
+<SPECIAL_STATEMENT>"{" 					{ return LAMBDA_START; }
+<SPECIAL_STATEMENT>"}"					{ return LAMBDA_END; }
+
+<SPECIAL_STATEMENT>"+"					{ return ADD_OP;}
+<SPECIAL_STATEMENT>"-"					{ return SUB_OP;}
+<SPECIAL_STATEMENT>"*"					{ return MULT_OP;}
+<SPECIAL_STATEMENT>"/"					{ return DIV_OP;}
+<SPECIAL_STATEMENT>"%"					{ return MOD_OP;}
+
+<SPECIAL_STATEMENT>{whitespace} 		{ ; }
+<SPECIAL_STATEMENT>"}>"					{ BEGIN(INITIAL); return END_SPECIAL; }
+<SPECIAL_STATEMENT>. 					{ return UnknownPatternAction(yytext, yyleng); } 	/* error */
+
+
+{whitespace}	{ ; }	/* ignoro whitespace */
 
 . 				{ return UnknownPatternAction(yytext, yyleng); }/* error */
 
