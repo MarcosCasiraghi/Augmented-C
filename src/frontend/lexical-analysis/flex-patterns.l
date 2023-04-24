@@ -16,8 +16,6 @@
 
 %x SPECIAL_STATEMENT
 
-
-
 digit	[0-9]
 alpha	[a-zA-Z]
 alnum	[a-zA-Z0-9]
@@ -43,6 +41,8 @@ num_constant {digit}+|{digit}*"."{digit}+
 <SPECIAL_STATEMENT>{num_constant} 		{ return NUM_CONSTANT; }				/*aca le tengo que pasar la el integer posta */
 <SPECIAL_STATEMENT>{variable} 			{ return VARIABLE_NAME; }				/*aca le tengo que pasar la variable posta */
 
+<SPECIAL_STATEMENT>"@elem"				{ return SPECIAL_VARIABLE; }
+
 <SPECIAL_STATEMENT>"{" 					{ return LAMBDA_START; }
 <SPECIAL_STATEMENT>"}"					{ return LAMBDA_END; }
 
@@ -59,12 +59,21 @@ num_constant {digit}+|{digit}*"."{digit}+
 <SPECIAL_STATEMENT>"||"                 {return OR_OP;}
 
 <SPECIAL_STATEMENT>"=="                 {return EQ_OP;}
-<SPECIAL_STATEMENT>"!="                 {return NEQ_OP;}
 <SPECIAL_STATEMENT>">"                  {return GR_OP;}
 <SPECIAL_STATEMENT>">="                 {return GE_OP;}
 <SPECIAL_STATEMENT>"<"                  {return LT_OP;}
 <SPECIAL_STATEMENT>"<="                 {return LE_OP;}
+<SPECIAL_STATEMENT>"!="                 {return NE_OP;}
 
+<SPECIAL_STATEMENT>"++"					{ return INC_OP;}
+<SPECIAL_STATEMENT>"--"					{ return DEC_OP;}
+
+<SPECIAL_STATEMENT>"~"					{ return BIT_NOT_OP;}
+<SPECIAL_STATEMENT>">>"					{ return BIT_RIGHT_OP;}
+<SPECIAL_STATEMENT>"<<"					{ return BIT_LEFT_OP;}
+<SPECIAL_STATEMENT>"^"					{ return BIT_XOR_OP;}
+<SPECIAL_STATEMENT>"|"					{ return BIT_OR_OP;}
+<SPECIAL_STATEMENT>"&"					{ return BIT_AND_OP;} 	
 
 
 <SPECIAL_STATEMENT>{whitespace} 		{ ; }

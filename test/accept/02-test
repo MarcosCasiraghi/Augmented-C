@@ -1,1 +1,1 @@
-1 + 2
+<{FILTER, var1, 5, sum, { @elem > 3}}>
