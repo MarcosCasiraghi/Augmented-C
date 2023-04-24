@@ -52,6 +52,20 @@ num_constant {digit}+|{digit}*"."{digit}+
 <SPECIAL_STATEMENT>"/"					{ return DIV_OP;}
 <SPECIAL_STATEMENT>"%"					{ return MOD_OP;}
 
+<SPECIAL_STATEMENT>"!"                  {return NOT_OP;}
+<SPECIAL_STATEMENT>"("                  {return OPAR;}
+<SPECIAL_STATEMENT>")"                  {return CPAR;}
+<SPECIAL_STATEMENT>"&&"                 {return AND_OP;}
+<SPECIAL_STATEMENT>"||"                 {return OR_OP;}
+
+<SPECIAL_STATEMENT>"=="                 {return EQ_OP;}
+<SPECIAL_STATEMENT>">"                  {return GR_OP;}
+<SPECIAL_STATEMENT>">="                 {return GE_OP;}
+<SPECIAL_STATEMENT>"<"                  {return LT_OP;}
+<SPECIAL_STATEMENT>"<="                 {return LE_OP;}
+
+
+
 <SPECIAL_STATEMENT>{whitespace} 		{ ; }
 <SPECIAL_STATEMENT>"}>"					{ BEGIN(INITIAL); return END_SPECIAL; }
 <SPECIAL_STATEMENT>. 					{ return UnknownPatternAction(yytext, yyleng); } 	/* error */
