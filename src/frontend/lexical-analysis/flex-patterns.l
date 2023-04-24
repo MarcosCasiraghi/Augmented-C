@@ -59,6 +59,7 @@ num_constant {digit}+|{digit}*"."{digit}+
 <SPECIAL_STATEMENT>"||"                 {return OR_OP;}
 
 <SPECIAL_STATEMENT>"=="                 {return EQ_OP;}
+<SPECIAL_STATEMENT>"!="                 {return NEQ_OP;}
 <SPECIAL_STATEMENT>">"                  {return GR_OP;}
 <SPECIAL_STATEMENT>">="                 {return GE_OP;}
 <SPECIAL_STATEMENT>"<"                  {return LT_OP;}

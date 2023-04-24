@@ -38,7 +38,7 @@
 %token ADD_OP SUB_OP MULT_OP DIV_OP MOD_OP
 
 %token NOT_OP OPAR CPAR AND_OP OR_OP
-%token EQ_OP GR_OP GE_OP LT_OP LE_OP
+%token EQ_OP NEQ_OP GR_OP GE_OP LT_OP LE_OP
 
 
 // Reglas de asociatividad y precedencia
@@ -81,6 +81,7 @@ relational_expression: expression EQ_OP expression
 						| expression GR_OP expression
 						| expression GE_OP expression
 						| expression LT_OP expression
-						| expression LE_OP expression ;
+						| expression LE_OP expression
+						| expression NEQ_OP expression ;
 
 %%
