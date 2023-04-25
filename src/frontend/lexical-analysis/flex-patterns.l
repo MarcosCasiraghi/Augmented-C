@@ -15,6 +15,7 @@
 
 
 %x SPECIAL_STATEMENT
+%x STRING_SPECIAL
 
 digit	[0-9]
 alpha	[a-zA-Z]
@@ -87,10 +88,18 @@ create_exp {num_constant_int}+\.\.\.{num_constant_int}+
 <SPECIAL_STATEMENT>"|"					{ return BIT_OR_OP;}
 <SPECIAL_STATEMENT>"&"					{ return BIT_AND_OP;} 	
 
+<SPECIAL_STATEMENT>"\""					{ BEGIN(STRING_SPECIAL); return STRING_START;}
 
 <SPECIAL_STATEMENT>{whitespace} 		{ ; }
 <SPECIAL_STATEMENT>"}>"					{ BEGIN(INITIAL); return END_SPECIAL; }
 <SPECIAL_STATEMENT>. 					{ return UnknownPatternAction(yytext, yyleng); } 	/* error */
+
+
+<STRING_SPECIAL>"\""							{ BEGIN(SPECIAL_STATEMENT); return STRING_END; }		// hay alguna manera de volver al estado anterior y no a uno especifico???
+<STRING_SPECIAL>.								{ return STRING_CHARACTER; }
+<STRING_SPECIAL>{whitespace}					{ return STRING_CHARACTER; }
+
+
 
 
 {whitespace}	{ ; }	/* ignoro whitespace */
