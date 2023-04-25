@@ -28,12 +28,13 @@
 
 // definicion de simbolos y otros
 
-%token REDUCE MAP FILTER FOREACH START_SPECIAL END_SPECIAL
+%token REDUCE MAP FILTER FOREACH CREATE START_SPECIAL END_SPECIAL
 %token EXPRESION_START EXPRESION_END 
 %token LAMBDA_START LAMBDA_END
 %token COMA
 
 %token VARIABLE_NAME NUM_CONSTANT SPECIAL_VARIABLE
+%token CREATE_EXPRESSION
 
 %token ADD_OP SUB_OP MULT_OP DIV_OP MOD_OP
 %token INC_OP DEC_OP
@@ -41,6 +42,9 @@
 
 %token NOT_OP OPAR CPAR AND_OP OR_OP
 %token EQ_OP GR_OP GE_OP LT_OP LE_OP NE_OP
+
+%token INT FLOAT DOUBLE LONG SHORT CHAR
+%token DOT
 
 
 // Reglas de asociatividad y precedencia
@@ -66,15 +70,20 @@
 program: special_statement { ProgramGrammarAction(); };
 special_statement : START_SPECIAL selector END_SPECIAL 	;
 
-selector: REDUCE COMA reduce_statement | FILTER COMA filter_statement | FOREACH COMA foreach_statement | MAP COMA map_statement 	;
+selector: REDUCE COMA reduce_statement | FILTER COMA filter_statement | FOREACH COMA foreach_statement 
+			| MAP COMA map_statement | CREATE COMA create_statement ;
 
 reduce_statement: variable COMA size COMA variable COMA lambda 	;
 filter_statement: variable COMA size COMA variable COMA boolean_lambda 	;
 map_statement: variable COMA size COMA variable COMA lambda 	;
 foreach_statement: variable COMA size COMA lambda 				;
+create_statement: variable COMA data_type COMA create_lambda 	;
+
+data_type: INT | FLOAT | DOUBLE | LONG | SHORT | CHAR ;
 
 lambda: LAMBDA_START expression_with_lambda LAMBDA_END ;
 boolean_lambda: LAMBDA_START boolean_expression_with_lambda LAMBDA_END ;
+create_lambda : LAMBDA_START CREATE_EXPRESSION LAMBDA_END ;
 
 size: variable | NUM_CONSTANT ;
 variable: VARIABLE_NAME   ;

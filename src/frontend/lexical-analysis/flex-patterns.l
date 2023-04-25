@@ -25,7 +25,9 @@ alphaext [a-zA-Z_]
 whitespace [ \t\r\f\n]+
 
 variable {alphaext}+{alnumext}*
+num_constant_int {digit}+
 num_constant {digit}+|{digit}*"."{digit}+
+create_exp {num_constant_int}+\.\.\.{num_constant_int}+
 
 
 %%
@@ -36,6 +38,16 @@ num_constant {digit}+|{digit}*"."{digit}+
 <SPECIAL_STATEMENT>"MAP" 				{ return MAP; }
 <SPECIAL_STATEMENT>"FILTER" 			{ return FILTER; }
 <SPECIAL_STATEMENT>"FOREACH" 			{ return FOREACH; }
+<SPECIAL_STATEMENT>"CREATE"             { return CREATE; }
+
+<SPECIAL_STATEMENT>"int"                { return INT; }
+<SPECIAL_STATEMENT>"float"              { return FLOAT; }
+<SPECIAL_STATEMENT>"double"             { return DOUBLE; }
+<SPECIAL_STATEMENT>"long"               { return LONG; }
+<SPECIAL_STATEMENT>"short"              { return SHORT; }
+<SPECIAL_STATEMENT>"char"               { return CHAR; }
+<SPECIAL_STATEMENT>"."                  { return DOT; }
+<SPECIAL_STATEMENT>{create_exp}         { return CREATE_EXPRESSION; }
 
 <SPECIAL_STATEMENT>"," 					{ return COMA; }
 <SPECIAL_STATEMENT>{num_constant} 		{ return NUM_CONSTANT; }				/*aca le tengo que pasar la el integer posta */
