@@ -16,6 +16,7 @@
 
 %x SPECIAL_STATEMENT
 %x STRING_SPECIAL
+%x DECLARATION
 
 digit	[0-9]
 alpha	[a-zA-Z]
@@ -32,6 +33,27 @@ create_exp {num_constant_int}+\.\.\.{num_constant_int}+
 
 
 %%
+
+"int"                { BEGIN(DECLARATION); return INT; } 					/* caso typeof ??? */
+"float"              { BEGIN(DECLARATION); return FLOAT; }
+"double"             { BEGIN(DECLARATION); return DOUBLE; }
+"long"               { BEGIN(DECLARATION); return LONG; }
+"short"              { BEGIN(DECLARATION); return SHORT; }
+"char"               { BEGIN(DECLARATION); return CHAR; }
+
+<DECLARATION>{variable} 			{ return VARIABLE_NAME; }				/* TODO: guardarse el nombre para backend */
+<DECLARATION>{num_constant} 		{ return NUM_CONSTANT; }
+<DECLARATION>"*"					{ return MULT_OP; }
+<DECLARATION>"["					{ return OPEN_BRACKET; }
+<DECLARATION>"]"					{ return CLOSE_BRACKET; }
+<DECLARATION>","					{ return COMA; }
+
+<DECLARATION>{whitespace} 			{ ; }
+
+<DECLARATION>"="					{ BEGIN(INITIAL); return EQ_OP; } 		/* no nos importa lo que pasa despues ??? */
+<DECLARATION>";"					{ BEGIN(INITIAL); return SEMI_COLON; }
+<DECLARATION>.						{ ; } 									/* por ahora ignoro */
+
 
 "<{"									{ BEGIN(SPECIAL_STATEMENT); return START_SPECIAL; } /* deberia poder devolver el "<{" */
 
@@ -96,14 +118,12 @@ create_exp {num_constant_int}+\.\.\.{num_constant_int}+
 
 
 <STRING_SPECIAL>"\""							{ BEGIN(SPECIAL_STATEMENT); return STRING_END; }		// hay alguna manera de volver al estado anterior y no a uno especifico???
-<STRING_SPECIAL>.								{ return STRING_CHARACTER; }
 <STRING_SPECIAL>{whitespace}					{ return STRING_CHARACTER; }
-
-
+<STRING_SPECIAL>.								{ return STRING_CHARACTER; }
 
 
 {whitespace}	{ ; }	/* ignoro whitespace */
 
-. 				{ return UnknownPatternAction(yytext, yyleng); }/* error */
+. 				{ ; } 	/* lenguaje de c que no tenemos en cuenta */
 
 %%

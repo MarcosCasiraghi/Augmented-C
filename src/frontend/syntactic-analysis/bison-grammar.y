@@ -47,6 +47,8 @@
 %token INT FLOAT DOUBLE LONG SHORT CHAR
 %token DOT
 
+%token SEMI_COLON CLOSE_BRACKET OPEN_BRACKET
+
 
 //  = = = = = = = = = = = = Reglas de asociatividad y precedencia  = = = = = = = = = = = = 
 
@@ -71,9 +73,12 @@
 
 %%
 
-program: special_statement { ProgramGrammarAction(); };
+program: statements { ProgramGrammarAction(); };
 
-
+statements: statements declaration
+		| statements special_statement
+		| declaration
+		| special_statement ;
 
 // = = = = = = = = = = = =  Lambda  = = = = = = = = = = = = = = = = 
 
@@ -86,58 +91,26 @@ selector: REDUCE COMA reduce_statement | FILTER COMA filter_statement | FOREACH 
 reduce_statement: variable COMA size COMA variable COMA lambda 	;
 filter_statement: variable COMA size COMA variable COMA boolean_lambda 	;
 map_statement: variable COMA size COMA variable COMA lambda 	;
-foreach_statement: variable COMA size COMA LAMBDA_START function_call_lambda LAMBDA_END			;
+foreach_statement: variable COMA size COMA LAMBDA_START function_call LAMBDA_END			;
 create_statement: variable COMA data_type COMA create_lambda 	;
 
-lambda: LAMBDA_START expression_with_lambda LAMBDA_END ;
-boolean_lambda: LAMBDA_START boolean_expression_with_lambda LAMBDA_END ;
+lambda: LAMBDA_START expression LAMBDA_END ;
+boolean_lambda: LAMBDA_START boolean_expression LAMBDA_END ;
 create_lambda : LAMBDA_START CREATE_EXPRESSION LAMBDA_END ;
-
-function_call_lambda: function_name OPAR function_arg_lambda CPAR 
-					| function_name OPAR CPAR ;
-
-function_arg_lambda: function_arg_lambda COMA function_arg_lambda
-					 | expression_with_lambda
-					 | function_call_lambda 
-					 | string ;
-
-
-// lambda expression must also accept @elem, but c expression must not accept it => we need another expression
-
-expression_with_lambda:  expression_with_lambda ADD_OP expression_with_lambda 
-						| expression_with_lambda SUB_OP expression_with_lambda 
-						| expression_with_lambda MULT_OP expression_with_lambda 
-						| expression_with_lambda DIV_OP expression_with_lambda 
-						| expression_with_lambda MOD_OP expression_with_lambda 
-						| expression_with_lambda INC_OP
-						| INC_OP expression_with_lambda
-						| expression_with_lambda DEC_OP
-						| DEC_OP expression_with_lambda
-						| BIT_NOT_OP expression_with_lambda
-						| expression_with_lambda BIT_RIGHT_OP expression_with_lambda
-						| expression_with_lambda BIT_LEFT_OP expression_with_lambda
-						| expression_with_lambda BIT_XOR_OP expression_with_lambda
-						| expression_with_lambda BIT_OR_OP expression_with_lambda
-						| variable 
-						| NUM_CONSTANT 
-						| SPECIAL_VARIABLE ;
-
-relational_expression_with_lambda: expression_with_lambda EQ_OP expression_with_lambda
-						| expression_with_lambda GR_OP expression_with_lambda
-						| expression_with_lambda GE_OP expression_with_lambda
-						| expression_with_lambda LT_OP expression_with_lambda
-						| expression_with_lambda LE_OP expression_with_lambda
-						| expression_with_lambda NE_OP expression_with_lambda ;
-
-boolean_expression_with_lambda: boolean_expression_with_lambda AND_OP boolean_expression_with_lambda
-					| OPAR boolean_expression_with_lambda CPAR
-					| boolean_expression_with_lambda OR_OP boolean_expression_with_lambda
-					| NOT_OP OPAR boolean_expression_with_lambda CPAR
-					| relational_expression_with_lambda ;
-
 
 
 // = = = = = = = = = = = =  C Lang  = = = = = = = = = = = = = = = = 
+
+
+declaration: data_type name declartion_end 
+			| data_type MULT_OP name declartion_end
+			| data_type name OPEN_BRACKET size CLOSE_BRACKET declartion_end;
+			| data_type name OPEN_BRACKET CLOSE_BRACKET declartion_end;
+			| data_type ;
+
+name: variable | variable COMA variable ; 				// permite declara multiples variables
+declartion_end:  SEMI_COLON | EQ_OP ;			// no nos importa lo que pasa despues del "="
+
 
 data_type: INT | FLOAT | DOUBLE | LONG | SHORT | CHAR ;
 
@@ -164,6 +137,7 @@ expression:  expression ADD_OP expression
 			| expression BIT_AND_OP expression
 			| variable 
 			| NUM_CONSTANT ;
+			| SPECIAL_VARIABLE ;		// check in backend if you are in c_lang, if so, reject
 
 boolean_expression: boolean_expression AND_OP boolean_expression
 					| OPAR boolean_expression CPAR
