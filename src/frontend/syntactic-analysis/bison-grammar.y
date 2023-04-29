@@ -34,8 +34,7 @@
 %token COMA
 %token STRING_START STRING_CHARACTER STRING_END
 
-%token VARIABLE_NAME NUM_CONSTANT SPECIAL_VARIABLE
-%token CREATE_EXPRESSION
+%token VARIABLE_NAME NUM_CONSTANT_FLOAT NUM_CONSTANT_INT SPECIAL_VARIABLE
 
 %token ADD_OP SUB_OP MULT_OP DIV_OP MOD_OP
 %token INC_OP DEC_OP
@@ -45,7 +44,7 @@
 %token EQ_OP GR_OP GE_OP LT_OP LE_OP NE_OP
 
 %token INT FLOAT DOUBLE LONG SHORT CHAR
-%token DOT
+%token THREE_DOT
 
 %token SEMI_COLON CLOSE_BRACKET OPEN_BRACKET OPEN_PARENTHESIS
 
@@ -96,7 +95,7 @@ create_statement: variable COMA data_type COMA create_lambda 	;
 
 lambda: LAMBDA_START expression LAMBDA_END ;
 boolean_lambda: LAMBDA_START boolean_expression LAMBDA_END ;
-create_lambda : LAMBDA_START CREATE_EXPRESSION LAMBDA_END ;
+create_lambda : LAMBDA_START NUM_CONSTANT_INT THREE_DOT NUM_CONSTANT_INT LAMBDA_END ;
 
 
 // = = = = = = = = = = = =  C Lang  = = = = = = = = = = = = = = = = 
@@ -116,7 +115,7 @@ declartion_end:  SEMI_COLON | EQ_OP ;			// no nos importa lo que pasa despues de
 
 data_type: INT | FLOAT | DOUBLE | LONG | SHORT | CHAR ;
 
-size: variable | NUM_CONSTANT 				;
+size: variable | NUM_CONSTANT_INT 				;
 variable: VARIABLE_NAME  					;	
 
 string: STRING_START string_character STRING_END 						;
@@ -138,7 +137,8 @@ expression:  expression ADD_OP expression
 			| expression BIT_OR_OP expression
 			| expression BIT_AND_OP expression
 			| variable 
-			| NUM_CONSTANT ;
+			| NUM_CONSTANT_FLOAT ;
+			| NUM_CONSTANT_INT ;
 			| SPECIAL_VARIABLE ;		// check in backend if you are in c_lang, if so, reject
 
 boolean_expression: boolean_expression AND_OP boolean_expression

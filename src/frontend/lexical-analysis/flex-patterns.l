@@ -39,8 +39,7 @@ variable {alphaext}+{alnumext}*
 word {variable}
 num_constant_int {digit}+
 num_constant {digit}+|{digit}*"."{digit}+
-create_exp {num_constant_int}+\.\.\.{num_constant_int}+
-
+num_constant_float {digit}*"."{digit}+
 
 %%
 
@@ -147,7 +146,8 @@ create_exp {num_constant_int}+\.\.\.{num_constant_int}+
 	
 
 <DECLARATION>{variable} 			{ return VARIABLE_NAME; }				/* TODO: guardarse el nombre para backend */
-<DECLARATION>{num_constant} 		{ return NUM_CONSTANT; }
+<DECLARATION>{num_constant_int}     { return NUM_CONSTANT_INT; }
+<DECLARATION>{num_constant_float} 	{ return NUM_CONSTANT_FLOAT; }
 <DECLARATION>"*"					{ return MULT_OP; }
 <DECLARATION>","					{ return COMA; }
 <DECLARATION>{whitespace} 			{ ; }
@@ -173,11 +173,11 @@ create_exp {num_constant_int}+\.\.\.{num_constant_int}+
 <SPECIAL_STATEMENT>"long"               { return LONG; }
 <SPECIAL_STATEMENT>"short"              { return SHORT; }
 <SPECIAL_STATEMENT>"char"               { return CHAR; }
-<SPECIAL_STATEMENT>"."                  { return DOT; }
-<SPECIAL_STATEMENT>{create_exp}         { return CREATE_EXPRESSION; }
+<SPECIAL_STATEMENT>"..."                { return THREE_DOT; }
 
 <SPECIAL_STATEMENT>"," 					{ return COMA; }
-<SPECIAL_STATEMENT>{num_constant} 		{ return NUM_CONSTANT; }				/*aca le tengo que pasar la el integer posta */
+<SPECIAL_STATEMENT>{num_constant_float} { return NUM_CONSTANT_FLOAT; }				/*aca le tengo que pasar la el integer posta */
+<SPECIAL_STATEMENT>{num_constant_int}   { return NUM_CONSTANT_INT; }
 <SPECIAL_STATEMENT>{variable} 			{ return VARIABLE_NAME; }				/*aca le tengo que pasar la variable posta */
 
 <SPECIAL_STATEMENT>"@elem"				{ return SPECIAL_VARIABLE; }
