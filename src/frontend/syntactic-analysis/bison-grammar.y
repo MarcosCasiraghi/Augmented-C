@@ -47,7 +47,7 @@
 %token INT FLOAT DOUBLE LONG SHORT CHAR
 %token DOT
 
-%token SEMI_COLON CLOSE_BRACKET OPEN_BRACKET
+%token SEMI_COLON CLOSE_BRACKET OPEN_BRACKET OPEN_PARENTHESIS
 
 
 //  = = = = = = = = = = = = Reglas de asociatividad y precedencia  = = = = = = = = = = = = 
@@ -101,14 +101,16 @@ create_lambda : LAMBDA_START CREATE_EXPRESSION LAMBDA_END ;
 
 // = = = = = = = = = = = =  C Lang  = = = = = = = = = = = = = = = = 
 
+pointer: MULT_OP | MULT_OP pointer
 
 declaration: data_type name declartion_end 
-			| data_type MULT_OP name declartion_end
-			| data_type name OPEN_BRACKET size CLOSE_BRACKET declartion_end;
-			| data_type name OPEN_BRACKET CLOSE_BRACKET declartion_end;
+			| data_type name OPEN_BRACKET;
+			| data_type pointer name declartion_end
+			| data_type name OPEN_PARENTHESIS;
+			| data_type pointer name OPEN_BRACKET;
 			| data_type ;
 
-name: variable | variable COMA variable ; 				// permite declara multiples variables
+name: variable | variable COMA name ; 				// permite declara multiples variables
 declartion_end:  SEMI_COLON | EQ_OP ;			// no nos importa lo que pasa despues del "="
 
 

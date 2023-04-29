@@ -13,10 +13,18 @@
 /* Dispone una variable global "yylineno" con el número de línea actual. */
 %option yylineno
 
+/* Para poder usar yy_pop_state() */
+%option stack
+
 
 %x SPECIAL_STATEMENT
-%x STRING_SPECIAL
+%x STRING
+%x CHAR_STRING
 %x DECLARATION
+%x STRING_SPECIAL
+%x CAST_OR_FUNCARG
+%x ML_COMMENT
+%x COMMENT
 
 digit	[0-9]
 alpha	[a-zA-Z]
@@ -24,9 +32,11 @@ alnum	[a-zA-Z0-9]
 alnumext [a-zA-Z0-9_]
 alphaext [a-zA-Z_]
 
+
 whitespace [ \t\r\f\n]+
 
 variable {alphaext}+{alnumext}*
+word {variable}
 num_constant_int {digit}+
 num_constant {digit}+|{digit}*"."{digit}+
 create_exp {num_constant_int}+\.\.\.{num_constant_int}+
@@ -34,22 +44,116 @@ create_exp {num_constant_int}+\.\.\.{num_constant_int}+
 
 %%
 
-"int"                { BEGIN(DECLARATION); return INT; } 					/* caso typeof ??? */
+"\""						{ BEGIN(STRING); }
+<STRING>"\""				{ BEGIN(INITIAL); }
+<STRING>{whitespace}		{ ; }
+<STRING>.					{ ; }
+
+"\'"							{ BEGIN(CHAR_STRING); }
+<CHAR_STRING>"\'"				{ BEGIN(INITIAL); }
+<CHAR_STRING>{whitespace}		{ ; }
+<CHAR_STRING>.					{ ; }
+
+"/*"							{ BEGIN(ML_COMMENT); }
+<ML_COMMENT>"*/"				{ BEGIN(INITIAL); }
+<ML_COMMENT>{whitespace}		{ ; }
+<ML_COMMENT>.					{ ; }
+
+"//"						{ BEGIN(COMMENT); }
+<COMMENT>"\n"				{ BEGIN(INITIAL); }
+<COMMENT>{whitespace}		{ ; }
+<COMMENT>.					{ ; }
+
+"auto"			{ ; }
+"break"			{ ; }
+"case"			{ ; }
+"const"			{ ; }
+"continue"		{ ; }
+"default"		{ ; }
+"do"			{ ; }
+"register"		{ ; }
+"return"		{ ; }
+"signed"		{ ; }
+"sizeof"		{ ; }
+"static"		{ ; }
+"struct"		{ ; }
+"switch"		{ ; }
+"typedef"		{ ; }
+"union"			{ ; }
+"unsigned"		{ ; }
+"void"			{ ; }
+"volatile"		{ ; }
+"while"			{ ; }
+"else"			{ ; }
+"enum"			{ ; }
+"extern"		{ ; }
+"for"			{ ; }
+"goto"			{ ; }
+"if"			{ ; }
+
+"."				{ ; }
+"->"			{ ; }
+"["				{ ; }
+"]"				{ ; }
+"{"				{ ; }
+"}"				{ ; }
+","				{ ; }
+";"				{ ; }
+":"				{ ; }
+"="				{ ; }
+"#"				{ ; }
+
+
+"+"					{ ;}
+"-"					{ ;}
+"*"					{ ;}
+"/"					{ ;}
+"%"					{ ;}
+"!"					{ ;}
+"=="			{ ; }
+">"				{ ; }
+">="			{ ; }
+"<"				{ ; }
+"<="			{ ; }
+"!="			{ ; }
+"++"			{ ; }
+"--"			{ ; }
+"~"				{ ; }
+">>"			{ ; }
+"<<"			{ ; }
+"^"				{ ; }
+"|"				{ ; }
+"&"				{ ; } 	
+"?"				{ ; } 	
+
+"("									{ BEGIN(CAST_OR_FUNCARG); }
+<CAST_OR_FUNCARG>")"				{ BEGIN(INITIAL); }
+<CAST_OR_FUNCARG>{whitespace}		{ ; }
+<CAST_OR_FUNCARG>.					{ ; }
+
+")"				{ ; } 	
+
+
+"int"          		 { BEGIN(DECLARATION); return INT; } 					/* caso typeof ??? */
 "float"              { BEGIN(DECLARATION); return FLOAT; }
 "double"             { BEGIN(DECLARATION); return DOUBLE; }
 "long"               { BEGIN(DECLARATION); return LONG; }
 "short"              { BEGIN(DECLARATION); return SHORT; }
 "char"               { BEGIN(DECLARATION); return CHAR; }
 
+{variable}			 { ; }
+
+{num_constant}		 { ; }
+	
+
 <DECLARATION>{variable} 			{ return VARIABLE_NAME; }				/* TODO: guardarse el nombre para backend */
 <DECLARATION>{num_constant} 		{ return NUM_CONSTANT; }
 <DECLARATION>"*"					{ return MULT_OP; }
-<DECLARATION>"["					{ return OPEN_BRACKET; }
-<DECLARATION>"]"					{ return CLOSE_BRACKET; }
 <DECLARATION>","					{ return COMA; }
-
 <DECLARATION>{whitespace} 			{ ; }
 
+<DECLARATION>"("					{ BEGIN(CAST_OR_FUNCARG); return OPEN_PARENTHESIS; }
+<DECLARATION>"["					{ BEGIN(INITIAL); return OPEN_BRACKET; }
 <DECLARATION>"="					{ BEGIN(INITIAL); return EQ_OP; } 		/* no nos importa lo que pasa despues ??? */
 <DECLARATION>";"					{ BEGIN(INITIAL); return SEMI_COLON; }
 <DECLARATION>.						{ ; } 									/* por ahora ignoro */
@@ -117,13 +221,14 @@ create_exp {num_constant_int}+\.\.\.{num_constant_int}+
 <SPECIAL_STATEMENT>. 					{ return UnknownPatternAction(yytext, yyleng); } 	/* error */
 
 
-<STRING_SPECIAL>"\""							{ BEGIN(SPECIAL_STATEMENT); return STRING_END; }		// hay alguna manera de volver al estado anterior y no a uno especifico???
-<STRING_SPECIAL>{whitespace}					{ return STRING_CHARACTER; }
-<STRING_SPECIAL>.								{ return STRING_CHARACTER; }
+
+<STRING_SPECIAL>"\""					{ BEGIN(SPECIAL_STATEMENT); return STRING_END; }	/* Tenemos un estado aparte porque NO queremos descartar su contenido */
+<STRING_SPECIAL>{whitespace}			{ return STRING_CHARACTER; }
+<STRING_SPECIAL>.						{ return STRING_CHARACTER; }
 
 
 {whitespace}	{ ; }	/* ignoro whitespace */
 
-. 				{ ; } 	/* lenguaje de c que no tenemos en cuenta */
+. 				{ return UnknownPatternAction(yytext, yyleng); } 	/* lenguaje de c que no tenemos en cuenta. ESTE DEBERIA SER ERROR ESTO */
 
 %%
