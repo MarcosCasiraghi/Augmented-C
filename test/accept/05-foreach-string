@@ -1,0 +1,1 @@
+<{FOREACH, arr1, 5, {printf("%d <{FILTER, var1, 5, sum, { @elem > 3}}>",2)}}>

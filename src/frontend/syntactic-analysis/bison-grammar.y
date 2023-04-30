@@ -46,7 +46,7 @@
 %token INT FLOAT DOUBLE LONG SHORT CHAR
 %token THREE_DOT
 
-%token SEMI_COLON CLOSE_BRACKET OPEN_BRACKET OPEN_PARENTHESIS
+%token SEMI_COLON CLOSE_BRACKET OPEN_BRACKET 
 
 
 //  = = = = = = = = = = = = Reglas de asociatividad y precedencia  = = = = = = = = = = = = 
@@ -100,26 +100,28 @@ create_lambda : LAMBDA_START NUM_CONSTANT_INT THREE_DOT NUM_CONSTANT_INT LAMBDA_
 
 // = = = = = = = = = = = =  C Lang  = = = = = = = = = = = = = = = = 
 
-pointer: MULT_OP | MULT_OP pointer
-
-declaration: data_type name declartion_end 
-			| data_type name OPEN_BRACKET;
-			| data_type pointer name declartion_end
-			| data_type name OPEN_PARENTHESIS;
-			| data_type pointer name OPEN_BRACKET;
-			| data_type ;
-
-name: variable | variable COMA name ; 				// permite declara multiples variables
-declartion_end:  SEMI_COLON | EQ_OP ;			// no nos importa lo que pasa despues del "="
-
+variable: VARIABLE_NAME  					;	
 
 data_type: INT | FLOAT | DOUBLE | LONG | SHORT | CHAR ;
 
+pointer: MULT_OP | MULT_OP pointer ;
+
+variable_names: variable | variable COMA variable_names ; 		// permite multiples variables declaradas a la vez
+declartion_end:  SEMI_COLON | EQ_OP | OPEN_BRACKET;				// no nos importa lo que viene despues 
+
+function_arg: data_type variable 
+			| data_type pointer variable
+function_args: function_arg | function_arg COMA function_args
+
+declaration: data_type variable_names declartion_end 
+			| data_type pointer variable_names declartion_end
+			| data_type variable OPAR function_args CPAR;
+			| data_type variable OPAR CPAR;
+
 size: variable | NUM_CONSTANT_INT 				;
-variable: VARIABLE_NAME  					;	
 
 string: STRING_START string_character STRING_END 						;
-string_character: string_character STRING_CHARACTER | STRING_CHARACTER 	;		// esto esta bien ??
+string_character: string_character STRING_CHARACTER | STRING_CHARACTER 	;
 
 expression:  expression ADD_OP expression 
 			| expression SUB_OP expression 
@@ -154,11 +156,10 @@ relational_expression: expression EQ_OP expression
 						| expression LE_OP expression
 						| expression NE_OP expression ;
 
-function_name: variable
-function_call: function_name OPAR function_arg CPAR 
-			| function_name OPAR CPAR ;
+function_call: variable OPAR function_call_arg CPAR 
+			| variable OPAR CPAR ;
 
-function_arg: function_arg COMA function_arg
+function_call_arg: function_call_arg COMA function_call_arg
 			 | expression
 			 | function_call 
 			 | string ;

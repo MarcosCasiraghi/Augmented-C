@@ -22,9 +22,10 @@
 %x CHAR_STRING
 %x DECLARATION
 %x STRING_SPECIAL
-%x CAST_OR_FUNCARG
+%x CAST
 %x ML_COMMENT
 %x COMMENT
+%x FUNC_ARG
 
 digit	[0-9]
 alpha	[a-zA-Z]
@@ -35,8 +36,10 @@ alphaext [a-zA-Z_]
 
 whitespace [ \t\r\f\n]+
 
-variable {alphaext}+{alnumext}*
-word {variable}
+variable_name {alphaext}+{alnumext}*
+variable {variable_name}
+
+
 num_constant_int {digit}+
 num_constant {digit}+|{digit}*"."{digit}+
 num_constant_float {digit}*"."{digit}+
@@ -103,12 +106,12 @@ num_constant_float {digit}*"."{digit}+
 "#"				{ ; }
 
 
-"+"					{ ;}
-"-"					{ ;}
-"*"					{ ;}
-"/"					{ ;}
-"%"					{ ;}
-"!"					{ ;}
+"+"				{ ; }
+"-"				{ ; }
+"*"				{ ; }
+"/"				{ ; }
+"%"				{ ; }
+"!"				{ ; }
 "=="			{ ; }
 ">"				{ ; }
 ">="			{ ; }
@@ -124,16 +127,11 @@ num_constant_float {digit}*"."{digit}+
 "|"				{ ; }
 "&"				{ ; } 	
 "?"				{ ; } 	
-
-"("									{ BEGIN(CAST_OR_FUNCARG); }
-<CAST_OR_FUNCARG>")"				{ BEGIN(INITIAL); }
-<CAST_OR_FUNCARG>{whitespace}		{ ; }
-<CAST_OR_FUNCARG>.					{ ; }
-
+"("				{ ; }
 ")"				{ ; } 	
 
 
-"int"          		 { BEGIN(DECLARATION); return INT; } 					/* caso typeof ??? */
+"int"          		 { BEGIN(DECLARATION); return INT; } 
 "float"              { BEGIN(DECLARATION); return FLOAT; }
 "double"             { BEGIN(DECLARATION); return DOUBLE; }
 "long"               { BEGIN(DECLARATION); return LONG; }
@@ -144,19 +142,31 @@ num_constant_float {digit}*"."{digit}+
 
 {num_constant}		 { ; }
 	
-
 <DECLARATION>{variable} 			{ return VARIABLE_NAME; }				/* TODO: guardarse el nombre para backend */
-<DECLARATION>{num_constant_int}     { return NUM_CONSTANT_INT; }
-<DECLARATION>{num_constant_float} 	{ return NUM_CONSTANT_FLOAT; }
 <DECLARATION>"*"					{ return MULT_OP; }
 <DECLARATION>","					{ return COMA; }
 <DECLARATION>{whitespace} 			{ ; }
 
-<DECLARATION>"("					{ BEGIN(CAST_OR_FUNCARG); return OPEN_PARENTHESIS; }
+<DECLARATION>"("					{ BEGIN(FUNC_ARG); return OPAR; } 	/* caso argumentos en declaracion de funcion: int func(int a, int b) */
 <DECLARATION>"["					{ BEGIN(INITIAL); return OPEN_BRACKET; }
-<DECLARATION>"="					{ BEGIN(INITIAL); return EQ_OP; } 		/* no nos importa lo que pasa despues ??? */
 <DECLARATION>";"					{ BEGIN(INITIAL); return SEMI_COLON; }
+<DECLARATION>"="					{ BEGIN(INITIAL); return EQ_OP; } 		/* no nos importa lo que pasa despues ??? */
 <DECLARATION>.						{ ; } 									/* por ahora ignoro */
+
+<FUNC_ARG>"int"          	   { return INT; }
+<FUNC_ARG>"float"              { return FLOAT; }
+<FUNC_ARG>"double"             { return DOUBLE; }
+<FUNC_ARG>"long"               { return LONG; }
+<FUNC_ARG>"short"              { return SHORT; }
+<FUNC_ARG>"char"               { return CHAR; }
+
+<FUNC_ARG>{variable} 			{ printf("%s\n",yytext); return VARIABLE_NAME; }
+<FUNC_ARG>"*"					{ return MULT_OP; }
+<FUNC_ARG>","					{ return COMA; }
+<FUNC_ARG>{whitespace} 			{ ; }
+
+<FUNC_ARG>")"					{ BEGIN(INITIAL); return CPAR; }
+
 
 
 "<{"									{ BEGIN(SPECIAL_STATEMENT); return START_SPECIAL; } /* deberia poder devolver el "<{" */
@@ -219,7 +229,6 @@ num_constant_float {digit}*"."{digit}+
 <SPECIAL_STATEMENT>{whitespace} 		{ ; }
 <SPECIAL_STATEMENT>"}>"					{ BEGIN(INITIAL); return END_SPECIAL; }
 <SPECIAL_STATEMENT>. 					{ return UnknownPatternAction(yytext, yyleng); } 	/* error */
-
 
 
 <STRING_SPECIAL>"\""					{ BEGIN(SPECIAL_STATEMENT); return STRING_END; }	/* Tenemos un estado aparte porque NO queremos descartar su contenido */
