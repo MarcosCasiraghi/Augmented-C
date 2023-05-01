@@ -28,7 +28,7 @@
 
 //  = = = = = = = = = = = =  Definicion de simbolos y otros  = = = = = = = = = = = = 
 
-%token REDUCE MAP FILTER FOREACH CREATE START_SPECIAL END_SPECIAL
+%token REDUCE MAP FILTER FOREACH CREATE REDUCERANGE MAPRANGE FILTERRANGE FOREACHRANGE START_SPECIAL END_SPECIAL
 %token EXPRESION_START EXPRESION_END 
 %token LAMBDA_START LAMBDA_END
 %token COMA
@@ -83,8 +83,15 @@ statements: statements declaration
 
 special_statement : START_SPECIAL selector END_SPECIAL 	;
 
-selector: REDUCE COMA reduce_statement | FILTER COMA filter_statement | FOREACH COMA foreach_statement 
-			| MAP COMA map_statement | CREATE COMA create_statement ;
+selector:     REDUCE COMA reduce_statement 
+			| FILTER COMA filter_statement 
+			| FOREACH COMA foreach_statement 
+			| MAP COMA map_statement 
+			| CREATE COMA create_statement 
+			| REDUCERANGE COMA reduce_range_statement
+			| FILTERRANGE COMA filter_range_statement 
+			| FOREACHRANGE COMA foreach_range_statement
+			| MAPRANGE COMA map_range_statement ;
 
 
 reduce_statement: variable COMA size COMA variable COMA lambda 	;
@@ -92,6 +99,10 @@ filter_statement: variable COMA size COMA variable COMA boolean_lambda 	;
 map_statement: variable COMA size COMA variable COMA lambda 	;
 foreach_statement: variable COMA size COMA LAMBDA_START function_call LAMBDA_END			;
 create_statement: variable COMA data_type COMA create_lambda 	;
+reduce_range_statement: variable COMA size COMA size COMA variable COMA lambda	;
+filter_range_statement: variable COMA size COMA size COMA variable COMA boolean_lambda	;
+map_range_statement: variable COMA size COMA size COMA variable COMA lambda	;
+foreach_range_statement: variable COMA size COMA size COMA LAMBDA_START function_call LAMBDA_END	;
 
 lambda: LAMBDA_START expression LAMBDA_END ;
 boolean_lambda: LAMBDA_START boolean_expression LAMBDA_END ;
@@ -147,7 +158,8 @@ boolean_expression: boolean_expression AND_OP boolean_expression
 					| OPAR boolean_expression CPAR
 					| boolean_expression OR_OP boolean_expression
 					| NOT_OP OPAR boolean_expression CPAR
-					| relational_expression ;
+					| relational_expression 
+					| expression;
 
 relational_expression: expression EQ_OP expression
 						| expression GR_OP expression

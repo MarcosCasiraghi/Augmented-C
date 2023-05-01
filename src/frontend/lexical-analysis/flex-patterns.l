@@ -176,6 +176,10 @@ num_constant_float {digit}*"."{digit}+
 <SPECIAL_STATEMENT>"FILTER" 			{ return FILTER; }
 <SPECIAL_STATEMENT>"FOREACH" 			{ return FOREACH; }
 <SPECIAL_STATEMENT>"CREATE"             { return CREATE; }
+<SPECIAL_STATEMENT>"REDUCERANGE"        { return REDUCERANGE; }
+<SPECIAL_STATEMENT>"MAPRANGE"           { return MAPRANGE; }
+<SPECIAL_STATEMENT>"FILTERRANGE"        { return FILTERRANGE; }
+<SPECIAL_STATEMENT>"FOREACHRANGE"       { return FOREACHRANGE; }
 
 <SPECIAL_STATEMENT>"int"                { return INT; }
 <SPECIAL_STATEMENT>"float"              { return FLOAT; }
