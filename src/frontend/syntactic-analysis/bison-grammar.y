@@ -43,11 +43,11 @@
 %token NOT_OP OPAR CPAR AND_OP OR_OP
 %token EQ_OP GR_OP GE_OP LT_OP LE_OP NE_OP
 
-%token INT FLOAT DOUBLE LONG SHORT CHAR
+%token INT FLOAT DOUBLE LONG SHORT CHAR VOID
 %token THREE_DOT
 
-%token SEMI_COLON CLOSE_BRACKET OPEN_BRACKET OBRACE CBRACE
-%token NUMBER_SIGN INCLUDE RETURN IF WHILE FOR
+%token COLON SEMI_COLON CLOSE_BRACKET OPEN_BRACKET OBRACE CBRACE 
+%token NUMBER_SIGN INCLUDE RETURN IF WHILE FOR ELSE CONTINUE BREAK CASE DEFAULT SWITCH
 
 %token ASSIGN SUM_ASSIGN SUB_ASSIGN MULT_ASSIGN DIV_ASSIGN MOD_ASSIGN // TODO: add bitwise
 
@@ -108,38 +108,54 @@ statements: meta_command statements
 meta_command: NUMBER_SIGN INCLUDE string 			// TODO: defines 
 			// | NUMBER_SIGN INCLUDE GR_OP FILE_NAME LT_OP
 
-
-
 function_arg: data_type variable 
 			| data_type pointers variable
 function_args: function_arg | function_arg COMA function_args
+
 function_declaration: data_type variable OPAR CPAR OBRACE code_block CBRACE
 					| data_type variable OPAR function_args CPAR OBRACE code_block CBRACE
+					| VOID variable OPAR CPAR OBRACE code_block CBRACE
+					| VOID variable OPAR function_args CPAR OBRACE code_block CBRACE
 
 code_block: declaration code_block
 		|	special_statement code_block
+		|	expression SEMI_COLON code_block
 		| 	return_statement code_block
-		|	if_statement code_block
+		|	if_else_statment code_block
 		|	for_statement code_block
 		|	while_statement code_block
+		|	switch_statement code_block
+
+		| 	CONTINUE SEMI_COLON	code_block			// WARNING: only allowed within a while or for loop
+		|	BREAK SEMI_COLON	code_block			// WARNING: only allowed in while, for or switch
+
+		| 	CASE expression COLON code_block		// WARNING: only allowed in switch. Expression should only allow: variable, NUM_CONSTANT_FLOAT, function_call, string
+		|	DEFAULT COLON code_block
 
 		|	declaration
 		|	special_statement
+		|	expression SEMI_COLON
 		|	return_statement
-		|	if_statement
+		|	if_else_statment
 		|	for_statement
 		|	while_statement
+		|	switch_statement
+
+		| 	CONTINUE SEMI_COLON			// WARNING: only allowed within a while or for loop
+		|	BREAK SEMI_COLON			// WARNING: only allowed in while, for or switch
 
 
 pointers: MULT_OP | MULT_OP pointers ;
 
-declartion_end: ASSIGN expression SEMI_COLON | SEMI_COLON ; 			// solo permite asignacion de tipo a = 3.
-declaration: data_type variable declartion_end 
-			| data_type pointers variable declartion_end
+declaration_end: ASSIGN expression SEMI_COLON | SEMI_COLON ; 			// solo permite asignacion de tipo a = 3.
+declaration: data_type variable declaration_end 
+			| data_type pointers variable declaration_end
 
 return_statement: RETURN expression SEMI_COLON
 
-if_statement: IF OPAR boolean_expression CPAR OBRACE code_block CBRACE   // TODO: add else
+if_else_statment: if_statement | if_statement else_statement 
+if_statement: IF OPAR boolean_expression CPAR OBRACE code_block CBRACE
+else_statement: ELSE OBRACE code_block CBRACE
 
 while_statement: WHILE OPAR boolean_expression CPAR OBRACE code_block CBRACE
 
@@ -151,11 +167,12 @@ assignment_type: ASSIGN | SUM_ASSIGN | SUB_ASSIGN | MULT_ASSIGN | DIV_ASSIGN | M
 
 assigment: variable assignment_type expression
 
+switch_statement: SWITCH OPAR expression CPAR OBRACE code_block CBRACE 		// WARNING: check and disallow NUM_CONSTANT_FLOAT, string, SPECIAL_VARIABLE
 
 
-variable: VARIABLE_NAME  					;	
+variable: VARIABLE_NAME		;	
 
-data_type: INT | FLOAT | DOUBLE | LONG | SHORT | CHAR ;
+data_type: INT | FLOAT | DOUBLE | LONG | SHORT | CHAR | VOID MULT_OP;
 
 size: variable | NUM_CONSTANT_INT 				;
 
@@ -188,7 +205,8 @@ boolean_expression: boolean_expression AND_OP boolean_expression
 					| OPAR boolean_expression CPAR
 					| boolean_expression OR_OP boolean_expression
 					| NOT_OP OPAR boolean_expression CPAR
-					| relational_expression ;
+					| relational_expression 
+					| expression ;
 
 relational_expression: expression EQ_OP expression
 						| expression GR_OP expression

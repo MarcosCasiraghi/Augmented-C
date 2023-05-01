@@ -60,6 +60,12 @@ num_constant_float {digit}*"."{digit}+
 "for"			{ return FOR; }
 "if"			{ return IF; }
 "include"		{ return INCLUDE; }
+"else"			{ return ELSE; }
+"continue"		{ return CONTINUE; }
+"break"			{ return BREAK; }
+"switch"		{ return SWITCH; }
+"case"			{ return CASE; }
+"default"		{ return DEFAULT; }
 
 "{"				{ return OBRACE; }
 "}"				{ return CBRACE; }
@@ -67,6 +73,7 @@ num_constant_float {digit}*"."{digit}+
 ")"				{ return CPAR; } 	
 ","				{ return COMA; }
 ";"				{ return SEMI_COLON; }
+":"				{ return COLON; }
 "#"				{ return NUMBER_SIGN; }
 
 "="				{ return ASSIGN; }
@@ -101,12 +108,13 @@ num_constant_float {digit}*"."{digit}+
 "<="            { return LE_OP;}
 "!="            { return NE_OP;}
 
-"int"          		 {  return INT; } 
-"float"              {  return FLOAT; }
-"double"             {  return DOUBLE; }
-"long"               {  return LONG; }
-"short"              {  return SHORT; }
-"char"               {  return CHAR; }
+"int"          		 	{  return INT; } 
+"float"             	{  return FLOAT; }
+"double"             	{  return DOUBLE; }
+"long"               	{  return LONG; }
+"short"              	{  return SHORT; }
+"char"               	{  return CHAR; }
+"void"				 	{  return VOID; }
 
 {variable}			 { return VARIABLE_NAME; }
 
