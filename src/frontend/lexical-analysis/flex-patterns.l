@@ -19,13 +19,9 @@
 
 %x SPECIAL_STATEMENT
 %x STRING
-%x CHAR_STRING
-%x DECLARATION
 %x STRING_SPECIAL
-%x CAST
 %x ML_COMMENT
 %x COMMENT
-%x FUNC_ARG
 
 digit	[0-9]
 alpha	[a-zA-Z]
@@ -39,22 +35,15 @@ whitespace [ \t\r\f\n]+
 variable_name {alphaext}+{alnumext}*
 variable {variable_name}
 
-
 num_constant_int {digit}+
-num_constant {digit}+|{digit}*"."{digit}+
 num_constant_float {digit}*"."{digit}+
 
 %%
 
-"\""						{ BEGIN(STRING); }
-<STRING>"\""				{ BEGIN(INITIAL); }
-<STRING>{whitespace}		{ ; }
-<STRING>.					{ ; }
-
-"\'"							{ BEGIN(CHAR_STRING); }
-<CHAR_STRING>"\'"				{ BEGIN(INITIAL); }
-<CHAR_STRING>{whitespace}		{ ; }
-<CHAR_STRING>.					{ ; }
+"\""						{ BEGIN(STRING); return STRING_START; }
+<STRING>"\""				{ BEGIN(INITIAL); return STRING_END; }
+<STRING>{whitespace}		{ return STRING_CHARACTER; }
+<STRING>.					{ return STRING_CHARACTER; }
 
 "/*"							{ BEGIN(ML_COMMENT); }
 <ML_COMMENT>"*/"				{ BEGIN(INITIAL); }
@@ -66,108 +55,64 @@ num_constant_float {digit}*"."{digit}+
 <COMMENT>{whitespace}		{ ; }
 <COMMENT>.					{ ; }
 
-"auto"			{ ; }
-"break"			{ ; }
-"case"			{ ; }
-"const"			{ ; }
-"continue"		{ ; }
-"default"		{ ; }
-"do"			{ ; }
-"register"		{ ; }
-"return"		{ ; }
-"signed"		{ ; }
-"sizeof"		{ ; }
-"static"		{ ; }
-"struct"		{ ; }
-"switch"		{ ; }
-"typedef"		{ ; }
-"union"			{ ; }
-"unsigned"		{ ; }
-"void"			{ ; }
-"volatile"		{ ; }
-"while"			{ ; }
-"else"			{ ; }
-"enum"			{ ; }
-"extern"		{ ; }
-"for"			{ ; }
-"goto"			{ ; }
-"if"			{ ; }
+"return"		{ return RETURN; }
+"while"			{ return WHILE; }
+"for"			{ return FOR; }
+"if"			{ return IF; }
+"include"		{ return INCLUDE; }
 
-"."				{ ; }
-"->"			{ ; }
-"["				{ ; }
-"]"				{ ; }
-"{"				{ ; }
-"}"				{ ; }
-","				{ ; }
-";"				{ ; }
-":"				{ ; }
-"="				{ ; }
-"#"				{ ; }
+"{"				{ return OBRACE; }
+"}"				{ return CBRACE; }
+"("				{ return OPAR; }
+")"				{ return CPAR; } 	
+","				{ return COMA; }
+";"				{ return SEMI_COLON; }
+"#"				{ return NUMBER_SIGN; }
 
+"="				{ return ASSIGN; }
+"+="			{ return SUM_ASSIGN; }
+"-="			{ return SUB_ASSIGN; }
+"*="			{ return MULT_ASSIGN; }
+"/="			{ return DIV_ASSIGN; }
+"%="			{ return MOD_ASSIGN; }
 
-"+"				{ ; }
-"-"				{ ; }
-"*"				{ ; }
-"/"				{ ; }
-"%"				{ ; }
-"!"				{ ; }
-"=="			{ ; }
-">"				{ ; }
-">="			{ ; }
-"<"				{ ; }
-"<="			{ ; }
-"!="			{ ; }
-"++"			{ ; }
-"--"			{ ; }
-"~"				{ ; }
-">>"			{ ; }
-"<<"			{ ; }
-"^"				{ ; }
-"|"				{ ; }
-"&"				{ ; } 	
-"?"				{ ; } 	
-"("				{ ; }
-")"				{ ; } 	
+"+"				{ return ADD_OP;}
+"-"				{ return SUB_OP;}
+"*"				{ return MULT_OP;}
+"/"				{ return DIV_OP;}
+"%"				{ return MOD_OP;}
+"++"			{ return INC_OP;}
+"--"			{ return DEC_OP;}
 
+"~"				{ return BIT_NOT_OP;}
+">>"			{ return BIT_RIGHT_OP;}
+"<<"			{ return BIT_LEFT_OP;}
+"^"				{ return BIT_XOR_OP;}
+"|"				{ return BIT_OR_OP;}
+"&"				{ return BIT_AND_OP;} 	
 
-"int"          		 { BEGIN(DECLARATION); return INT; } 
-"float"              { BEGIN(DECLARATION); return FLOAT; }
-"double"             { BEGIN(DECLARATION); return DOUBLE; }
-"long"               { BEGIN(DECLARATION); return LONG; }
-"short"              { BEGIN(DECLARATION); return SHORT; }
-"char"               { BEGIN(DECLARATION); return CHAR; }
+"!"             { return NOT_OP;}
+"&&"            { return AND_OP;}
+"||"            { return OR_OP;}
+"=="            { return EQ_OP;}
+">"             { return GR_OP;}
+">="            { return GE_OP;}
+"<"             { return LT_OP;}
+"<="            { return LE_OP;}
+"!="            { return NE_OP;}
 
-{variable}			 { ; }
+"int"          		 {  return INT; } 
+"float"              {  return FLOAT; }
+"double"             {  return DOUBLE; }
+"long"               {  return LONG; }
+"short"              {  return SHORT; }
+"char"               {  return CHAR; }
 
-{num_constant}		 { ; }
+{variable}			 { return VARIABLE_NAME; }
+
+{num_constant_float} { return NUM_CONSTANT_FLOAT; }	
+{num_constant_int}   { return NUM_CONSTANT_INT; }
 	
-<DECLARATION>{variable} 			{ return VARIABLE_NAME; }				/* TODO: guardarse el nombre para backend */
-<DECLARATION>"*"					{ return MULT_OP; }
-<DECLARATION>","					{ return COMA; }
-<DECLARATION>{whitespace} 			{ ; }
-
-<DECLARATION>"("					{ BEGIN(FUNC_ARG); return OPAR; } 	/* caso argumentos en declaracion de funcion: int func(int a, int b) */
-<DECLARATION>"["					{ BEGIN(INITIAL); return OPEN_BRACKET; }
-<DECLARATION>";"					{ BEGIN(INITIAL); return SEMI_COLON; }
-<DECLARATION>"="					{ BEGIN(INITIAL); return EQ_OP; } 		/* no nos importa lo que pasa despues ??? */
-<DECLARATION>.						{ ; } 									/* por ahora ignoro */
-
-<FUNC_ARG>"int"          	   { return INT; }
-<FUNC_ARG>"float"              { return FLOAT; }
-<FUNC_ARG>"double"             { return DOUBLE; }
-<FUNC_ARG>"long"               { return LONG; }
-<FUNC_ARG>"short"              { return SHORT; }
-<FUNC_ARG>"char"               { return CHAR; }
-
-<FUNC_ARG>{variable} 			{ printf("%s\n",yytext); return VARIABLE_NAME; }
-<FUNC_ARG>"*"					{ return MULT_OP; }
-<FUNC_ARG>","					{ return COMA; }
-<FUNC_ARG>{whitespace} 			{ ; }
-
-<FUNC_ARG>")"					{ BEGIN(INITIAL); return CPAR; }
-
-
 
 "<{"									{ BEGIN(SPECIAL_STATEMENT); return START_SPECIAL; } /* deberia poder devolver el "<{" */
 
@@ -225,16 +170,13 @@ num_constant_float {digit}*"."{digit}+
 <SPECIAL_STATEMENT>"&"					{ return BIT_AND_OP;} 	
 
 <SPECIAL_STATEMENT>"\""					{ BEGIN(STRING_SPECIAL); return STRING_START;}
-
-<SPECIAL_STATEMENT>{whitespace} 		{ ; }
-<SPECIAL_STATEMENT>"}>"					{ BEGIN(INITIAL); return END_SPECIAL; }
-<SPECIAL_STATEMENT>. 					{ return UnknownPatternAction(yytext, yyleng); } 	/* error */
-
-
 <STRING_SPECIAL>"\""					{ BEGIN(SPECIAL_STATEMENT); return STRING_END; }	/* Tenemos un estado aparte porque NO queremos descartar su contenido */
 <STRING_SPECIAL>{whitespace}			{ return STRING_CHARACTER; }
 <STRING_SPECIAL>.						{ return STRING_CHARACTER; }
 
+<SPECIAL_STATEMENT>{whitespace} 		{ ; }
+<SPECIAL_STATEMENT>"}>"					{ BEGIN(INITIAL); return END_SPECIAL; }
+<SPECIAL_STATEMENT>. 					{ return UnknownPatternAction(yytext, yyleng); } 	/* error */
 
 {whitespace}	{ ; }	/* ignoro whitespace */
 

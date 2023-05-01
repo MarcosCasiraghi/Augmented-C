@@ -46,12 +46,15 @@
 %token INT FLOAT DOUBLE LONG SHORT CHAR
 %token THREE_DOT
 
-%token SEMI_COLON CLOSE_BRACKET OPEN_BRACKET 
+%token SEMI_COLON CLOSE_BRACKET OPEN_BRACKET OBRACE CBRACE
+%token NUMBER_SIGN INCLUDE RETURN IF WHILE FOR
 
+%token ASSIGN SUM_ASSIGN SUB_ASSIGN MULT_ASSIGN DIV_ASSIGN MOD_ASSIGN // TODO: add bitwise
 
 //  = = = = = = = = = = = = Reglas de asociatividad y precedencia  = = = = = = = = = = = = 
 
 %left COMA
+%left ASSIGN SUM_ASSIGN SUB_ASSIGN MULT_ASSIGN DIV_ASSIGN MOD_ASSIGN
 %left OR_OP
 %left AND_OP
 %left BIT_OR_OP
@@ -74,11 +77,6 @@
 
 program: statements { ProgramGrammarAction(); };
 
-statements: statements declaration
-		| statements special_statement
-		| declaration
-		| special_statement ;
-
 // = = = = = = = = = = = =  Lambda  = = = = = = = = = = = = = = = = 
 
 special_statement : START_SPECIAL selector END_SPECIAL 	;
@@ -100,23 +98,64 @@ create_lambda : LAMBDA_START NUM_CONSTANT_INT THREE_DOT NUM_CONSTANT_INT LAMBDA_
 
 // = = = = = = = = = = = =  C Lang  = = = = = = = = = = = = = = = = 
 
+statements: meta_command statements
+		| function_declaration statements
+		| declaration statements
+		| meta_command
+		| function_declaration
+		| declaration
+
+meta_command: NUMBER_SIGN INCLUDE string 			// TODO: defines 
+			// | NUMBER_SIGN INCLUDE GR_OP FILE_NAME LT_OP
+
+
+
+function_arg: data_type variable 
+			| data_type pointers variable
+function_args: function_arg | function_arg COMA function_args
+function_declaration: data_type variable OPAR CPAR OBRACE code_block CBRACE
+					| data_type variable OPAR function_args CPAR OBRACE code_block CBRACE
+
+code_block: declaration code_block
+		|	special_statement code_block
+		| 	return_statement code_block
+		|	if_statement code_block
+		|	for_statement code_block
+		|	while_statement code_block
+
+		|	declaration
+		|	special_statement
+		|	return_statement
+		|	if_statement
+		|	for_statement
+		|	while_statement
+
+
+pointers: MULT_OP | MULT_OP pointers ;
+
+declartion_end: ASSIGN expression SEMI_COLON | SEMI_COLON ; 			// solo permite asignacion de tipo a = 3.
+declaration: data_type variable declartion_end 
+			| data_type pointers variable declartion_end
+
+return_statement: RETURN expression SEMI_COLON
+
+if_statement: IF OPAR boolean_expression CPAR OBRACE code_block CBRACE   // TODO: add else
+
+while_statement: WHILE OPAR boolean_expression CPAR OBRACE code_block CBRACE
+
+// el ; entre declaration y boolean no esta dado que declaration ya tiene uno
+for_statement: FOR OPAR declaration boolean_expression SEMI_COLON assigment CPAR OBRACE code_block CBRACE
+			|  FOR OPAR declaration boolean_expression SEMI_COLON expression CPAR OBRACE code_block CBRACE
+
+assignment_type: ASSIGN | SUM_ASSIGN | SUB_ASSIGN | MULT_ASSIGN | DIV_ASSIGN | MOD_ASSIGN
+
+assigment: variable assignment_type expression
+
+
+
 variable: VARIABLE_NAME  					;	
 
 data_type: INT | FLOAT | DOUBLE | LONG | SHORT | CHAR ;
-
-pointer: MULT_OP | MULT_OP pointer ;
-
-variable_names: variable | variable COMA variable_names ; 		// permite multiples variables declaradas a la vez
-declartion_end:  SEMI_COLON | EQ_OP | OPEN_BRACKET;				// no nos importa lo que viene despues 
-
-function_arg: data_type variable 
-			| data_type pointer variable
-function_args: function_arg | function_arg COMA function_args
-
-declaration: data_type variable_names declartion_end 
-			| data_type pointer variable_names declartion_end
-			| data_type variable OPAR function_args CPAR;
-			| data_type variable OPAR CPAR;
 
 size: variable | NUM_CONSTANT_INT 				;
 
@@ -139,9 +178,11 @@ expression:  expression ADD_OP expression
 			| expression BIT_OR_OP expression
 			| expression BIT_AND_OP expression
 			| variable 
-			| NUM_CONSTANT_FLOAT ;
-			| NUM_CONSTANT_INT ;
-			| SPECIAL_VARIABLE ;		// check in backend if you are in c_lang, if so, reject
+			| NUM_CONSTANT_FLOAT 
+			| NUM_CONSTANT_INT 
+			| SPECIAL_VARIABLE 		// check in backend if you are in c_lang, if so, reject
+			| function_call 
+			| string
 
 boolean_expression: boolean_expression AND_OP boolean_expression
 					| OPAR boolean_expression CPAR
@@ -159,11 +200,8 @@ relational_expression: expression EQ_OP expression
 function_call: variable OPAR function_call_arg CPAR 
 			| variable OPAR CPAR ;
 
-function_call_arg: function_call_arg COMA function_call_arg
+function_call_arg: expression COMA function_call_arg
 			 | expression
-			 | function_call 
-			 | string ;
-
 
 
 %%
