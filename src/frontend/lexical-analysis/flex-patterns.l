@@ -56,7 +56,7 @@ string 			\"{any}*\"
 <INCLUDE_STATE>{file_name}	{ return FILE_NAME; }
 <INCLUDE_STATE>{string}		{ BEGIN(INITIAL); return STRING; }
 <INCLUDE_STATE>">"			{ BEGIN(INITIAL); return GR_OP; }
-<INCLUDE_STATE>.			{ ; }
+<INCLUDE_STATE>.			{ return UnknownPatternAction(yytext, yyleng); }
 
 
 "return"		{ return RETURN; }
@@ -70,6 +70,8 @@ string 			\"{any}*\"
 "case"			{ return CASE; }
 "default"		{ return DEFAULT; }
 
+"["				{ return OBRACKET; }
+"]"				{ return CBRACKET; }
 "{"				{ return OBRACE; }
 "}"				{ return CBRACE; }
 "("				{ return OPAR; }

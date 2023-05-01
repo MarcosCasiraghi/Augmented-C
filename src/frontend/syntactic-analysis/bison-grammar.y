@@ -45,7 +45,7 @@
 %token INT FLOAT DOUBLE LONG SHORT CHAR VOID
 %token THREE_DOT
 
-%token COLON SEMI_COLON CLOSE_BRACKET OPEN_BRACKET OBRACE CBRACE FILE_NAME
+%token COLON SEMI_COLON OBRACKET CBRACKET OBRACE CBRACE FILE_NAME
 %token NUMBER_SIGN INCLUDE RETURN IF WHILE FOR ELSE CONTINUE BREAK CASE DEFAULT SWITCH
 
 %token ASSIGN SUM_ASSIGN SUB_ASSIGN MULT_ASSIGN DIV_ASSIGN MOD_ASSIGN // TODO: add bitwise
@@ -129,7 +129,7 @@ code_block: declaration code_block
 		|	BREAK SEMI_COLON	code_block			// WARNING: only allowed in while, for or switch
 
 		| 	CASE expression COLON code_block		// WARNING: only allowed in switch. Expression should only allow: variable, NUM_CONSTANT_FLOAT, function_call, string
-		|	DEFAULT COLON code_block
+		|	DEFAULT COLON code_block				// WARNING: only allowed in switch. Expression should only allow: variable, NUM_CONSTANT_FLOAT, function_call, string
 
 		|	declaration
 		|	special_statement
@@ -146,9 +146,22 @@ code_block: declaration code_block
 
 pointers: MULT_OP | MULT_OP pointers ;
 
-declaration_end: ASSIGN expression SEMI_COLON | SEMI_COLON ; 			// solo permite asignacion de tipo a = 3.
-declaration: data_type variable declaration_end 
-			| data_type pointers variable declaration_end
+declaration: single_declaration | array_declaration ;
+
+single_declaration: data_type variable single_inicialization
+				| data_type pointers variable single_inicialization
+single_inicialization: ASSIGN expression SEMI_COLON | SEMI_COLON ; 
+
+array_declaration: data_type variable array_declaration_size array_inicialization
+array_declaration_size: OBRACKET CBRACKET array_declaration_size
+					|   OBRACKET NUM_CONSTANT_INT CBRACKET array_declaration_size
+					| 	OBRACKET NUM_CONSTANT_INT CBRACKET
+					|	OBRACKET CBRACKET
+array_list: NUM_CONSTANT_INT COMA array_list
+			| NUM_CONSTANT_INT
+array_inicialization: ASSIGN OBRACE array_list CBRACE SEMI_COLON | SEMI_COLON;
+
+
 
 return_statement: RETURN expression SEMI_COLON
 
