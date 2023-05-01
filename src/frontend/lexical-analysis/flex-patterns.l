@@ -18,19 +18,20 @@
 
 
 %x SPECIAL_STATEMENT
-%x STRING
-%x STRING_SPECIAL
 %x ML_COMMENT
-%x COMMENT
+%x INCLUDE_STATE
 
 digit	[0-9]
 alpha	[a-zA-Z]
 alnum	[a-zA-Z0-9]
 alnumext [a-zA-Z0-9_]
 alphaext [a-zA-Z_]
-
+any 	[ -~]
 
 whitespace [ \t\r\f\n]+
+space [ \t]+
+
+file_name [a-zA-Z0-9_-]+\.{alpha}{1,3}
 
 variable_name {alphaext}+{alnumext}*
 variable {variable_name}
@@ -38,28 +39,30 @@ variable {variable_name}
 num_constant_int {digit}+
 num_constant_float {digit}*"."{digit}+
 
-%%
+string 			\"{any}*\" 
 
-"\""						{ BEGIN(STRING); return STRING_START; }
-<STRING>"\""				{ BEGIN(INITIAL); return STRING_END; }
-<STRING>{whitespace}		{ return STRING_CHARACTER; }
-<STRING>.					{ return STRING_CHARACTER; }
+%%
 
 "/*"							{ BEGIN(ML_COMMENT); }
 <ML_COMMENT>"*/"				{ BEGIN(INITIAL); }
 <ML_COMMENT>{whitespace}		{ ; }
 <ML_COMMENT>.					{ ; }
 
-"//"						{ BEGIN(COMMENT); }
-<COMMENT>"\n"				{ BEGIN(INITIAL); }
-<COMMENT>{whitespace}		{ ; }
-<COMMENT>.					{ ; }
+"//".*							{ ; }	/* single line comment */
+
+"include"					{ BEGIN(INCLUDE_STATE); return INCLUDE; }
+<INCLUDE_STATE>{space}		{ ; }
+<INCLUDE_STATE>"<"			{ return LT_OP; }
+<INCLUDE_STATE>{file_name}	{ return FILE_NAME; }
+<INCLUDE_STATE>{string}		{ BEGIN(INITIAL); return STRING; }
+<INCLUDE_STATE>">"			{ BEGIN(INITIAL); return GR_OP; }
+<INCLUDE_STATE>.			{ ; }
+
 
 "return"		{ return RETURN; }
 "while"			{ return WHILE; }
 "for"			{ return FOR; }
 "if"			{ return IF; }
-"include"		{ return INCLUDE; }
 "else"			{ return ELSE; }
 "continue"		{ return CONTINUE; }
 "break"			{ return BREAK; }
@@ -116,6 +119,7 @@ num_constant_float {digit}*"."{digit}+
 "char"               	{  return CHAR; }
 "void"				 	{  return VOID; }
 
+{string}			 { return STRING; }
 {variable}			 { return VARIABLE_NAME; }
 
 {num_constant_float} { return NUM_CONSTANT_FLOAT; }	
@@ -142,6 +146,7 @@ num_constant_float {digit}*"."{digit}+
 <SPECIAL_STATEMENT>{num_constant_float} { return NUM_CONSTANT_FLOAT; }				/*aca le tengo que pasar la el integer posta */
 <SPECIAL_STATEMENT>{num_constant_int}   { return NUM_CONSTANT_INT; }
 <SPECIAL_STATEMENT>{variable} 			{ return VARIABLE_NAME; }				/*aca le tengo que pasar la variable posta */
+<SPECIAL_STATEMENT>{string}				{ return STRING; }
 
 <SPECIAL_STATEMENT>"@elem"				{ return SPECIAL_VARIABLE; }
 
@@ -176,11 +181,6 @@ num_constant_float {digit}*"."{digit}+
 <SPECIAL_STATEMENT>"^"					{ return BIT_XOR_OP;}
 <SPECIAL_STATEMENT>"|"					{ return BIT_OR_OP;}
 <SPECIAL_STATEMENT>"&"					{ return BIT_AND_OP;} 	
-
-<SPECIAL_STATEMENT>"\""					{ BEGIN(STRING_SPECIAL); return STRING_START;}
-<STRING_SPECIAL>"\""					{ BEGIN(SPECIAL_STATEMENT); return STRING_END; }	/* Tenemos un estado aparte porque NO queremos descartar su contenido */
-<STRING_SPECIAL>{whitespace}			{ return STRING_CHARACTER; }
-<STRING_SPECIAL>.						{ return STRING_CHARACTER; }
 
 <SPECIAL_STATEMENT>{whitespace} 		{ ; }
 <SPECIAL_STATEMENT>"}>"					{ BEGIN(INITIAL); return END_SPECIAL; }

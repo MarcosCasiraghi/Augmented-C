@@ -31,8 +31,7 @@
 %token REDUCE MAP FILTER FOREACH CREATE START_SPECIAL END_SPECIAL
 %token EXPRESION_START EXPRESION_END 
 %token LAMBDA_START LAMBDA_END
-%token COMA
-%token STRING_START STRING_CHARACTER STRING_END
+%token COMA STRING
 
 %token VARIABLE_NAME NUM_CONSTANT_FLOAT NUM_CONSTANT_INT SPECIAL_VARIABLE
 
@@ -46,7 +45,7 @@
 %token INT FLOAT DOUBLE LONG SHORT CHAR VOID
 %token THREE_DOT
 
-%token COLON SEMI_COLON CLOSE_BRACKET OPEN_BRACKET OBRACE CBRACE 
+%token COLON SEMI_COLON CLOSE_BRACKET OPEN_BRACKET OBRACE CBRACE FILE_NAME
 %token NUMBER_SIGN INCLUDE RETURN IF WHILE FOR ELSE CONTINUE BREAK CASE DEFAULT SWITCH
 
 %token ASSIGN SUM_ASSIGN SUB_ASSIGN MULT_ASSIGN DIV_ASSIGN MOD_ASSIGN // TODO: add bitwise
@@ -105,8 +104,8 @@ statements: meta_command statements
 		| function_declaration
 		| declaration
 
-meta_command: NUMBER_SIGN INCLUDE string 			// TODO: defines 
-			// | NUMBER_SIGN INCLUDE GR_OP FILE_NAME LT_OP
+meta_command: NUMBER_SIGN INCLUDE STRING 
+			| NUMBER_SIGN INCLUDE LT_OP FILE_NAME GR_OP
 
 function_arg: data_type variable 
 			| data_type pointers variable
@@ -167,7 +166,7 @@ assignment_type: ASSIGN | SUM_ASSIGN | SUB_ASSIGN | MULT_ASSIGN | DIV_ASSIGN | M
 
 assigment: variable assignment_type expression
 
-switch_statement: SWITCH OPAR expression CPAR OBRACE code_block CBRACE 		// WARNING: check and disallow NUM_CONSTANT_FLOAT, string, SPECIAL_VARIABLE
+switch_statement: SWITCH OPAR expression CPAR OBRACE code_block CBRACE 		// WARNING: disallow NUM_CONSTANT_FLOAT, string, SPECIAL_VARIABLE
 
 
 variable: VARIABLE_NAME		;	
@@ -175,9 +174,6 @@ variable: VARIABLE_NAME		;
 data_type: INT | FLOAT | DOUBLE | LONG | SHORT | CHAR | VOID MULT_OP;
 
 size: variable | NUM_CONSTANT_INT 				;
-
-string: STRING_START string_character STRING_END 						;
-string_character: string_character STRING_CHARACTER | STRING_CHARACTER 	;
 
 expression:  expression ADD_OP expression 
 			| expression SUB_OP expression 
@@ -197,9 +193,9 @@ expression:  expression ADD_OP expression
 			| variable 
 			| NUM_CONSTANT_FLOAT 
 			| NUM_CONSTANT_INT 
-			| SPECIAL_VARIABLE 		// check in backend if you are in c_lang, if so, reject
+			| SPECIAL_VARIABLE 		// WARNING: disallow in non special_statement context
 			| function_call 
-			| string
+			| STRING
 
 boolean_expression: boolean_expression AND_OP boolean_expression
 					| OPAR boolean_expression CPAR
