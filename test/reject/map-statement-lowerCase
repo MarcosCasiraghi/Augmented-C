@@ -1,1 +1,4 @@
+int main(){
+	
 <{map, arr1, 20, arr2, {@elem * 2}}>
+}

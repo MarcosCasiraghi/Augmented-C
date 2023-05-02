@@ -1,1 +1,7 @@
+
+
+int main(){
+	
 <{FILTER, var1, 5, sum, { @elem > 3}}>
+
+}

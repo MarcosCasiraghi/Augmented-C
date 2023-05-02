@@ -1,1 +1,4 @@
+int main(){
+	
 <{FILTER, arr1, 34, arr2, { exp > 34 && 4 < }}>
+}

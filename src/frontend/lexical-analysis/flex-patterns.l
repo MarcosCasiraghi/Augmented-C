@@ -18,156 +18,115 @@
 
 
 %x SPECIAL_STATEMENT
-%x STRING
-%x CHAR_STRING
-%x DECLARATION
-%x STRING_SPECIAL
-%x CAST
 %x ML_COMMENT
-%x COMMENT
-%x FUNC_ARG
+%x INCLUDE_STATE
 
 digit	[0-9]
 alpha	[a-zA-Z]
 alnum	[a-zA-Z0-9]
 alnumext [a-zA-Z0-9_]
 alphaext [a-zA-Z_]
-
+any 	[ -~]
 
 whitespace [ \t\r\f\n]+
+space [ \t]+
+
+file_name [a-zA-Z0-9_-]+\.{alpha}{1,3}
 
 variable_name {alphaext}+{alnumext}*
 variable {variable_name}
 
-
 num_constant_int {digit}+
-num_constant {digit}+|{digit}*"."{digit}+
 num_constant_float {digit}*"."{digit}+
 
+string 			\"{any}*\" 
+
 %%
-
-"\""						{ BEGIN(STRING); }
-<STRING>"\""				{ BEGIN(INITIAL); }
-<STRING>{whitespace}		{ ; }
-<STRING>.					{ ; }
-
-"\'"							{ BEGIN(CHAR_STRING); }
-<CHAR_STRING>"\'"				{ BEGIN(INITIAL); }
-<CHAR_STRING>{whitespace}		{ ; }
-<CHAR_STRING>.					{ ; }
 
 "/*"							{ BEGIN(ML_COMMENT); }
 <ML_COMMENT>"*/"				{ BEGIN(INITIAL); }
 <ML_COMMENT>{whitespace}		{ ; }
 <ML_COMMENT>.					{ ; }
 
-"//"						{ BEGIN(COMMENT); }
-<COMMENT>"\n"				{ BEGIN(INITIAL); }
-<COMMENT>{whitespace}		{ ; }
-<COMMENT>.					{ ; }
+"//".*							{ ; }	/* single line comment */
 
-"auto"			{ ; }
-"break"			{ ; }
-"case"			{ ; }
-"const"			{ ; }
-"continue"		{ ; }
-"default"		{ ; }
-"do"			{ ; }
-"register"		{ ; }
-"return"		{ ; }
-"signed"		{ ; }
-"sizeof"		{ ; }
-"static"		{ ; }
-"struct"		{ ; }
-"switch"		{ ; }
-"typedef"		{ ; }
-"union"			{ ; }
-"unsigned"		{ ; }
-"void"			{ ; }
-"volatile"		{ ; }
-"while"			{ ; }
-"else"			{ ; }
-"enum"			{ ; }
-"extern"		{ ; }
-"for"			{ ; }
-"goto"			{ ; }
-"if"			{ ; }
-
-"."				{ ; }
-"->"			{ ; }
-"["				{ ; }
-"]"				{ ; }
-"{"				{ ; }
-"}"				{ ; }
-","				{ ; }
-";"				{ ; }
-":"				{ ; }
-"="				{ ; }
-"#"				{ ; }
+"include"					{ BEGIN(INCLUDE_STATE); return INCLUDE; }
+<INCLUDE_STATE>{space}		{ ; }
+<INCLUDE_STATE>"<"			{ return LT_OP; }
+<INCLUDE_STATE>{file_name}	{ return FILE_NAME; }
+<INCLUDE_STATE>{string}		{ BEGIN(INITIAL); return STRING; }
+<INCLUDE_STATE>">"			{ BEGIN(INITIAL); return GR_OP; }
+<INCLUDE_STATE>.			{ return UnknownPatternAction(yytext, yyleng); }
 
 
-"+"				{ ; }
-"-"				{ ; }
-"*"				{ ; }
-"/"				{ ; }
-"%"				{ ; }
-"!"				{ ; }
-"=="			{ ; }
-">"				{ ; }
-">="			{ ; }
-"<"				{ ; }
-"<="			{ ; }
-"!="			{ ; }
-"++"			{ ; }
-"--"			{ ; }
-"~"				{ ; }
-">>"			{ ; }
-"<<"			{ ; }
-"^"				{ ; }
-"|"				{ ; }
-"&"				{ ; } 	
-"?"				{ ; } 	
-"("				{ ; }
-")"				{ ; } 	
+"return"		{ return RETURN; }
+"while"			{ return WHILE; }
+"for"			{ return FOR; }
+"if"			{ return IF; }
+"else"			{ return ELSE; }
+"continue"		{ return CONTINUE; }
+"break"			{ return BREAK; }
+"switch"		{ return SWITCH; }
+"case"			{ return CASE; }
+"default"		{ return DEFAULT; }
 
+"["				{ return OBRACKET; }
+"]"				{ return CBRACKET; }
+"{"				{ return OBRACE; }
+"}"				{ return CBRACE; }
+"("				{ return OPAR; }
+")"				{ return CPAR; } 	
+","				{ return COMA; }
+";"				{ return SEMI_COLON; }
+":"				{ return COLON; }
+"#"				{ return NUMBER_SIGN; }
 
-"int"          		 { BEGIN(DECLARATION); return INT; } 
-"float"              { BEGIN(DECLARATION); return FLOAT; }
-"double"             { BEGIN(DECLARATION); return DOUBLE; }
-"long"               { BEGIN(DECLARATION); return LONG; }
-"short"              { BEGIN(DECLARATION); return SHORT; }
-"char"               { BEGIN(DECLARATION); return CHAR; }
+"="				{ return ASSIGN; }
+"+="			{ return SUM_ASSIGN; }
+"-="			{ return SUB_ASSIGN; }
+"*="			{ return MULT_ASSIGN; }
+"/="			{ return DIV_ASSIGN; }
+"%="			{ return MOD_ASSIGN; }
 
-{variable}			 { ; }
+"+"				{ return ADD_OP;}
+"-"				{ return SUB_OP;}
+"*"				{ return MULT_OP;}
+"/"				{ return DIV_OP;}
+"%"				{ return MOD_OP;}
+"++"			{ return INC_OP;}
+"--"			{ return DEC_OP;}
 
-{num_constant}		 { ; }
+"~"				{ return BIT_NOT_OP;}
+">>"			{ return BIT_RIGHT_OP;}
+"<<"			{ return BIT_LEFT_OP;}
+"^"				{ return BIT_XOR_OP;}
+"|"				{ return BIT_OR_OP;}
+"&"				{ return BIT_AND_OP;} 	
+
+"!"             { return NOT_OP;}
+"&&"            { return AND_OP;}
+"||"            { return OR_OP;}
+"=="            { return EQ_OP;}
+">"             { return GR_OP;}
+">="            { return GE_OP;}
+"<"             { return LT_OP;}
+"<="            { return LE_OP;}
+"!="            { return NE_OP;}
+
+"int"          		 	{  return INT; } 
+"float"             	{  return FLOAT; }
+"double"             	{  return DOUBLE; }
+"long"               	{  return LONG; }
+"short"              	{  return SHORT; }
+"char"               	{  return CHAR; }
+"void"				 	{  return VOID; }
+
+{string}			 { return STRING; }
+{variable}			 { return VARIABLE_NAME; }
+
+{num_constant_float} { return NUM_CONSTANT_FLOAT; }	
+{num_constant_int}   { return NUM_CONSTANT_INT; }
 	
-<DECLARATION>{variable} 			{ return VARIABLE_NAME; }				/* TODO: guardarse el nombre para backend */
-<DECLARATION>"*"					{ return MULT_OP; }
-<DECLARATION>","					{ return COMA; }
-<DECLARATION>{whitespace} 			{ ; }
-
-<DECLARATION>"("					{ BEGIN(FUNC_ARG); return OPAR; } 	/* caso argumentos en declaracion de funcion: int func(int a, int b) */
-<DECLARATION>"["					{ BEGIN(INITIAL); return OPEN_BRACKET; }
-<DECLARATION>";"					{ BEGIN(INITIAL); return SEMI_COLON; }
-<DECLARATION>"="					{ BEGIN(INITIAL); return EQ_OP; } 		/* no nos importa lo que pasa despues ??? */
-<DECLARATION>.						{ ; } 									/* por ahora ignoro */
-
-<FUNC_ARG>"int"          	   { return INT; }
-<FUNC_ARG>"float"              { return FLOAT; }
-<FUNC_ARG>"double"             { return DOUBLE; }
-<FUNC_ARG>"long"               { return LONG; }
-<FUNC_ARG>"short"              { return SHORT; }
-<FUNC_ARG>"char"               { return CHAR; }
-
-<FUNC_ARG>{variable} 			{ printf("%s\n",yytext); return VARIABLE_NAME; }
-<FUNC_ARG>"*"					{ return MULT_OP; }
-<FUNC_ARG>","					{ return COMA; }
-<FUNC_ARG>{whitespace} 			{ ; }
-
-<FUNC_ARG>")"					{ BEGIN(INITIAL); return CPAR; }
-
-
 
 "<{"									{ BEGIN(SPECIAL_STATEMENT); return START_SPECIAL; } /* deberia poder devolver el "<{" */
 
@@ -193,6 +152,7 @@ num_constant_float {digit}*"."{digit}+
 <SPECIAL_STATEMENT>{num_constant_float} { return NUM_CONSTANT_FLOAT; }				/*aca le tengo que pasar la el integer posta */
 <SPECIAL_STATEMENT>{num_constant_int}   { return NUM_CONSTANT_INT; }
 <SPECIAL_STATEMENT>{variable} 			{ return VARIABLE_NAME; }				/*aca le tengo que pasar la variable posta */
+<SPECIAL_STATEMENT>{string}				{ return STRING; }
 
 <SPECIAL_STATEMENT>"@elem"				{ return SPECIAL_VARIABLE; }
 
@@ -228,17 +188,9 @@ num_constant_float {digit}*"."{digit}+
 <SPECIAL_STATEMENT>"|"					{ return BIT_OR_OP;}
 <SPECIAL_STATEMENT>"&"					{ return BIT_AND_OP;} 	
 
-<SPECIAL_STATEMENT>"\""					{ BEGIN(STRING_SPECIAL); return STRING_START;}
-
 <SPECIAL_STATEMENT>{whitespace} 		{ ; }
 <SPECIAL_STATEMENT>"}>"					{ BEGIN(INITIAL); return END_SPECIAL; }
 <SPECIAL_STATEMENT>. 					{ return UnknownPatternAction(yytext, yyleng); } 	/* error */
-
-
-<STRING_SPECIAL>"\""					{ BEGIN(SPECIAL_STATEMENT); return STRING_END; }	/* Tenemos un estado aparte porque NO queremos descartar su contenido */
-<STRING_SPECIAL>{whitespace}			{ return STRING_CHARACTER; }
-<STRING_SPECIAL>.						{ return STRING_CHARACTER; }
-
 
 {whitespace}	{ ; }	/* ignoro whitespace */
 

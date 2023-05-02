@@ -1,0 +1,43 @@
+#include <stdio.h>
+
+int a = 0;
+	int b[] = {0};
+
+void * func(int a, int b){
+	return a + b;
+}
+
+int main(){
+	int aa = 3;
+
+	void * a;
+
+	int * arr = alloca(34);
+
+	int * arr1;
+
+	int a[][20] = {1,2,3} ;
+
+	int b[] = {0};
+	int b[];
+	int b[3333];
+
+	switch(aa){
+		case 0:
+			printf("aaaa");
+			break;
+		case 1:
+		case 3:
+			aa++;
+
+		default:
+			aa++;
+	}
+
+	for(int i=0;i<aa; "asdfasdfasdf"){
+
+		<{FOREACH, arr1, 5, {recursive(recursive(printf("%d\n",2), 1))}}>
+		<{FOREACHRANGE, arr1, 5,6, {recursive(recursive(printf("%d\n",2), 1))}}>
+	}
+
+}

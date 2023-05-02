@@ -1,1 +1,5 @@
+
+int main(){
+	
 <{FOREACH, arr1, 5, {recursive(recursive(printf("%d\n",2), 1))}}>
+}

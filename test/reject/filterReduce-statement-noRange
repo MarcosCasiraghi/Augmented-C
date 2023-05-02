@@ -1,1 +1,4 @@
+int main(){
+	
 <{FILTERRANGE, arr1, 2, var, {@elem < 10}}>
+}

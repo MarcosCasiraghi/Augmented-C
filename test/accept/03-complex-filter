@@ -1,1 +1,5 @@
-<{FILTER, var1, 5, sum, { ~@elem<<2 > @elem++ - 3 }}>
+
+int main(){
+	
+	<{FILTER, var1, 5, sum, { ~@elem<<2 > @elem++ - 3 }}>
+}

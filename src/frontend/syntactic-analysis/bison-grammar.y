@@ -31,8 +31,7 @@
 %token REDUCE MAP FILTER FOREACH CREATE REDUCERANGE MAPRANGE FILTERRANGE FOREACHRANGE START_SPECIAL END_SPECIAL
 %token EXPRESION_START EXPRESION_END 
 %token LAMBDA_START LAMBDA_END
-%token COMA
-%token STRING_START STRING_CHARACTER STRING_END
+%token COMA STRING
 
 %token VARIABLE_NAME NUM_CONSTANT_FLOAT NUM_CONSTANT_INT SPECIAL_VARIABLE
 
@@ -43,15 +42,18 @@
 %token NOT_OP OPAR CPAR AND_OP OR_OP
 %token EQ_OP GR_OP GE_OP LT_OP LE_OP NE_OP
 
-%token INT FLOAT DOUBLE LONG SHORT CHAR
+%token INT FLOAT DOUBLE LONG SHORT CHAR VOID
 %token THREE_DOT
 
-%token SEMI_COLON CLOSE_BRACKET OPEN_BRACKET 
+%token COLON SEMI_COLON OBRACKET CBRACKET OBRACE CBRACE FILE_NAME
+%token NUMBER_SIGN INCLUDE RETURN IF WHILE FOR ELSE CONTINUE BREAK CASE DEFAULT SWITCH
 
+%token ASSIGN SUM_ASSIGN SUB_ASSIGN MULT_ASSIGN DIV_ASSIGN MOD_ASSIGN // TODO: add bitwise
 
 //  = = = = = = = = = = = = Reglas de asociatividad y precedencia  = = = = = = = = = = = = 
 
 %left COMA
+%left ASSIGN SUM_ASSIGN SUB_ASSIGN MULT_ASSIGN DIV_ASSIGN MOD_ASSIGN
 %left OR_OP
 %left AND_OP
 %left BIT_OR_OP
@@ -73,11 +75,6 @@
 %%
 
 program: statements { ProgramGrammarAction(); };
-
-statements: statements declaration
-		| statements special_statement
-		| declaration
-		| special_statement ;
 
 // = = = = = = = = = = = =  Lambda  = = = = = = = = = = = = = = = = 
 
@@ -111,28 +108,96 @@ create_lambda : LAMBDA_START NUM_CONSTANT_INT THREE_DOT NUM_CONSTANT_INT LAMBDA_
 
 // = = = = = = = = = = = =  C Lang  = = = = = = = = = = = = = = = = 
 
-variable: VARIABLE_NAME  					;	
+statements: meta_command statements
+		| function_declaration statements
+		| declaration statements
+		| meta_command
+		| function_declaration
+		| declaration
 
-data_type: INT | FLOAT | DOUBLE | LONG | SHORT | CHAR ;
-
-pointer: MULT_OP | MULT_OP pointer ;
-
-variable_names: variable | variable COMA variable_names ; 		// permite multiples variables declaradas a la vez
-declartion_end:  SEMI_COLON | EQ_OP | OPEN_BRACKET;				// no nos importa lo que viene despues 
+meta_command: NUMBER_SIGN INCLUDE STRING 
+			| NUMBER_SIGN INCLUDE LT_OP FILE_NAME GR_OP
 
 function_arg: data_type variable 
-			| data_type pointer variable
+			| data_type pointers variable
 function_args: function_arg | function_arg COMA function_args
 
-declaration: data_type variable_names declartion_end 
-			| data_type pointer variable_names declartion_end
-			| data_type variable OPAR function_args CPAR;
-			| data_type variable OPAR CPAR;
+function_declaration: data_type variable OPAR CPAR OBRACE code_block CBRACE
+					| data_type variable OPAR function_args CPAR OBRACE code_block CBRACE
+					| VOID variable OPAR CPAR OBRACE code_block CBRACE
+					| VOID variable OPAR function_args CPAR OBRACE code_block CBRACE
+
+code_block: declaration code_block
+		|	special_statement code_block
+		|	expression SEMI_COLON code_block
+		| 	return_statement code_block
+		|	if_else_statment code_block
+		|	for_statement code_block
+		|	while_statement code_block
+		|	switch_statement code_block
+
+		| 	CONTINUE SEMI_COLON	code_block			// WARNING: only allowed within a while or for loop
+		|	BREAK SEMI_COLON	code_block			// WARNING: only allowed in while, for or switch
+
+		| 	CASE expression COLON code_block		// WARNING: only allowed in switch. Expression should only allow: variable, NUM_CONSTANT_FLOAT, function_call, string
+		|	DEFAULT COLON code_block				// WARNING: only allowed in switch. Expression should only allow: variable, NUM_CONSTANT_FLOAT, function_call, string
+
+		|	declaration
+		|	special_statement
+		|	expression SEMI_COLON
+		|	return_statement
+		|	if_else_statment
+		|	for_statement
+		|	while_statement
+		|	switch_statement
+
+		| 	CONTINUE SEMI_COLON			// WARNING: only allowed within a while or for loop
+		|	BREAK SEMI_COLON			// WARNING: only allowed in while, for or switch
+
+
+pointers: MULT_OP | MULT_OP pointers ;
+
+declaration: single_declaration | array_declaration ;
+
+single_declaration: data_type variable single_inicialization
+				| data_type pointers variable single_inicialization
+single_inicialization: ASSIGN expression SEMI_COLON | SEMI_COLON ; 
+
+array_declaration: data_type variable array_declaration_size array_inicialization
+array_declaration_size: OBRACKET CBRACKET array_declaration_size
+					|   OBRACKET NUM_CONSTANT_INT CBRACKET array_declaration_size
+					| 	OBRACKET NUM_CONSTANT_INT CBRACKET
+					|	OBRACKET CBRACKET
+array_list: NUM_CONSTANT_INT COMA array_list
+			| NUM_CONSTANT_INT
+array_inicialization: ASSIGN OBRACE array_list CBRACE SEMI_COLON | SEMI_COLON;
+
+
+
+return_statement: RETURN expression SEMI_COLON
+
+if_else_statment: if_statement | if_statement else_statement 
+if_statement: IF OPAR boolean_expression CPAR OBRACE code_block CBRACE
+else_statement: ELSE OBRACE code_block CBRACE
+
+while_statement: WHILE OPAR boolean_expression CPAR OBRACE code_block CBRACE
+
+// el ; entre declaration y boolean no esta dado que declaration ya tiene uno
+for_statement: FOR OPAR declaration boolean_expression SEMI_COLON assigment CPAR OBRACE code_block CBRACE
+			|  FOR OPAR declaration boolean_expression SEMI_COLON expression CPAR OBRACE code_block CBRACE
+
+assignment_type: ASSIGN | SUM_ASSIGN | SUB_ASSIGN | MULT_ASSIGN | DIV_ASSIGN | MOD_ASSIGN
+
+assigment: variable assignment_type expression
+
+switch_statement: SWITCH OPAR expression CPAR OBRACE code_block CBRACE 		// WARNING: disallow NUM_CONSTANT_FLOAT, string, SPECIAL_VARIABLE
+
+
+variable: VARIABLE_NAME		;	
+
+data_type: INT | FLOAT | DOUBLE | LONG | SHORT | CHAR | VOID MULT_OP;
 
 size: variable | NUM_CONSTANT_INT 				;
-
-string: STRING_START string_character STRING_END 						;
-string_character: string_character STRING_CHARACTER | STRING_CHARACTER 	;
 
 expression:  expression ADD_OP expression 
 			| expression SUB_OP expression 
@@ -150,9 +215,11 @@ expression:  expression ADD_OP expression
 			| expression BIT_OR_OP expression
 			| expression BIT_AND_OP expression
 			| variable 
-			| NUM_CONSTANT_FLOAT ;
-			| NUM_CONSTANT_INT ;
-			| SPECIAL_VARIABLE ;		// check in backend if you are in c_lang, if so, reject
+			| NUM_CONSTANT_FLOAT 
+			| NUM_CONSTANT_INT 
+			| SPECIAL_VARIABLE 		// WARNING: disallow in non special_statement context
+			| function_call 
+			| STRING
 
 boolean_expression: boolean_expression AND_OP boolean_expression
 					| OPAR boolean_expression CPAR
@@ -160,6 +227,7 @@ boolean_expression: boolean_expression AND_OP boolean_expression
 					| NOT_OP OPAR boolean_expression CPAR
 					| relational_expression 
 					| expression;
+
 
 relational_expression: expression EQ_OP expression
 						| expression GR_OP expression
@@ -171,11 +239,8 @@ relational_expression: expression EQ_OP expression
 function_call: variable OPAR function_call_arg CPAR 
 			| variable OPAR CPAR ;
 
-function_call_arg: function_call_arg COMA function_call_arg
+function_call_arg: expression COMA function_call_arg
 			 | expression
-			 | function_call 
-			 | string ;
-
 
 
 %%

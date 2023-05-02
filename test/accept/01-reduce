@@ -1,1 +1,5 @@
-<{REDUCE, var1, 5, sum, { @elem * 3 * a }}>
+
+int main(){
+	
+	<{REDUCE, var1, 5, sum, { @elem * 3 * a }}>
+}
