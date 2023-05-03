@@ -1,0 +1,12 @@
+#include <stdio.h>
+
+int main(int argc, char** argv) {
+
+    <{CREATE, arr, int, {0...3}}>
+
+    <{CREATE, arr1, int , {4...9}}>
+
+    <{MAP, arr, 4, arr1 , {@elem * 3} }>
+
+    return 0;
+}

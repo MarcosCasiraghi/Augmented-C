@@ -1,0 +1,13 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+
+int cuadratic(int a, int b, int c, int x) {
+  return a*x*x + b*x + c;
+}
+
+void main() {
+  int a[4] = {0, 1, 2, 3};
+
+  <{FOREACH, a, 4, {printf("%d", @elem)} }>
+}
