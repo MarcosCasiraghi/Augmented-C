@@ -156,8 +156,8 @@ string 			\"{any}*\"
 
 <SPECIAL_STATEMENT>"@elem"				{ return SPECIAL_VARIABLE; }
 
-<SPECIAL_STATEMENT>"{" 					{ return LAMBDA_START; }
-<SPECIAL_STATEMENT>"}"					{ return LAMBDA_END; }
+<SPECIAL_STATEMENT>"{" 					{ return OBRACE; }
+<SPECIAL_STATEMENT>"}"					{ return CBRACE; }
 
 <SPECIAL_STATEMENT>"+"					{ return ADD_OP;}
 <SPECIAL_STATEMENT>"-"					{ return SUB_OP;}

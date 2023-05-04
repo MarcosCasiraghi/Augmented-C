@@ -17,38 +17,32 @@
 
 	// No-terminales (frontend).
 	int program;
-	int expression;
-	int factor;
-	int constant;
 
 	// Terminales.
 	token token;
-	int integer;
 }
 
 //  = = = = = = = = = = = =  Definicion de simbolos y otros  = = = = = = = = = = = = 
 
-%token REDUCE MAP FILTER FOREACH CREATE REDUCERANGE MAPRANGE FILTERRANGE FOREACHRANGE START_SPECIAL END_SPECIAL
-%token EXPRESION_START EXPRESION_END 
-%token LAMBDA_START LAMBDA_END
-%token COMA STRING
+%token REDUCE MAP FILTER FOREACH CREATE REDUCERANGE MAPRANGE FILTERRANGE FOREACHRANGE START_SPECIAL END_SPECIAL 
 
-%token VARIABLE_NAME NUM_CONSTANT_FLOAT NUM_CONSTANT_INT SPECIAL_VARIABLE
+%token INT FLOAT DOUBLE LONG SHORT CHAR VOID
+%token VARIABLE_NAME NUM_CONSTANT_FLOAT NUM_CONSTANT_INT SPECIAL_VARIABLE STRING
+%token FILE_NAME
 
 %token ADD_OP SUB_OP MULT_OP DIV_OP MOD_OP
 %token INC_OP DEC_OP
 %token BIT_NOT_OP BIT_RIGHT_OP BIT_LEFT_OP BIT_XOR_OP BIT_OR_OP BIT_AND_OP
 
-%token NOT_OP OPAR CPAR AND_OP OR_OP
+%token ASSIGN SUM_ASSIGN SUB_ASSIGN MULT_ASSIGN DIV_ASSIGN MOD_ASSIGN
+
+%token NOT_OP AND_OP OR_OP
 %token EQ_OP GR_OP GE_OP LT_OP LE_OP NE_OP
 
-%token INT FLOAT DOUBLE LONG SHORT CHAR VOID
-%token THREE_DOT
+%token COMA THREE_DOT COLON SEMI_COLON
+%token OBRACKET CBRACKET OBRACE CBRACE OPAR CPAR 
 
-%token COLON SEMI_COLON OBRACKET CBRACKET OBRACE CBRACE FILE_NAME
 %token NUMBER_SIGN INCLUDE RETURN IF WHILE FOR ELSE CONTINUE BREAK CASE DEFAULT SWITCH
-
-%token ASSIGN SUM_ASSIGN SUB_ASSIGN MULT_ASSIGN DIV_ASSIGN MOD_ASSIGN // TODO: add bitwise
 
 //  = = = = = = = = = = = = Reglas de asociatividad y precedencia  = = = = = = = = = = = = 
 
@@ -94,16 +88,16 @@ selector:     REDUCE COMA reduce_statement
 reduce_statement: variable COMA size COMA variable COMA lambda 	;
 filter_statement: variable COMA size COMA variable COMA boolean_lambda 	;
 map_statement: variable COMA size COMA variable COMA lambda 	;
-foreach_statement: variable COMA size COMA LAMBDA_START function_call LAMBDA_END			;
+foreach_statement: variable COMA size COMA OBRACE function_call CBRACE			;
 create_statement: variable COMA data_type COMA create_lambda 	;
 reduce_range_statement: variable COMA size COMA size COMA variable COMA lambda	;
 filter_range_statement: variable COMA size COMA size COMA variable COMA boolean_lambda	;
 map_range_statement: variable COMA size COMA size COMA variable COMA lambda	;
-foreach_range_statement: variable COMA size COMA size COMA LAMBDA_START function_call LAMBDA_END	;
+foreach_range_statement: variable COMA size COMA size COMA OBRACE function_call CBRACE	;
 
-lambda: LAMBDA_START expression LAMBDA_END ;
-boolean_lambda: LAMBDA_START boolean_expression LAMBDA_END ;
-create_lambda : LAMBDA_START NUM_CONSTANT_INT THREE_DOT NUM_CONSTANT_INT LAMBDA_END ;
+lambda: OBRACE expression CBRACE ;
+boolean_lambda: OBRACE boolean_expression CBRACE ;
+create_lambda : OBRACE NUM_CONSTANT_INT THREE_DOT NUM_CONSTANT_INT CBRACE ;
 
 
 // = = = = = = = = = = = =  C Lang  = = = = = = = = = = = = = = = = 
@@ -135,6 +129,7 @@ code_block: declaration code_block
 		|	for_statement code_block
 		|	while_statement code_block
 		|	switch_statement code_block
+		|	assigment SEMI_COLON code_block
 
 		| 	CONTINUE SEMI_COLON	code_block			// WARNING: only allowed within a while or for loop
 		|	BREAK SEMI_COLON	code_block			// WARNING: only allowed in while, for or switch
@@ -150,6 +145,7 @@ code_block: declaration code_block
 		|	for_statement
 		|	while_statement
 		|	switch_statement
+		|	assigment SEMI_COLON
 
 		| 	CONTINUE SEMI_COLON			// WARNING: only allowed within a while or for loop
 		|	BREAK SEMI_COLON			// WARNING: only allowed in while, for or switch
@@ -159,7 +155,7 @@ pointers: MULT_OP | MULT_OP pointers ;
 
 declaration: single_declaration | array_declaration ;
 
-single_declaration: data_type variable single_inicialization
+single_declaration: data_type variable single_inicialization			// different from assignment since you cannot do: int var += 3;
 				| data_type pointers variable single_inicialization
 single_inicialization: ASSIGN expression SEMI_COLON | SEMI_COLON ; 
 
@@ -172,7 +168,13 @@ array_list: NUM_CONSTANT_INT COMA array_list
 			| NUM_CONSTANT_INT
 array_inicialization: ASSIGN OBRACE array_list CBRACE SEMI_COLON | SEMI_COLON;
 
+assignment_type: ASSIGN | SUM_ASSIGN | SUB_ASSIGN | MULT_ASSIGN | DIV_ASSIGN | MOD_ASSIGN
+assigment: variable assignment_type expression | array_deref assignment_type expression
 
+variable: VARIABLE_NAME 
+array_deref: variable OBRACKET size CBRACKET
+
+data_type: INT | FLOAT | DOUBLE | LONG | SHORT | CHAR | VOID MULT_OP;
 
 return_statement: RETURN expression SEMI_COLON
 
@@ -186,16 +188,7 @@ while_statement: WHILE OPAR boolean_expression CPAR OBRACE code_block CBRACE
 for_statement: FOR OPAR declaration boolean_expression SEMI_COLON assigment CPAR OBRACE code_block CBRACE
 			|  FOR OPAR declaration boolean_expression SEMI_COLON expression CPAR OBRACE code_block CBRACE
 
-assignment_type: ASSIGN | SUM_ASSIGN | SUB_ASSIGN | MULT_ASSIGN | DIV_ASSIGN | MOD_ASSIGN
-
-assigment: variable assignment_type expression
-
 switch_statement: SWITCH OPAR expression CPAR OBRACE code_block CBRACE 		// WARNING: disallow NUM_CONSTANT_FLOAT, string, SPECIAL_VARIABLE
-
-
-variable: VARIABLE_NAME		;	
-
-data_type: INT | FLOAT | DOUBLE | LONG | SHORT | CHAR | VOID MULT_OP;
 
 size: variable | NUM_CONSTANT_INT 				;
 
@@ -219,7 +212,7 @@ expression:  expression ADD_OP expression
 			| NUM_CONSTANT_INT 
 			| SPECIAL_VARIABLE 		// WARNING: disallow in non special_statement context
 			| function_call 
-			| variable OBRACKET size CBRACKET
+			| array_deref
 			| STRING
 
 boolean_expression: boolean_expression AND_OP boolean_expression
