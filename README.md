@@ -33,9 +33,41 @@ En Linux:
 user@machine:path/ $ script/test.sh
 ```
 
+## Casos válidos
+
+1) El compilador acepta declaracion de funciones (como main()) y llamados.
+2) El compilador acepta declaraciones de variables y asignaciones (incluye arreglos).
+3) Se aceptan bloques if-else (necesariamente tiene que tener {}).
+4) Se aceptan ciclos for/while.
+5) Se aceptan bloques switch.
+6) Se acpetan #include's.
+
+## Special Statement
+Nuestra aumento de C se particuliza con poder reconocer una lineas para ahorrar trabajo al programador.
+
+Estas tienen el siguiente formato:
+<{CREATE, nombre_array, data_type, { number...number } }>   
+## para crear un array ya inicializado con valores secuenciales.
+
+<{FILTER, nombre_array1, size, nombre_array2, { "expresion booleana a cumplir"  } }>
+## para filtrar a otro arreglo a partir de una condicion. Adentro de la expresion con @elem se refiere al elemento del arreglo1 en cada iteracion. Size puede ser pasado como una variable.
+
+<{MAP, nombre_array1, size, nombre_array2, { "expresion a ejecutar" } }>
+## para mapear los elementos de un arreglo a otro con cierta transformacion. Se usa @elem nuevamente.
+
+<{REDUCE, nombre_array, size, variable, { "expresion que se le asigna a variable" } }>
+## para reducir los elementos de un arreglo a una variable. Para mantener el valor de la variable, deberia ser utilizada en cada iteracion.
+
+<{FOREACH, nombre_array, size, { "llamado a funcion" } }>
+## para aplicar cierta funcion a cada elemento del arreglo. Tiene que pasarse una funcion.
+
+Cada una de estas ultimas 4 funciones se pueden ejecutar para un cierto rango.
+Se invocan con: NOMBRERANGE y en vez de recibir un size, se recibe el indice de inicio y el indice de fin.
+
+
 ## Limitaciones
 
-1) Solo acepta tipo de datos: short, char, int, long, float, double.
+1) Solo acepta tipo de datos: short, char, int, long, float, double, void*.
 2) No acepta desreferenciar structs. Ejemplo: struct_name.struct_field  o  struct_name->struct_field
 3) No permite puteros a funciones.
 4) No permite casteos de tipo: (double) variable
