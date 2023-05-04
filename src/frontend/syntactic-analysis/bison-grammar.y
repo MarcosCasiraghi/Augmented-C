@@ -219,6 +219,7 @@ expression:  expression ADD_OP expression
 			| NUM_CONSTANT_INT 
 			| SPECIAL_VARIABLE 		// WARNING: disallow in non special_statement context
 			| function_call 
+			| variable OBRACKET size CBRACKET
 			| STRING
 
 boolean_expression: boolean_expression AND_OP boolean_expression

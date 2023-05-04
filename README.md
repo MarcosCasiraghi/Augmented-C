@@ -69,7 +69,11 @@ Se invocan con: NOMBRERANGE y en vez de recibir un size, se recibe el indice de 
 
 1) Solo acepta tipo de datos: short, char, int, long, float, double, void*.
 2) No acepta desreferenciar structs. Ejemplo: struct_name.struct_field  o  struct_name->struct_field
-3) No permite puteros a funciones.
-4) No permite casteos de tipo: (double) variable
-5) No permite asignaciones de tipo: int a = 4, b = 2, c;
+3) No acepta creacion de structs.
+4) No acepta definicion de nuevos tipos de datos (typedef).
+5) No se permite casteos explicitos.
+6) No permite puteros a funciones.
+7) No permite asignaciones de tipo: int a = 4, b = 2, c, ni creacion de multiples variables en una linea
+8) No acepta asignacion con operadores de bitshift. Ejemplo: var &= 2  o var >>= 2
+9) No se permite creacion de arreglos del estilo: char * argv[]. Se debe hacer de esta forma: char ** argv.
 
