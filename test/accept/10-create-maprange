@@ -1,0 +1,12 @@
+int main(){
+
+    <{CREATE, arr1, int, { 1...20 }}>
+
+
+    int arr2[10];
+
+    <{MAPRANGE, arr1, 1, 10, arr2, { @elem / 3 * 4} }>
+
+    return arr2[1];
+	
+}

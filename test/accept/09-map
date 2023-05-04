@@ -1,0 +1,10 @@
+
+int main(){
+
+    int arr1[20];
+    int arr2[20];
+
+    <{MAP, arr1, 20, arr2, { @elem * 2 + 3}}>
+
+    return 0;
+}
