@@ -4,7 +4,7 @@
 
 %}
 
-// Tipos de dato utilizados en las variables semánticas ($$, $1, $2, etc.).
+// Tipos de dato utilizados en las variables semÃ¡nticas ($$, $1, $2, etc.).
 %union {
 	// No-terminales (backend).
 	/*
@@ -96,7 +96,7 @@ map_range_statement: variable COMA size COMA size COMA variable COMA lambda	;
 foreach_range_statement: variable COMA size COMA size COMA OBRACE function_call CBRACE	;
 
 lambda: OBRACE expression CBRACE ;
-boolean_lambda: OBRACE boolean_expression CBRACE ;
+boolean_lambda: OBRACE expression CBRACE ;
 create_lambda : OBRACE NUM_CONSTANT_INT THREE_DOT NUM_CONSTANT_INT CBRACE ;
 
 
@@ -179,14 +179,14 @@ data_type: INT | FLOAT | DOUBLE | LONG | SHORT | CHAR | VOID MULT_OP;
 return_statement: RETURN expression SEMI_COLON
 
 if_else_statment: if_statement | if_statement else_statement 
-if_statement: IF OPAR boolean_expression CPAR OBRACE code_block CBRACE
+if_statement: IF OPAR expression CPAR OBRACE code_block CBRACE
 else_statement: ELSE OBRACE code_block CBRACE
 
-while_statement: WHILE OPAR boolean_expression CPAR OBRACE code_block CBRACE
+while_statement: WHILE OPAR expression CPAR OBRACE code_block CBRACE
 
 // el ; entre declaration y boolean no esta dado que declaration ya tiene uno
-for_statement: FOR OPAR declaration boolean_expression SEMI_COLON assigment CPAR OBRACE code_block CBRACE
-			|  FOR OPAR declaration boolean_expression SEMI_COLON expression CPAR OBRACE code_block CBRACE
+for_statement: FOR OPAR declaration expression SEMI_COLON assigment CPAR OBRACE code_block CBRACE
+			|  FOR OPAR declaration expression SEMI_COLON expression CPAR OBRACE code_block CBRACE
 
 switch_statement: SWITCH OPAR expression CPAR OBRACE code_block CBRACE 		// WARNING: disallow NUM_CONSTANT_FLOAT, string, SPECIAL_VARIABLE
 
@@ -207,6 +207,19 @@ expression:  expression ADD_OP expression
 			| expression BIT_XOR_OP expression
 			| expression BIT_OR_OP expression
 			| expression BIT_AND_OP expression
+
+			| expression AND_OP expression
+			| OPAR expression CPAR
+			| expression OR_OP expression
+			| NOT_OP OPAR expression CPAR
+
+			| expression EQ_OP expression
+			| expression GR_OP expression
+			| expression GE_OP expression
+			| expression LT_OP expression
+			| expression LE_OP expression
+			| expression NE_OP expression
+
 			| variable 
 			| NUM_CONSTANT_FLOAT 
 			| NUM_CONSTANT_INT 
@@ -215,20 +228,6 @@ expression:  expression ADD_OP expression
 			| array_deref
 			| STRING
 
-boolean_expression: boolean_expression AND_OP boolean_expression
-					| OPAR boolean_expression CPAR
-					| boolean_expression OR_OP boolean_expression
-					| NOT_OP OPAR boolean_expression CPAR
-					| relational_expression 
-					| expression;
-
-
-relational_expression: expression EQ_OP expression
-						| expression GR_OP expression
-						| expression GE_OP expression
-						| expression LT_OP expression
-						| expression LE_OP expression
-						| expression NE_OP expression ;
 
 function_call: variable OPAR function_call_arg CPAR 
 			| variable OPAR CPAR ;

@@ -1,0 +1,23 @@
+int main() {
+
+    <{CREATE, primes, int, {1...31}}>
+
+    int false = 0;
+
+    int filter[16];
+
+    randomize(false);
+
+    <{FILTER, primes, 32, filter, { (@elem % 2) == 1 } }>
+
+    if(false) {
+        <{MAP, primes, 32, filter, { (@elem * 4) / 5} }>
+        false = 0;
+    }
+    else{
+        <{REDUCE, filter, 16, false, { @elem + @elem} }>
+        false = 1;
+    }
+
+    return false;
+}
