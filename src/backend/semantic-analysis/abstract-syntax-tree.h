@@ -53,4 +53,123 @@ typedef struct {
 	Expression * expression;
 } Program;
 
+
+struct VariableNode {
+	VARIABLENAME * variableName;
+};
+
+struct ArrayDerefNode {				//Open y Close bracket son implicitos
+	VariableNode * variableNode;
+	SizeNode * sizeNode;
+};
+
+enum DataType {
+	Int,
+	Float,
+	Dobule, 
+	Long,
+	Short,
+	Char,
+	VoidPointer
+};
+
+struct ReturnStatementNode {			//return y ; son implicitos
+	ExpressionNode * expressionNode;
+};
+
+struct IfElseStatement {
+	IfStatementNode * ifStatementNode;
+	ElseStatementNode * elseStatementNode;
+};
+
+struct IfStatementNode {				//if, (, ), {, } son implicitos
+	ExpressionNode * expressionNode;
+	CodeBlockNode * codeBlockNode;
+
+};
+
+struct ElseStatementNode {				//else, {, } son implicitos
+	CodeBlockNode * codeBlockNode;
+};
+
+struct WhileStatementNode {			//while, (, ), {, } son implicitos
+	ExpressionNode * expressionNode;
+	CodeBlockNode * codeBlockNode;
+};
+
+struct ForStatementNode {				//for, (, ), ;, {, } son implicitos
+	DeclarationNode * declarationNode;
+	ExpressionNode * expressionNode;
+	AssigmentNode * assigmentNode;			//either one of these
+	ExpressionNode * expressionNode;		//
+	CodeBlockNode * codeBlockNode;
+};
+
+struct SwitchStatementNode {				//switch, (, ), {, } son implicitos
+	ExpressionNode * expressionNode;
+	CodeBlockNode * codeBlockNode;
+};
+
+struct SizeNode {
+	VariableNode * variableNode;
+	NumConstantIntNode * numConstantIntNode;
+};
+
+enum ExpressionNodeType{
+	AddOp,
+	SubOp,
+	MultOp,
+	DivOp,
+	ModOp,
+	IncOp,
+	DecOp,
+	BitNotOp,
+	BitRightOp,
+	BitLeftOp,
+	BitXorOp,
+	BitOrOp,
+	BitAndOp,
+	AndOp,
+	OrOp,
+	NotOp,
+	EqOp,
+	GrOp,
+	GeOp,
+	LtOp,
+	LeOp,
+	NeOp
+};
+
+typedef struct ExpressionNode ExpressionNode;
+
+struct ExpressionNode {						//(, ) son implicitos
+	ExpressionNodeType op;
+	ExpressionNode * leftExpressionNode;
+	ExpressionNode * rightExpressionNode;
+	VariableNode * variableNode;
+	NumConstantIntNode * numConstantIntode;
+	NumConstatnFloatNode * numConstantFloatNode;
+	SpecialVariableNode * specialVariableNode;
+	FunctionCallNode * functionCallNode;
+	ArrayDerefNode * arrayDerefNode;
+	StringNode * StringNode;
+};
+
+struct FunctionCallNode {						//(, ) son implicitos
+	VariableNode * variableNode;
+	FunctionCallArgNode * functionCallArgNode;		//puede ser null
+};
+
+
+typedef struct FunctionCallArgNode FunctionCallArgNode;
+
+struct FunctionCallArgNode {				//',' es implicito
+	ExpressionNode * expressionNode;
+	FunctionCallArgNode * functionCallArgNode;		//puede ser null
+};
+
+
+
+
+
 #endif
