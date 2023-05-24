@@ -47,7 +47,21 @@ typedef struct SpecialStatementNode {
 	SelectorNode * selectorNode;
 } SpecialStatementNode;
 
+typedef enum SelectorNodeType{
+	ReduceStatement,
+	FilterStatement,
+	ForeachStatement,
+	MapStatement,
+	CreateStatement,
+	ReduceRangeStatement,
+	FilterRangeStatement,
+	ForeachRangeStatement,
+	MapRangeStatement
+} SelectorNodeType;
+
 typedef struct SelectorNode {
+	SelectorNodeType selectorNodeType;
+
 	ReduceStatementNode * reduceStatement;
 	FilterStatementNode * filterStatement;
 	ForeachStatementNode * foreachStatement;
