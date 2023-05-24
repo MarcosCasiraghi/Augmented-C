@@ -25,7 +25,8 @@ typedef struct {
 * De este modo, al recorrer el AST, es posible determinar qué nodos hijos
 * posee según el valor de este enumerado.
 */
-typedef Variable char *;
+typedef char * Variable;
+typedef struct FunctionArgsNode FunctionArgsNode;
 typedef struct CodeBlockNode CodeBlockNode;
 typedef struct PointerNode PointerNode;
 typedef struct ExpressionNode ExpressionNode;
@@ -37,7 +38,134 @@ enum FunctionDeclarationType{
 	WithArgs,
 	NoArgsVoid,
 	WithArgsVoid
-}
+};
+
+enum MetaCommandType {
+	String,
+	File_Name
+};
+
+struct ProgramNode {
+	ExpressionNode * expressionNode;
+};
+
+//ProgramNode * ProgramGrammarAction(ExpressionNode * expressionNode) {
+//	ProgramNode * programNode = malloc(sizeof);
+//	programNode->expressionNode = expressionNode;
+//	return programNode;
+//}
+
+typedef struct SpecialStatementNode {
+	SelectorNode * selectorNode;
+} SpecialStatementNode;
+
+typedef struct SelectorNode {
+	ReduceStatementNode * reduceStatement;
+	FilterStatementNode * filterStatement;
+	ForeachStatementNode * foreachStatement;
+	MapStatementNode * mapStatement;
+	CreateStatementNode * createStatement;
+	ReduceRangeStatementNode * reduceRangeStatement;
+	FilterRangeStatementNode * filterRangeStatement;
+	ForeachRangeStatementNode * foreachRangeStatement;
+	MapRangeStatementNode * mapRangeStatement;
+} SelectorNode;
+
+typedef struct Lambda {
+	ExpressionNode * expressionNode;
+} Lambda;
+
+typedef struct CreateLambda {
+	int *constant1;
+	int *constant2;		// el ... es obviado
+} CreateLambda;
+
+typedef struct ReduceStatementNode {
+	Variable variable1;
+	int *size;
+	Variable variable2;
+	Lambda * lambda;
+} ReduceStatementNode;
+
+typedef struct FilterStatementNode {
+	Variable variable1;
+	int *size;
+	Variable variable2;
+	Lambda * lambda;
+} FilterStatementNode;
+
+typedef struct ForeachStatementNode {
+	Variable variable1;
+	int *size;
+	FunctionCallNode * functionCallNode;
+} ForeachStatementNode;
+
+typedef struct MapStatementNode {
+	Variable variable1;
+	int *size;
+	Variable variable2;
+	CreateLambda * createLambda;
+} MapStatementNode;
+
+typedef struct CreateStatementNode {
+	Variable variable1;
+	int *size;
+	Variable variable2;
+	Lambda * lambda;
+} CreateStatementNode;
+
+typedef struct ReduceRangeStatementNode {
+	Variable variable1;
+	int *size1;
+	int *size2;
+	Variable variable2;
+	Lambda * lambda;
+} ReduceRangeStatementNode;
+
+typedef struct FilterRangeStatementNode {
+	Variable variable1;
+	int *size1;
+	int *size2;
+	Variable variable2;
+	Lambda * lambda;
+} FilterRangeStatementNode;
+
+typedef struct ForeachRangeStatementNode {
+	Variable variable1;
+	int *size1;
+	int *size2;
+	FunctionCallNode * functionCallNode;
+} ForeachRangeStatementNode;
+
+typedef struct MapRangeStatementNode {
+	Variable variable1;
+	int *size1;
+	int *size2;
+	Variable variable2;
+	CreateLambda * createLambda;
+} MapRangeStatementNode;
+
+typedef struct MetaCommandNode {
+	MetaCommandType * type;
+} MetaCommandNode;
+
+typedef struct StatementNode {
+	StatementNode *statement;
+	MetaCommandNode metacommand;
+	FunctionDeclarationNode functionDeclarationNode;
+	DeclarationNode declarationNode;
+} Statements;
+
+typedef struct FunctionArgNode {
+	DataType * dataType;
+	PointerNode * pointer;
+	Variable variable;
+} FunctionArgNode;
+
+typedef struct FunctionArgsNode {
+	FunctionArgNode * functionArgNode;
+	FunctionArgsNode * functionArgsNode;
+} FunctionArgsNode;
 
 typedef struct FunctionDeclarationNode{
 	FunctionDeclarationType * type;
@@ -46,7 +174,7 @@ typedef struct FunctionDeclarationNode{
 	Variable variable;
 	CodeBlockNode * codeBlock;
 	FunctionCallArgNode * functionArgs;
-}FunctionDeclarationNode;
+} FunctionDeclarationNode;
 
 
 typedef struct CodeBlockNode{
@@ -56,50 +184,50 @@ typedef struct CodeBlockNode{
 	ReturnStatementNode * returnStatement;
 	IfElseStatmentNode * ifElse;
 	ForStatementNode * forStatement;
-	WhileStatement * whileStatement
+	WhileStatement * whileStatement;
 	SwitchStatement * switchStatement;
 	AssigmentNode * assingment;
 
 	CodeBlockNode * codeBlock;
 
 	// TODO: falta case
-}CodeBlockNode;
+} CodeBlockNode;
 
 
 typedef struct PointerNode{
 	// * is implicit
 	PointerNode * pointerNode;
-}PointerNode;
+} PointerNode;
 
 
 enum DeclarationType{
 	SingleDeclaration,
 	ArrayDeclaration
-}
+};
 
 typedef struct DeclarationNode{
 	DeclarationType * type;
 	SingleDeclarationNode * singleDeclarationNode;
 	ArrayDeclarationNode * arrayDeclarationNode;
-}DeclarationNode;
+} DeclarationNode;
 
 typedef struct SingleDeclarationNode{
 	PointerNode * pointer;		// NULL
 	DataType * dataType;
 	VariableNode * variable;
 	SingleInitializeNode * singleInitializeNode;
-}SingleDeclarationNode;
+} SingleDeclarationNode;
 
 enum AssignmentType{
 	NoAssign,
 	AssignSingle
-}
+};
 
 typedef struct SingleInitializeNode{
 	// ASSIGN, SEMI_COLON implicit
 	AssignmentType * type;
 	ExpressionNode * expressionNode; // NULL
-}SingleInitializeNode;
+} SingleInitializeNode;
 
 
 typedef struct ArrayDeclarationNode{
@@ -107,37 +235,37 @@ typedef struct ArrayDeclarationNode{
 	Variable variable;
 	ArraySizeNode * arraySizeNode;
 	ArrayInitializeNode * arrayInitializeNode;
-}ArrayDeclarationNode;
+} ArrayDeclarationNode;
 
 enum ArraySizeType{
 	NotSizedSingle,
 	Sized,
 	NotSizedMultiple,
 	SizedMutilple
-}
+};
 
 typedef struct ArraySizeNode{
 	ArraySizeType * type;
 	NumConstantIntNode * numberConstant;
 	ArraySizeNode * arraySizeNode;	// NULL
-}ArraySizeNode;
+} ArraySizeNode;
 
 enum ArrayInitializeType{
 	WithList,
 	Empty
-}
+};
 
 typedef struct ArrayInitializeNode{
 	// ASSIGN OBRACE CBRACE SEMI_COLON implicit
 	ArrayInitializeType * type;
 	ArrayListNode * arrayListNode;
-}ArrayInitializeNode;
+} ArrayInitializeNode;
 
 typedef struct ArrayListNode{
 	// COMA implicit depending on arrayListNode * != NULL
 	NumConstantIntNode integer;
 	ArrayListNode * arrayListNode;		// NULL
-}ArrayListNode;
+} ArrayListNode;
 
 
 enum AssingmentType{
@@ -147,7 +275,7 @@ enum AssingmentType{
 	MULT_ASSIGN,
 	DIV_ASSIGN,
 	MOD_ASSIGN
-}
+};
 
 typedef struct AssigmentNode{
 	AssingmentType * type;
@@ -155,13 +283,13 @@ typedef struct AssigmentNode{
 
 	Variable variable;	// NULL
 	ArrayDefinitionNode * arrayDefinitionNode;	// NULL
-}AssigmentNode;
+} AssigmentNode;
 
 
 typedef struct ArrayDerefNode {				//Open y Close bracket son implicitos
 	Variable * variable;
 	SizeNode * sizeNode;
-}ArrayDerefNode;
+} ArrayDerefNode;
 
 enum DataType {
 	Int,
@@ -175,27 +303,27 @@ enum DataType {
 
 typedef struct ReturnStatementNode {			//return y ; son implicitos
 	ExpressionNode * expressionNode;
-}ReturnStatementNode;
+} ReturnStatementNode;
 
 typedef struct IfElseStatement {
 	IfStatementNode * ifStatementNode;
 	ElseStatementNode * elseStatementNode;
-}IfElseStatement;
+} IfElseStatement;
 
 typedef struct IfStatementNode {				//if, (, ), {, } son implicitos
 	ExpressionNode * expressionNode;
 	CodeBlockNode * codeBlockNode;
 
-}IfStatementNode;
+} IfStatementNode;
 
 typedef struct ElseStatementNode {				//else, {, } son implicitos
 	CodeBlockNode * codeBlockNode;
-}ElseStatementNode;
+} ElseStatementNode;
 
 typedef struct WhileStatementNode {			//while, (, ), {, } son implicitos
 	ExpressionNode * expressionNode;
 	CodeBlockNode * codeBlockNode;
-}WhileStatementNode;
+} WhileStatementNode;
 
 typedef struct ForStatementNode {				//for, (, ), ;, {, } son implicitos
 	DeclarationNode * declarationNode;
@@ -203,17 +331,17 @@ typedef struct ForStatementNode {				//for, (, ), ;, {, } son implicitos
 	AssigmentNode * assigmentNode;			//either one of these
 	ExpressionNode * expressionNode;		//
 	CodeBlockNode * codeBlockNode;
-}ForStatementNode;
+} ForStatementNode;
 
 typedef struct SwitchStatementNode {				//switch, (, ), {, } son implicitos
 	ExpressionNode * expressionNode;
 	CodeBlockNode * codeBlockNode;
-}SwitchStatementNode;
+} SwitchStatementNode;
 
 typedef struct SizeNode {
 	Variable * variable;
 	NumConstantIntNode * numConstantIntNode;
-}SizeNode;
+} SizeNode;
 
 enum ExpressionNodeType{
 	AddOp,
