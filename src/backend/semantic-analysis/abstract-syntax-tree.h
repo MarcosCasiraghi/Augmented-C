@@ -134,21 +134,21 @@ typedef struct MapRangeStatementNode {
 	CreateLambda * createLambda;
 } MapRangeStatementNode;
 
-enum MetaCommandType {
+typedef enum MetaCommandType {
 	String,
 	File_Name
-};
+} MetaCommandType;
 
 typedef struct MetaCommandNode {
 	MetaCommandType type;
 } MetaCommandNode;
 
-enum StatementType {
+typedef enum StatementType {
 	Statement,
 	Pointer,
 	FunctionDeclaration,
 	Declaration
-};
+} StatementType;
 
 typedef struct StatementNode {
 	StatementType type;
@@ -160,10 +160,10 @@ typedef struct StatementNode {
 } Statements;
 
 
-enum FunctionArgType {
+typedef enum FunctionArgType {
 	pointer,
 	noPointer
-};
+} FunctionArgType;
 
 typedef struct FunctionArgNode {
 	FunctionArgType type;
@@ -173,10 +173,10 @@ typedef struct FunctionArgNode {
 	Variable variable;
 } FunctionArgNode;
 
-enum FunctionArgsType {
+typedef enum FunctionArgsType {
 	single,
 	multiple
-};
+} FunctionArgsType;
 
 typedef struct FunctionArgsNode {
 	FunctionArgsType type;
@@ -185,12 +185,12 @@ typedef struct FunctionArgsNode {
 	FunctionArgsNode * functionArgsNode;
 } FunctionArgsNode;
 
-enum FunctionDeclarationType{
+typedef enum FunctionDeclarationType{
 	NoArgs,
 	WithArgs,
 	NoArgsVoid,
 	WithArgsVoid
-};
+} FunctionDeclarationType;
 
 typedef struct FunctionDeclarationNode{
 	FunctionDeclarationType type;
@@ -225,10 +225,10 @@ typedef struct PointerNode{
 } PointerNode;
 
 
-enum DeclarationType{
+typedef enum DeclarationType{
 	SingleDeclaration,
 	ArrayDeclaration
-};
+} DeclarationType;
 
 typedef struct DeclarationNode{
 	DeclarationType type;
@@ -243,10 +243,10 @@ typedef struct SingleDeclarationNode{
 	SingleInitializeNode * singleInitializeNode;
 } SingleDeclarationNode;
 
-enum AssignmentType{
+typedef enum AssignmentType{
 	NoAssign,
 	AssignSingle
-};
+} AssignmentType;
 
 typedef struct SingleInitializeNode{
 	// ASSIGN, SEMI_COLON implicit
@@ -262,12 +262,12 @@ typedef struct ArrayDeclarationNode{
 	ArrayInitializeNode * arrayInitializeNode;
 } ArrayDeclarationNode;
 
-enum ArraySizeType{
+typedef enum ArraySizeType{
 	NotSizedSingle,
 	Sized,
 	NotSizedMultiple,
 	SizedMutilple
-};
+} ArraySizeType;
 
 typedef struct ArraySizeNode{
 	ArraySizeType type;
@@ -275,10 +275,10 @@ typedef struct ArraySizeNode{
 	ArraySizeNode * arraySizeNode;	// NULL
 } ArraySizeNode;
 
-enum ArrayInitializeType{
+typedef enum ArrayInitializeType{
 	WithList,
 	Empty
-};
+} ArrayInitializeType;
 
 typedef struct ArrayInitializeNode{
 	// ASSIGN OBRACE CBRACE SEMI_COLON implicit
@@ -293,17 +293,17 @@ typedef struct ArrayListNode{
 } ArrayListNode;
 
 
-enum AssingmentType{
+typedef enum AssingmentType{
 	ASSIGN, 
 	SUM_ASSIGN,
 	SUB_ASSIGN,
 	MULT_ASSIGN,
 	DIV_ASSIGN,
 	MOD_ASSIGN
-};
+} AssignmentType;
 
 typedef struct AssigmentNode{
-	AssingmentType type;
+	AssignmentType type;
 	ExpressionNode * expressionNode;
 
 	Variable variable;	// NULL
@@ -316,7 +316,7 @@ typedef struct ArrayDerefNode {				//Open y Close bracket son implicitos
 	SizeNode * sizeNode;
 } ArrayDerefNode;
 
-enum DataType {
+typedef enum DataType {
 	Int,
 	Float,
 	Dobule, 
@@ -324,7 +324,7 @@ enum DataType {
 	Short,
 	Char,
 	VoidPointer
-};
+} DataType;
 
 typedef struct ReturnStatementNode {			//return y ; son implicitos
 	ExpressionNode * expressionNode;
@@ -368,7 +368,7 @@ typedef struct SizeNode {
 	NumConstantIntNode * numConstantIntNode;
 } SizeNode;
 
-enum ExpressionNodeType{
+typedef enum ExpressionNodeType{
 	AddOp,
 	SubOp,
 	MultOp,
@@ -397,7 +397,7 @@ enum ExpressionNodeType{
 	specialVariable,
 	ArrayDeref,
 	String
-};
+} ExpressionNodeType;
 
 
 typedef struct ExpressionNode {						//(, ) son implicitos
@@ -413,10 +413,10 @@ typedef struct ExpressionNode {						//(, ) son implicitos
 	StringVar * StringNode;
 }ExpressionNode;
 
-enum FunctionCallType {
+typedef enum FunctionCallType {
 	NoArgs,
 	WithArgs
-};
+}FunctionCallType;
 
 typedef struct FunctionCallNode {						//(, ) son implicitos
 	FunctionCallType type;
@@ -425,10 +425,10 @@ typedef struct FunctionCallNode {						//(, ) son implicitos
 	FunctionCallArgNode * functionCallArgNode;		//puede ser null
 }FunctionCallNode;
 
-enum FunctionCallArgType {
+typedef enum FunctionCallArgType {
 	NoArgs,
 	WithArgs
-};
+}FunctionCallArgType;
 
 typedef struct FunctionCallArgNode {				//',' es implicito
 	FunctionCallArgType type;
