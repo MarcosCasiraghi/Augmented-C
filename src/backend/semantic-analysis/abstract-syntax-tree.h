@@ -26,6 +26,9 @@ typedef struct {
 * posee según el valor de este enumerado.
 */
 typedef char * Variable;
+typedef char * NumConstantIntNode;
+typedef char * NumConstantFloatNode;
+typedef char * SpecialVariable;
 typedef struct FunctionArgsNode FunctionArgsNode;
 typedef struct CodeBlockNode CodeBlockNode;
 typedef struct PointerNode PointerNode;
@@ -33,27 +36,10 @@ typedef struct ExpressionNode ExpressionNode;
 typedef struct FunctionCallArgNode FunctionCallArgNode;
 
 
-enum FunctionDeclarationType{
-	NoArgs,
-	WithArgs,
-	NoArgsVoid,
-	WithArgsVoid
-};
-
-enum MetaCommandType {
-	String,
-	File_Name
-};
-
 struct ProgramNode {
 	ExpressionNode * expressionNode;
 };
 
-//ProgramNode * ProgramGrammarAction(ExpressionNode * expressionNode) {
-//	ProgramNode * programNode = malloc(sizeof);
-//	programNode->expressionNode = expressionNode;
-//	return programNode;
-//}
 
 typedef struct SpecialStatementNode {
 	SelectorNode * selectorNode;
@@ -76,96 +62,133 @@ typedef struct Lambda {
 } Lambda;
 
 typedef struct CreateLambda {
-	int *constant1;
-	int *constant2;		// el ... es obviado
+	NumConstantIntNode * constant1;
+	NumConstantIntNode * constant2;		// el ... es obviado
 } CreateLambda;
+
 
 typedef struct ReduceStatementNode {
 	Variable variable1;
-	int *size;
+	NumConstantIntNode size;
 	Variable variable2;
 	Lambda * lambda;
 } ReduceStatementNode;
 
 typedef struct FilterStatementNode {
 	Variable variable1;
-	int *size;
+	NumConstantIntNode size;
 	Variable variable2;
 	Lambda * lambda;
 } FilterStatementNode;
 
 typedef struct ForeachStatementNode {
 	Variable variable1;
-	int *size;
+	NumConstantIntNode size;
 	FunctionCallNode * functionCallNode;
 } ForeachStatementNode;
 
 typedef struct MapStatementNode {
 	Variable variable1;
-	int *size;
+	NumConstantIntNode size;
 	Variable variable2;
 	CreateLambda * createLambda;
 } MapStatementNode;
 
 typedef struct CreateStatementNode {
 	Variable variable1;
-	int *size;
+	NumConstantIntNode size;
 	Variable variable2;
 	Lambda * lambda;
 } CreateStatementNode;
 
 typedef struct ReduceRangeStatementNode {
 	Variable variable1;
-	int *size1;
-	int *size2;
+	NumConstantIntNode size1;
+	NumConstantIntNode size2;
 	Variable variable2;
 	Lambda * lambda;
 } ReduceRangeStatementNode;
 
 typedef struct FilterRangeStatementNode {
 	Variable variable1;
-	int *size1;
-	int *size2;
+	NumConstantIntNode size1;
+	NumConstantIntNode size2;
 	Variable variable2;
 	Lambda * lambda;
 } FilterRangeStatementNode;
 
 typedef struct ForeachRangeStatementNode {
 	Variable variable1;
-	int *size1;
-	int *size2;
+	NumConstantIntNode size1;
+	NumConstantIntNode size2;
 	FunctionCallNode * functionCallNode;
 } ForeachRangeStatementNode;
 
 typedef struct MapRangeStatementNode {
 	Variable variable1;
-	int *size1;
-	int *size2;
+	NumConstantIntNode size1;
+	NumConstantIntNode size2;
 	Variable variable2;
 	CreateLambda * createLambda;
 } MapRangeStatementNode;
+
+enum MetaCommandType {
+	String,
+	File_Name
+};
 
 typedef struct MetaCommandNode {
 	MetaCommandType * type;
 } MetaCommandNode;
 
+enum StatementType {
+	Statement,
+	Pointer,
+	FunctionDeclaration,
+	Declaration
+};
+
 typedef struct StatementNode {
+	StatementType * type;
+
 	StatementNode *statement;
 	MetaCommandNode metacommand;
 	FunctionDeclarationNode functionDeclarationNode;
 	DeclarationNode declarationNode;
 } Statements;
 
+
+enum FunctionArgType {
+	pointer,
+	noPointer
+};
+
 typedef struct FunctionArgNode {
+	FunctionArgType * type;
+
 	DataType * dataType;
 	PointerNode * pointer;
 	Variable variable;
 } FunctionArgNode;
 
+enum FunctionArgsType {
+	single,
+	multiple
+};
+
 typedef struct FunctionArgsNode {
+	FunctionArgsType * type;
+
 	FunctionArgNode * functionArgNode;
 	FunctionArgsNode * functionArgsNode;
 } FunctionArgsNode;
+
+enum FunctionDeclarationType{
+	NoArgs,
+	WithArgs,
+	NoArgsVoid,
+	WithArgsVoid
+};
 
 typedef struct FunctionDeclarationNode{
 	FunctionDeclarationType * type;
@@ -365,7 +388,13 @@ enum ExpressionNodeType{
 	GeOp,
 	LtOp,
 	LeOp,
-	NeOp
+	NeOp,
+	variable,
+	NumConstantFloat,
+	NumConstantInt,
+	specialVariable,
+	ArrayDeref,
+	String
 };
 
 
@@ -375,20 +404,33 @@ typedef struct ExpressionNode {						//(, ) son implicitos
 	ExpressionNode * rightExpressionNode;
 	Variable * Variable;
 	NumConstantIntNode * numConstantIntode;
-	NumConstatnFloatNode * numConstantFloatNode;
+	NumConstantFloatNode * numConstantFloatNode;
 	SpecialVariable * specialVariable;
 	FunctionCallNode * functionCallNode;
 	ArrayDerefNode * arrayDerefNode;
 	StringNode * StringNode;
 }ExpressionNode;
 
+enum FunctionCallType {
+	NoArgs,
+	WithArgs
+};
+
 typedef struct FunctionCallNode {						//(, ) son implicitos
+	FunctionCallType * type;
+
 	Variable * Variable;
 	FunctionCallArgNode * functionCallArgNode;		//puede ser null
 }FunctionCallNode;
 
+enum FunctionCallArgType {
+	NoArgs,
+	WithArgs
+};
 
 typedef struct FunctionCallArgNode {				//',' es implicito
+	FunctionCallArgType * type;
+
 	ExpressionNode * expressionNode;
 	FunctionCallArgNode * functionCallArgNode;		//puede ser null
 }FunctionCallArgNode;
