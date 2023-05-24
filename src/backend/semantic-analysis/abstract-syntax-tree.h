@@ -25,6 +25,7 @@ typedef struct {
 * De este modo, al recorrer el AST, es posible determinar qué nodos hijos
 * posee según el valor de este enumerado.
 */
+typedef char * StringVar;
 typedef char * Variable;
 typedef char * NumConstantIntNode;
 typedef char * NumConstantFloatNode;
@@ -34,6 +35,7 @@ typedef struct CodeBlockNode CodeBlockNode;
 typedef struct PointerNode PointerNode;
 typedef struct ExpressionNode ExpressionNode;
 typedef struct FunctionCallArgNode FunctionCallArgNode;
+typedef struct StatementNode StatementNode;
 
 
 struct ProgramNode {
@@ -138,7 +140,7 @@ enum MetaCommandType {
 };
 
 typedef struct MetaCommandNode {
-	MetaCommandType * type;
+	MetaCommandType type;
 } MetaCommandNode;
 
 enum StatementType {
@@ -149,7 +151,7 @@ enum StatementType {
 };
 
 typedef struct StatementNode {
-	StatementType * type;
+	StatementType type;
 
 	StatementNode *statement;
 	MetaCommandNode metacommand;
@@ -164,9 +166,9 @@ enum FunctionArgType {
 };
 
 typedef struct FunctionArgNode {
-	FunctionArgType * type;
+	FunctionArgType type;
 
-	DataType * dataType;
+	DataType dataType;
 	PointerNode * pointer;
 	Variable variable;
 } FunctionArgNode;
@@ -177,7 +179,7 @@ enum FunctionArgsType {
 };
 
 typedef struct FunctionArgsNode {
-	FunctionArgsType * type;
+	FunctionArgsType type;
 
 	FunctionArgNode * functionArgNode;
 	FunctionArgsNode * functionArgsNode;
@@ -191,9 +193,9 @@ enum FunctionDeclarationType{
 };
 
 typedef struct FunctionDeclarationNode{
-	FunctionDeclarationType * type;
+	FunctionDeclarationType type;
 
-	DataType * functionType;
+	DataType functionType;
 	Variable variable;
 	CodeBlockNode * codeBlock;
 	FunctionCallArgNode * functionArgs;
@@ -205,10 +207,10 @@ typedef struct CodeBlockNode{
 	SpecialStatementNode * specialStatement;
 	ExpressionNode * expression;
 	ReturnStatementNode * returnStatement;
-	IfElseStatmentNode * ifElse;
+	IfElseStatementNode * ifElse;
 	ForStatementNode * forStatement;
-	WhileStatement * whileStatement;
-	SwitchStatement * switchStatement;
+	WhileStatementNode * whileStatement;
+	SwitchStatementNode * switchStatement;
 	AssigmentNode * assingment;
 
 	CodeBlockNode * codeBlock;
@@ -229,15 +231,15 @@ enum DeclarationType{
 };
 
 typedef struct DeclarationNode{
-	DeclarationType * type;
+	DeclarationType type;
 	SingleDeclarationNode * singleDeclarationNode;
 	ArrayDeclarationNode * arrayDeclarationNode;
 } DeclarationNode;
 
 typedef struct SingleDeclarationNode{
 	PointerNode * pointer;		// NULL
-	DataType * dataType;
-	VariableNode * variable;
+	DataType dataType;
+	Variable * variable;
 	SingleInitializeNode * singleInitializeNode;
 } SingleDeclarationNode;
 
@@ -248,13 +250,13 @@ enum AssignmentType{
 
 typedef struct SingleInitializeNode{
 	// ASSIGN, SEMI_COLON implicit
-	AssignmentType * type;
+	AssignmentType type;
 	ExpressionNode * expressionNode; // NULL
 } SingleInitializeNode;
 
 
 typedef struct ArrayDeclarationNode{
-	DataType * dataType;
+	DataType dataType;
 	Variable variable;
 	ArraySizeNode * arraySizeNode;
 	ArrayInitializeNode * arrayInitializeNode;
@@ -268,7 +270,7 @@ enum ArraySizeType{
 };
 
 typedef struct ArraySizeNode{
-	ArraySizeType * type;
+	ArraySizeType type;
 	NumConstantIntNode * numberConstant;
 	ArraySizeNode * arraySizeNode;	// NULL
 } ArraySizeNode;
@@ -280,7 +282,7 @@ enum ArrayInitializeType{
 
 typedef struct ArrayInitializeNode{
 	// ASSIGN OBRACE CBRACE SEMI_COLON implicit
-	ArrayInitializeType * type;
+	ArrayInitializeType type;
 	ArrayListNode * arrayListNode;
 } ArrayInitializeNode;
 
@@ -301,11 +303,11 @@ enum AssingmentType{
 };
 
 typedef struct AssigmentNode{
-	AssingmentType * type;
+	AssingmentType type;
 	ExpressionNode * expressionNode;
 
 	Variable variable;	// NULL
-	ArrayDefinitionNode * arrayDefinitionNode;	// NULL
+	ArrayDerefNode * arrayDefinitionNode;	// NULL
 } AssigmentNode;
 
 
@@ -328,10 +330,10 @@ typedef struct ReturnStatementNode {			//return y ; son implicitos
 	ExpressionNode * expressionNode;
 } ReturnStatementNode;
 
-typedef struct IfElseStatement {
+typedef struct IfElseStatementNode {
 	IfStatementNode * ifStatementNode;
 	ElseStatementNode * elseStatementNode;
-} IfElseStatement;
+} IfElseStatementNode;
 
 typedef struct IfStatementNode {				//if, (, ), {, } son implicitos
 	ExpressionNode * expressionNode;
@@ -408,7 +410,7 @@ typedef struct ExpressionNode {						//(, ) son implicitos
 	SpecialVariable * specialVariable;
 	FunctionCallNode * functionCallNode;
 	ArrayDerefNode * arrayDerefNode;
-	StringNode * StringNode;
+	StringVar * StringNode;
 }ExpressionNode;
 
 enum FunctionCallType {
@@ -417,7 +419,7 @@ enum FunctionCallType {
 };
 
 typedef struct FunctionCallNode {						//(, ) son implicitos
-	FunctionCallType * type;
+	FunctionCallType type;
 
 	Variable * Variable;
 	FunctionCallArgNode * functionCallArgNode;		//puede ser null
@@ -429,7 +431,7 @@ enum FunctionCallArgType {
 };
 
 typedef struct FunctionCallArgNode {				//',' es implicito
-	FunctionCallArgType * type;
+	FunctionCallArgType type;
 
 	ExpressionNode * expressionNode;
 	FunctionCallArgNode * functionCallArgNode;		//puede ser null
