@@ -316,8 +316,15 @@ typedef enum AssingmentType{
 	MOD_ASSIGN
 } AssignmentType;
 
+typedef enum AssignmentNodeType{
+	withVar,
+	withArrayDeref
+}AssignmentNodeType;
+
 typedef struct AssigmentNode{
-	AssignmentType type;
+	AssignmentNodeType withType;
+
+	AssignmentType assignmentType;
 	ExpressionNode * expressionNode;
 
 	Variable variable;	// NULL
@@ -344,7 +351,13 @@ typedef struct ReturnStatementNode {			//return y ; son implicitos
 	ExpressionNode * expressionNode;
 } ReturnStatementNode;
 
+typedef enum IfElseStatementType {
+	withElse,
+	withoutElse
+}IfElseStatementType;
+
 typedef struct IfElseStatementNode {
+	IfElseStatementType type;
 	IfStatementNode * ifStatementNode;
 	ElseStatementNode * elseStatementNode;
 } IfElseStatementNode;
@@ -364,9 +377,15 @@ typedef struct WhileStatementNode {			//while, (, ), {, } son implicitos
 	CodeBlockNode * codeBlockNode;
 } WhileStatementNode;
 
+typedef enum ForStatementType{
+	withExpression,
+	withAssignment
+}ForStatementType;
+
 typedef struct ForStatementNode {				//for, (, ), ;, {, } son implicitos
+	ForStatementType type;
 	DeclarationNode * declarationNode;
-	ExpressionNode * expressionNode;
+	ExpressionNode * firstExpressionNode;
 	AssigmentNode * assigmentNode;			//either one of these
 	ExpressionNode * expressionNode;		//
 	CodeBlockNode * codeBlockNode;
@@ -377,7 +396,14 @@ typedef struct SwitchStatementNode {				//switch, (, ), {, } son implicitos
 	CodeBlockNode * codeBlockNode;
 } SwitchStatementNode;
 
+
+typedef enum SizeNodeType {
+	variable,
+	NumConstantInt
+} SizeNodeType;
+
 typedef struct SizeNode {
+	SizeNodeType type;
 	Variable * variable;
 	NumConstantIntNode * numConstantIntNode;
 } SizeNode;
@@ -409,6 +435,7 @@ typedef enum ExpressionNodeType{
 	NumConstantFloat,
 	NumConstantInt,
 	specialVariable,
+	functionCall,
 	ArrayDeref,
 	String
 } ExpressionNodeType;
@@ -419,7 +446,7 @@ typedef struct ExpressionNode {						//(, ) son implicitos
 	ExpressionNode * leftExpressionNode;
 	ExpressionNode * rightExpressionNode;
 	Variable * Variable;
-	NumConstantIntNode * numConstantIntode;
+	NumConstantIntNode * numConstantIntNode;
 	NumConstantFloatNode * numConstantFloatNode;
 	SpecialVariable * specialVariable;
 	FunctionCallNode * functionCallNode;
