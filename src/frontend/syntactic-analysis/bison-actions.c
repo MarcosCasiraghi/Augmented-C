@@ -104,21 +104,355 @@ void ProgramGrammarAction() {
 // 	return value;
 // }
 
-ArrayInitializeNode * ArrayInitializeEmptyGrammarAction(){
-	ArrayInitializeNode * arrayInitializeNode = malloc(sizeof(ArrayInitializeNode));
-	arrayInitializeNode->type = Empty;
-	arrayInitializeNode->arrayListNode = NULL;
 
-	return arrayInitializeNode;
+// - - - - - - Function Declaration - - - - - -
+
+FunctionDeclarationNode* FunctionDeclarationNoArgsAction(DataType functionType, Variable variable, CodeBlockNode* codeBlock) {
+    FunctionDeclarationNode* node = malloc(sizeof(FunctionDeclarationNode));
+    node->type = NoArgs;
+    node->functionType = functionType;
+    node->variable = variable;
+    node->codeBlock = codeBlock;
+    node->functionArgs = NULL;
+    return node;
 }
 
-ArrayInitializeNode * ArrayInitializeWithListGrammarAction(ArrayListNode * arrayListNode){
-	ArrayInitializeNode * arrayInitializeNode = malloc(sizeof(ArrayInitializeNode));
-	arrayInitializeNode->type = WithList;
-	arrayInitializeNode->arrayListNode = arrayListNode;
-
-	return arrayInitializeNode;
+FunctionDeclarationNode* FunctionDeclarationWithArgs(DataType functionType, Variable variable, CodeBlockNode* codeBlock, FunctionCallArgNode* functionArgs) {
+    FunctionDeclarationNode* node = malloc(sizeof(FunctionDeclarationNode));
+    node->type = WithArgs;
+    node->functionType = functionType;
+    node->variable = variable;
+    node->codeBlock = codeBlock;
+    node->functionArgs = functionArgs;
+    return node;
 }
+
+FunctionDeclarationNode* VoidFunctionDeclaration(Variable variable, CodeBlockNode* codeBlock) {
+    FunctionDeclarationNode* node = malloc(sizeof(FunctionDeclarationNode));
+    node->type = NoArgsVoid;
+    node->functionType = NoArgsVoid;
+    node->variable = variable;
+    node->codeBlock = codeBlock;
+    node->functionArgs = NULL;
+    return node;
+}
+
+FunctionDeclarationNode* VoidFunctionDeclarationWithArgs(Variable variable, CodeBlockNode* codeBlock, FunctionCallArgNode* functionArgs) {
+    FunctionDeclarationNode* node = malloc(sizeof(FunctionDeclarationNode));
+    node->type = WithArgsVoid;
+    node->functionType = WithArgsVoid;
+    node->variable = variable;
+    node->codeBlock = codeBlock;
+    node->functionArgs = functionArgs;
+    return node;
+}
+
+
+// - - - - - - Code Block - - - - - -
+
+
+CodeBlockNode * DelcalartionCodeBlockAction(DeclarationNode * declarationNode){
+    CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
+    node->child = NoChild;
+    node->type = DeclarationStatement;
+    node->declarationNode = declarationNode;
+    return node;
+}
+CodeBlockNode * SpecialStatementCodeBlockAction(SpecialStatementNode * specialStatement){
+    CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
+    node->child = NoChild;
+    node->type = SpecialStatement;
+    node->specialStatement = specialStatement;
+    return node;
+}
+CodeBlockNode * ExpressionCodeBlockAction(ExpressionNode * expression){
+    CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
+    node->child = NoChild;
+    node->type = ExpressionStatement;
+    node->expression = expression;
+    return node;
+}
+
+CodeBlockNode * ReturnCodeBlockAction(ReturnStatementNode * returnStatementNode){
+    CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
+    node->child = NoChild;
+    node->type = ReturnStatement;
+    node->returnStatement = returnStatementNode;
+    return node;
+}
+
+CodeBlockNode * IfElseCodeBlockAction(IfElseStatementNode * ifElse){
+    CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
+    node->child = NoChild;
+    node->type = IfElseStatement;
+    node->ifElse = ifElse;
+    return node;
+}
+CodeBlockNode * ForCodeBlockAction(ForStatementNode * forStatement){
+    CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
+    node->child = NoChild;
+    node->type = ForStatement;
+    node->ifElse = forStatement;
+    return node;
+}
+CodeBlockNode * WhileCodeBlockAction(WhileStatementNode * whileStatement){
+    CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
+    node->child = NoChild;
+    node->type = WhileStatement;
+    node->whileStatement = whileStatement;
+    return node;
+}
+CodeBlockNode * SwitchCodeBlockAction(SwitchStatementNode * switchStatement){
+    CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
+    node->child = NoChild;
+    node->type = SwitchStatement;
+    node->switchStatement = switchStatement;
+    return node;
+}
+CodeBlockNode * AssingmentCodeBlockAction(AssigmentNode * assingment){
+    CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
+    node->child = NoChild;
+    node->type = AssignmentStatement;
+    node->assingment = assingment;
+    return node;
+}
+CodeBlockNode * CaseCodeBlockAction(ExpressionNode * expression, CodeBlockNode * codeBlock){
+    CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
+    node->child = HasChild;
+    node->type = AssignmentStatement;
+    node->codeBlock = codeBlock;
+    return node;
+}
+CodeBlockNode * DefaultCaseCodeBlockAction(ExpressionNode * expression, CodeBlockNode * codeBlock){
+    CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
+    node->child = HasChild;
+    node->type = DefaultCaseStatement;
+    node->codeBlock = codeBlock;
+    return node;
+}
+
+CodeBlockNode * DelcalartionCodeBlockActionWithChild(DeclarationNode * declarationNode, CodeBlockNode * codeBlock){
+    CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
+    node->child = HasChild;
+    node->type = DeclarationStatement;
+    node->declarationNode = declarationNode;
+    node->codeBlock = codeBlock;
+    return node;
+}
+CodeBlockNode * SpecialStatementCodeBlockActionWithChild(SpecialStatementNode * specialStatement, CodeBlockNode * codeBlock){
+    CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
+    node->child = HasChild;
+    node->type = SpecialStatement;
+    node->specialStatement = specialStatement;
+    node->codeBlock = codeBlock;
+    return node;
+}
+CodeBlockNode * ExpressionCodeBlockActionWithChild(ExpressionNode * expression, CodeBlockNode * codeBlock){
+    CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
+    node->child = HasChild;
+    node->type = ExpressionStatement;
+    node->expression = expression;
+    node->codeBlock = codeBlock;
+    return node;
+}
+
+CodeBlockNode * ReturnCodeBlockActionWithChild(ReturnStatementNode * returnStatementNode, CodeBlockNode * codeBlock){
+    CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
+    node->child = HasChild;
+    node->type = ReturnStatement;
+    node->returnStatement = returnStatementNode;
+    node->codeBlock = codeBlock;
+    return node;
+}
+
+CodeBlockNode * IfElseCodeBlockActionWithChild(IfElseStatementNode * ifElse, CodeBlockNode * codeBlock){
+    CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
+    node->child = HasChild;
+    node->type = IfElseStatement;
+    node->ifElse = ifElse;
+    node->codeBlock = codeBlock;
+    return node;
+}
+CodeBlockNode * ForCodeBlockActionWithChild(ForStatementNode * forStatement, CodeBlockNode * codeBlock){
+    CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
+    node->child = HasChild;
+    node->type = ForStatement;
+    node->ifElse = forStatement;
+    node->codeBlock = codeBlock;
+    return node;
+}
+CodeBlockNode * WhileCodeBlockActionWithChild(WhileStatementNode * whileStatement, CodeBlockNode * codeBlock){
+    CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
+    node->child = HasChild;
+    node->type = WhileStatement;
+    node->whileStatement = whileStatement;
+    node->codeBlock = codeBlock;
+    return node;
+}
+CodeBlockNode * SwitchCodeBlockActionWithChild(SwitchStatementNode * switchStatement, CodeBlockNode * codeBlock){
+    CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
+    node->child = HasChild;
+    node->type = SwitchStatement;
+    node->switchStatement = switchStatement;
+    node->codeBlock = codeBlock;
+    return node;
+}
+CodeBlockNode * AssingmentCodeBlockActionWithChild(AssigmentNode * assingment, CodeBlockNode * codeBlock){
+    CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
+    node->child = HasChild;
+    node->type = AssignmentStatement;
+    node->assingment = assingment;
+    node->codeBlock = codeBlock;
+    return node;
+}
+
+// - - - - - - Pointer - - - - - -
+
+PointerNode * PointerAction(){
+    PointerNode * node = malloc(sizeof(PointerNode));
+    node->child = NoChild;
+
+    return node;
+}
+
+PointerNode * PointerActionWithChild(PointerNode * pointerNode){
+    PointerNode * node = malloc(sizeof(PointerNode));
+    node->child = NoChild;
+    node->pointerNode = pointerNode;
+    return node;
+}
+
+// - - - - - - Declaration - - - - - -
+
+DeclarationNode * DelcarationOfSingleAction(SingleDeclarationNode * singleDeclarationNode){
+    DeclarationNode * node = malloc(sizeof(DeclarationNode));
+    node->type = SingleDeclaration;
+    node->singleDeclarationNode = singleDeclarationNode;
+    return node;
+}
+
+DeclarationNode * DelcarationOfArrayAction(ArrayDeclarationNode * arrayDeclarationNode){
+    DeclarationNode * node = malloc(sizeof(DeclarationNode));
+    node->type = ArrayDeclaration;
+    node->arrayDeclarationNode = arrayDeclarationNode;
+    return node;
+}
+
+
+// - - - - - - Single Declaration - - - - - -
+
+SingleDeclarationNode * SingleWithPointerDelcarationAction(PointerNode * pointer, DataType dataType, Variable * variable, SingleInitializeNode * singleInitializeNode){
+    SingleDeclarationNode * node = malloc(sizeof(SingleDeclarationNode));
+    node->type = SinleWithPointer;
+    node->pointer = pointer;
+    node->dataType = dataType;
+    node->variable = variable;
+    node->singleInitializeNode = singleInitializeNode;
+    return node;
+}
+
+
+SingleDeclarationNode * SingleWithoutPointerDelcarationAction(DataType dataType, Variable * variable, SingleInitializeNode * singleInitializeNode){
+    SingleDeclarationNode * node = malloc(sizeof(SingleDeclarationNode));
+    node->type = SinleWithoutPointer;
+    node->dataType = dataType;
+    node->variable = variable;
+    node->singleInitializeNode = singleInitializeNode;
+    return node;
+}
+
+// - - - - - - Single Initialization - - - - - -
+
+SingleInitializeNode * SingleInitializationWithoutAssignAction(){
+    SingleInitializeNode * node = malloc(sizeof(SingleInitializeNode));
+    node->type = NoAssign;
+    return node;
+}
+SingleInitializeNode * SingleInitializationWithAssignAction(ExpressionNode * expressionNode){
+    SingleInitializeNode * node = malloc(sizeof(SingleInitializeNode));
+    node->type = AssignSingle;
+    node->expressionNode = expressionNode;
+    return node;
+}
+
+
+// - - - - - - Array Declaration - - - - - -
+
+ArrayDeclarationNode * ArrayDeclarationAction(DataType dataType, Variable variable, ArraySizeNode * arraySizeNode, ArrayInitializeNode * arrayInitializeNode){
+    ArrayDeclarationNode * node = malloc(sizeof(ArrayDeclarationNode));
+    node->dataType = dataType;
+    node->variable = variable;
+    node->arraySizeNode = arraySizeNode;
+    node->arrayInitializeNode;
+    return node;
+}
+
+
+// - - - - - - Array Size - - - - - -
+
+ArraySizeNode * ArraySizeWithoutSizeNorChildrenAction(){
+    ArraySizeNode * node = malloc(sizeof(ArraySizeNode));
+    node->type = NotSizedSingle;
+    node->child = NoChild;
+    return node;
+}
+
+ArraySizeNode * ArraySizeWithSizeWithoutChildrenAction(NumConstantIntNode * numberConstant){
+    ArraySizeNode * node = malloc(sizeof(ArraySizeNode));
+    node->type = Sized;
+    node->child = NoChild;
+    node->numberConstant = numberConstant;
+    return node;
+}
+
+ArraySizeNode * ArraySizeWithoutSizeWithChildrenAction(ArraySizeNode * arraySizeNode){
+    ArraySizeNode * node = malloc(sizeof(ArraySizeNode));
+    node->type = NotSizedSingle;
+    node->child = HasChild;
+    node->arraySizeNode = arraySizeNode;
+    return node;
+}
+
+ArraySizeNode * ArraySizeWithSizeWithChildrenAction(NumConstantIntNode * numberConstant, ArraySizeNode * arraySizeNode){
+    ArraySizeNode * node = malloc(sizeof(ArraySizeNode));
+    node->type = Sized;
+    node->child = NoChild;
+    node->numberConstant = numberConstant;
+    node->arraySizeNode = arraySizeNode;
+    return node;
+}
+
+// - - - - - - Array Initialize - - - - - -
+
+ArrayInitializeNode * ArrayInitializeEmptyAction(){
+    ArrayInitializeNode * node = malloc(sizeof(ArrayInitializeNode));
+    node->type = Empty;
+    return node;
+}
+ArrayInitializeNode * ArrayInitializeWithListAction(ArrayListNode * arrayListNode){
+    ArrayInitializeNode * node = malloc(sizeof(ArrayInitializeNode));
+    node->type = WithList;
+    node->arrayListNode = arrayListNode;
+
+    return node;
+}
+
+// - - - - - - Array Initialize List - - - - - -
+
+ArrayListNode * ArrayListAction(NumConstantIntNode integer){
+    ArrayListNode * node = malloc(sizeof(ArrayListNode));
+    node->child = NoChild;
+    node->integer = integer;
+    return node;
+}
+ArrayListNode * ArrayListManyAction(NumConstantIntNode integer, ArrayListNode * arrayListNode){
+    ArrayListNode * node = malloc(sizeof(ArrayListNode));
+    node->child = HasChild;
+    node->integer = integer;
+    node->arrayListNode = arrayListNode;
+    return node;
+}
+
 
 AssigmentNode * AssignmentWithArrayDerefGrammarAction(ArrayDerefNode * arrayDerefNode, AssignmentType type, ExpressionNode * expressionNode ){
 	AssigmentNode * assigmentNode = malloc(sizeof(AssigmentNode));
@@ -798,3 +1132,5 @@ FunctionCallArgNode * NoArgsFunctionCallArgGrammarAction(ExpressionNode * expres
 
 	return functionCallArgNode;
 }
+
+

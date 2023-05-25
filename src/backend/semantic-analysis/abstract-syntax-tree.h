@@ -38,6 +38,19 @@ typedef struct FunctionCallArgNode FunctionCallArgNode;
 typedef struct StatementNode StatementNode;
 
 
+/*
+*	In many cases, in to distinguish between nodes
+* 	we only need to know if it has a child or not.
+* 	Use this instead of creating a new enum.
+*/
+
+typedef enum Child{
+	HasChild,
+	NoChild
+}Child;
+
+
+
 struct ProgramNode {
 	ExpressionNode * expressionNode;
 };
@@ -215,26 +228,45 @@ typedef struct FunctionDeclarationNode{
 	FunctionCallArgNode * functionArgs;
 } FunctionDeclarationNode;
 
+typedef enum CodeBlockType{
+	DeclarationStatement,
+	SpecialStatement,
+	ExpressionStatement,					// ; is implicit
+	ReturnStatement,
+	IfElseStatement,
+	ForStatement,
+	WhileStatement,
+	SwitchStatement,
+	AssignmentStatement,
+	CaseStatement,				// : is implicit
+	DefaultCaseStatement,		// : is implicit
+	ContinueStatement,			// ; is implicit
+	BreakStatement,				// ; is implicit 
+}CodeBlockType;
+
+
 
 typedef struct CodeBlockNode{
+	CodeBlockType type;
+	Child child;
+
 	DeclarationNode * declarationNode;
 	SpecialStatementNode * specialStatement;
-	ExpressionNode * expression;
+	ExpressionNode * expression;			//  used in expression and used in CASE, DEAFU; Also, child will always be = HasChild
 	ReturnStatementNode * returnStatement;
 	IfElseStatementNode * ifElse;
 	ForStatementNode * forStatement;
 	WhileStatementNode * whileStatement;
 	SwitchStatementNode * switchStatement;
 	AssigmentNode * assingment;
+	ExpressionNode * expressionNode;	
 
 	CodeBlockNode * codeBlock;
-
-	// TODO: falta case
 } CodeBlockNode;
 
 
-typedef struct PointerNode{
-	// * is implicit
+typedef struct PointerNode{	// * is implicit
+	HasChild child;
 	PointerNode * pointerNode;
 } PointerNode;
 
@@ -250,10 +282,17 @@ typedef struct DeclarationNode{
 	ArrayDeclarationNode * arrayDeclarationNode;
 } DeclarationNode;
 
+typedef enum SingleDeclarationType{
+	SinleWithPointer,
+	SinleWithoutPointer
+}
+
 typedef struct SingleDeclarationNode{
+	SingleDeclarationType type;
+
 	PointerNode * pointer;		// NULL
 	DataType dataType;
-	Variable * variable;
+	Variable variable;
 	SingleInitializeNode * singleInitializeNode;
 } SingleDeclarationNode;
 
@@ -262,12 +301,10 @@ typedef enum AssignmentType{
 	AssignSingle
 } AssignmentType;
 
-typedef struct SingleInitializeNode{
-	// ASSIGN, SEMI_COLON implicit
+typedef struct SingleInitializeNode{	// =, ; implicit
 	AssignmentType type;
 	ExpressionNode * expressionNode; // NULL
 } SingleInitializeNode;
-
 
 typedef struct ArrayDeclarationNode{
 	DataType dataType;
@@ -278,14 +315,14 @@ typedef struct ArrayDeclarationNode{
 
 typedef enum ArraySizeType{
 	NotSizedSingle,
-	Sized,
-	NotSizedMultiple,
-	SizedMutilple
+	Sized
 } ArraySizeType;
 
-typedef struct ArraySizeNode{
+typedef struct ArraySizeNode{ 			// [, ],  implicit
 	ArraySizeType type;
-	NumConstantIntNode * numberConstant;
+	HasChild child;
+
+	NumConstantIntNode * numberConstant;	// NULL
 	ArraySizeNode * arraySizeNode;	// NULL
 } ArraySizeNode;
 
@@ -294,15 +331,16 @@ typedef enum ArrayInitializeType{
 	Empty
 } ArrayInitializeType;
 
-typedef struct ArrayInitializeNode{
-	// ASSIGN OBRACE CBRACE SEMI_COLON implicit
+typedef struct ArrayInitializeNode{		// =,  {,  }, ;  implicit
 	ArrayInitializeType type;
-	ArrayListNode * arrayListNode;
+	ArrayListNode * arrayListNode;		// NULL
 } ArrayInitializeNode;
 
-typedef struct ArrayListNode{
-	// COMA implicit depending on arrayListNode * != NULL
+typedef struct ArrayListNode{			// , implicit depending on hasChild
+	HasChild child;
+
 	NumConstantIntNode integer;
+
 	ArrayListNode * arrayListNode;		// NULL
 } ArrayListNode;
 
@@ -323,17 +361,17 @@ typedef enum AssignmentNodeType{
 
 typedef struct AssigmentNode{
 	AssignmentNodeType withType;
-
 	AssignmentType assignmentType;
+
 	ExpressionNode * expressionNode;
 
-	Variable variable;	// NULL
-	ArrayDerefNode * arrayDefinitionNode;	// NULL
+	Variable variable;							// NULL
+	ArrayDerefNode * arrayDefinitionNode;		// NULL
 } AssigmentNode;
 
 
 typedef struct ArrayDerefNode {				//Open y Close bracket son implicitos
-	Variable * variable;
+	Variable variable;
 	SizeNode * sizeNode;
 } ArrayDerefNode;
 
