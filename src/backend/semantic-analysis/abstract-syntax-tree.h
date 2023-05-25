@@ -437,7 +437,8 @@ typedef enum ExpressionNodeType{
 	specialVariable,
 	functionCall,
 	ArrayDeref,
-	String
+	String,
+	WithParenthesis
 } ExpressionNodeType;
 
 
