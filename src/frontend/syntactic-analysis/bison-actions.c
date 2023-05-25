@@ -505,7 +505,21 @@ ExpressionNode * AndOpExpressionGrammarAction(ExpressionNode * leftExpressionNod
 	return  expressionNode;
 }
 
-//TODO - caso Opar expression CPar???
+ExpressionNode * ParenthesisExpressionGrammarAction(ExpressionNode * rightExpressionNode){
+	ExpressionNode * expressionNode = malloc(sizeof(ExpressionNode));
+	expressionNode->op = WithParenthesis;
+	expressionNode->leftExpressionNode = NULL;
+	expressionNode->rightExpressionNode = rightExpressionNode;
+	expressionNode->Variable = NULL;
+	expressionNode->numConstantIntNode = NULL;
+	expressionNode->numConstantFloatNode = NULL;
+	expressionNode->specialVariable = NULL;
+	expressionNode->functionCallNode = NULL;
+	expressionNode->arrayDerefNode = NULL;
+	expressionNode->StringNode = NULL;
+
+	return  expressionNode;
+}
 
 ExpressionNode * OrOpExpressionGrammarAction(ExpressionNode * leftExpressionNode, ExpressionNode * rightExpressionNode){
 	ExpressionNode * expressionNode = malloc(sizeof(ExpressionNode));
