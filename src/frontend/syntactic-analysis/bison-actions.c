@@ -104,6 +104,485 @@ void ProgramGrammarAction() {
 // 	return value;
 // }
 
+// - - - - - - Selector - - - - - - - - - - - -
+
+SelectorNode * ReduceStatementSelectorGrammarAction(ReduceStatementNode * reduceStatementNode) {
+	SelectorNode * node = malloc(sizeof(SelectorNode));
+	node->selectorNodeType = ReduceStatement;
+	node->reduceStatement = reduceStatementNode;
+	node->filterStatement = NULL;
+	node->foreachStatement = NULL;
+	node->mapStatement = NULL;
+	node->createStatement = NULL;
+	node->reduceRangeStatement = NULL;
+	node->filterRangeStatement = NULL;
+	node->foreachRangeStatement = NULL;
+	node->mapRangeStatement = NULL;
+	return node;
+}
+
+SelectorNode * FilterStatementSelectorGrammarAction(FilterStatementNode * filterStatementNode) {
+	SelectorNode * node = malloc(sizeof(SelectorNode));
+	node->selectorNodeType = FilterStatement;
+	node->filterStatement = filterStatementNode;
+	node->reduceStatement = NULL;
+	node->createStatement = NULL;
+	node->foreachStatement = NULL;
+	node->mapStatement = NULL;
+	node->reduceRangeStatement = NULL;
+	node->filterRangeStatement = NULL;
+	node->foreachRangeStatement = NULL;
+	node->mapRangeStatement = NULL;
+	return node;
+}
+
+SelectorNode * ForeachStatementSelectorGrammarAction(ForeachStatementNode * foreachStatementNode) {
+	SelectorNode * node = malloc(sizeof(SelectorNode));
+	node->selectorNodeType = ForeachStatement;
+	node->foreachStatement = foreachStatementNode;
+	node->reduceStatement = NULL;
+	node->filterStatement = NULL;
+	node->mapStatement = NULL;
+	node->createStatement = NULL;
+	node->reduceRangeStatement = NULL;
+	node->filterRangeStatement = NULL;
+	node->foreachRangeStatement = NULL;
+	node->mapRangeStatement = NULL;
+	return node;
+}
+
+SelectorNode * MapStatementSelectorGrammarAction(MapStatementNode * mapStatementNode) {
+	SelectorNode * node = malloc(sizeof(SelectorNode));
+	node->selectorNodeType = MapStatement;
+	node->mapStatement = mapStatementNode;
+	node->reduceStatement = NULL;
+	node->filterStatement = NULL;
+	node->foreachStatement = NULL;
+	node->createStatement = NULL;
+	node->reduceRangeStatement = NULL;
+	node->filterRangeStatement = NULL;
+	node->foreachRangeStatement = NULL;
+	node->mapRangeStatement = NULL;
+	return node;
+}
+
+SelectorNode * CreateStatementSelectorGrammarAction(CreateStatementNode * createStatementNode) {
+	SelectorNode * node = malloc(sizeof(SelectorNode));
+	node->selectorNodeType = CreateStatement;
+	node->createStatement = createStatementNode;
+	node->reduceStatement = NULL;
+	node->filterStatement = NULL;
+	node->foreachStatement = NULL;
+	node->mapStatement = NULL;
+	node->reduceRangeStatement = NULL;
+	node->filterRangeStatement = NULL;
+	node->foreachRangeStatement = NULL;
+	node->mapRangeStatement = NULL;
+	return node;
+}
+
+SelectorNode * ReduceRangeStatementSelectorGrammarAction(ReduceRangeStatementNode * reduceRangeStatementNode) {
+	SelectorNode * node = malloc(sizeof(SelectorNode));
+	node->selectorNodeType = ReduceRangeStatement;
+	node->reduceRangeStatement = reduceRangeStatementNode;
+	node->reduceStatement = NULL;
+	node->filterStatement = NULL;
+	node->foreachStatement = NULL;
+	node->mapStatement = NULL;
+	node->createStatement = NULL;
+	node->filterRangeStatement = NULL;
+	node->foreachRangeStatement = NULL;
+	node->mapRangeStatement = NULL;
+	return node;
+}
+
+SelectorNode * FilterRangeStatementSelectorGrammarAction(FilterRangeStatementNode * filterRangeStatementNode) {
+	SelectorNode * node = malloc(sizeof(SelectorNode));
+	node->selectorNodeType = FilterRangeStatement;
+	node->filterRangeStatement = filterRangeStatementNode;
+	node->reduceStatement = NULL;
+	node->filterStatement = NULL;
+	node->foreachStatement = NULL;
+	node->mapStatement = NULL;
+	node->createStatement = NULL;
+	node->reduceRangeStatement = NULL;
+	node->foreachRangeStatement = NULL;
+	node->mapRangeStatement = NULL;
+	return node;
+}
+
+SelectorNode * ForeachRangeStatementSelectorGrammarAction(ForeachRangeStatementNode * foreachRangeStatementNode) {
+	SelectorNode * node = malloc(sizeof(SelectorNode));
+	node->selectorNodeType = ForeachRangeStatement;
+	node->foreachRangeStatement = foreachRangeStatementNode;
+	node->reduceStatement = NULL;
+	node->filterStatement = NULL;
+	node->foreachStatement = NULL;
+	node->mapStatement = NULL;
+	node->createStatement = NULL;
+	node->reduceRangeStatement = NULL;
+	node->filterRangeStatement = NULL;
+	node->mapRangeStatement = NULL;
+	return node;
+}
+
+SelectorNode * MapRangeStatementSelectorGrammarAction(MapRangeStatementNode * mapRangeStatementNode) {
+	SelectorNode * node = malloc(sizeof(SelectorNode));
+	node->selectorNodeType = MapRangeStatement;
+	node->mapRangeStatement = mapRangeStatementNode;
+	node->reduceStatement = NULL;
+	node->filterStatement = NULL;
+	node->foreachStatement = NULL;
+	node->mapStatement = NULL;
+	node->createStatement = NULL;
+	node->reduceRangeStatement = NULL;
+	node->filterRangeStatement = NULL;
+	node->foreachRangeStatement = NULL;
+	return node;
+}
+
+// - - - - - - Free Selector - - - - - - - - -
+
+void freeSelectorNode(SelectorNode * node) {
+	switch (node->selectorNodeType) {
+		case ReduceStatement:
+			freeReduceStatementNode(node->reduceStatement);
+			break;
+		case FilterStatement:
+			freeFilterStatementNode(node->filterStatement);
+			break;
+		case ForeachStatement:
+			freeForeachStatementNode(node->foreachStatement);
+			break;
+		case MapStatement:
+			freeMapStatementNode(node->mapStatement);
+			break;
+		case CreateStatement:
+			freeCreateStatementNode(node->createStatement);
+			break;
+		case ReduceRangeStatement:
+			freeReduceRangeStatementNode(node->reduceRangeStatement);
+			break;
+		case FilterRangeStatement:
+			freeFilterRangeStatementNode(node->filterRangeStatement);
+			break;
+		case ForeachRangeStatement:
+			freeForeachRangeStatementNode(node->foreachRangeStatement);
+			break;
+		case MapRangeStatement:
+			freeMapRangeStatementNode(node->mapRangeStatement);
+			break;
+	}
+	free(node);
+}
+
+void freeReduceStatementNode(ReduceStatementNode * node) {
+	free(node->variable1);
+	free(node->size);
+	free(node->variable2);
+	freeLambda(node->lambda);
+	free(node);
+}
+
+void freeFilterStatementNode(FilterStatementNode * node) {
+	free(node->variable1);
+	free(node->size);
+	free(node->variable2);
+	freeLambda(node->lambda);
+	free(node);
+}
+
+void freeForeachStatementNode(ForeachStatementNode * node) {
+	free(node->variable1);
+	free(node->size);
+	freeFunctionCallNode(node->functionCallNode);
+	free(node);
+}
+
+void freeMapStatementNode(MapStatementNode * node) {
+	free(node->variable1);
+	free(node->size);
+	free(node->variable2);
+	freeCreateLambda(node->createLambda);
+	free(node);
+}
+
+void freeCreateStatementNode(CreateStatementNode * node) {
+	free(node->variable1);
+	free(node->size);
+	free(node->variable2);
+	free(node);
+}
+
+void freeReduceRangeStatementNode(ReduceRangeStatementNode * node) {
+	free(node->variable1);
+	free(node->size1);
+	free(node->variable2);
+	free(node->size2);
+	freeLambda(node->lambda);
+	free(node);
+}
+
+void freeFilterRangeStatementNode(FilterRangeStatementNode * node) {
+	free(node->variable1);
+	free(node->size1);
+	free(node->size2);
+	free(node->variable2);
+	freeLambda(node->lambda);
+	free(node);
+}
+
+void freeForeachRangeStatementNode(ForeachRangeStatementNode * node) {
+	free(node->variable1);
+	free(node->size1);
+	free(node->size1);
+	freeFunctionCallNode(node->functionCallNode);
+	free(node);
+}
+
+void freeMapRangeStatementNode(MapRangeStatementNode * node) {
+	free(node->variable1);
+	free(node->size1);
+	free(node->size2);
+	free(node->variable2);
+	freeCreateLambda(node->createLambda);
+	free(node);
+}
+
+// - - - - - - Lambda Expressions - - - - - - -
+
+Lambda * LambdaGrammarAction(ExpressionNode * expressionNode) {
+	Lambda * node = malloc(sizeof(Lambda));
+	node->expressionNode = expressionNode;
+	return node;
+}
+
+CreateLambda * CreateLambdaGrammarAction(NumConstantIntNode * constant1, NumConstantIntNode * constant2) {
+	CreateLambda * node = malloc(sizeof(CreateLambda));
+	node->constant1 = constant1;
+	node->constant2 = constant2;
+	return node;
+}
+
+// - - - - - - Free Lambdas - - - - - - - - -
+
+void freeLambda(Lambda * node) {
+	free(node->expressionNode);
+	free(node);
+}
+
+void freeCreateLambda(CreateLambda * node) {
+	free(node->constant1);
+	free(node->constant2);
+	free(node);
+}
+
+// - - - - - - Special Statements - - - - - - - 
+
+CreateLambda * CreateLambdaGrammarAction(NumConstantIntNode * constant1, NumConstantIntNode * constant2) {
+	CreateLambda * node = malloc(sizeof(CreateLambda));
+	node->constant1 = constant1;
+	node->constant2 = constant2;
+	return node;
+}
+
+ReduceStatementNode * ReduceStatementGrammarAction(Variable variable1, NumConstantIntNode size, Variable variable2, Lambda * lambda) {
+	ReduceStatementNode * node = malloc(sizeof(ReduceStatementNode));
+	node->variable1 = variable1;
+	node->size = size;
+	node->variable2 = variable2;
+	node->lambda = lambda;
+	return node;
+}
+
+FilterStatementNode * FilterStatementGrammarAction(Variable variable1, NumConstantIntNode size, Variable variable2, Lambda * lambda) {
+	FilterStatementNode * node = malloc(sizeof(FilterStatementNode));
+	node->variable1 = variable1;
+	node->size = size;
+	node->variable2 = variable2;
+	node->lambda = lambda;
+	return node;
+}
+
+ForeachStatementNode * ForeachStatementGrammarAction(Variable variable1, NumConstantIntNode size, FunctionCallNode * functionCallNode) {
+	ForeachStatementNode * node = malloc(sizeof(ForeachStatementNode));
+	node->variable1 = variable1;
+	node->size = size;
+	node->functionCallNode = functionCallNode;
+	return node;
+}
+
+MapStatementNode * MapStatementGrammarAction(Variable variable1, NumConstantIntNode size, Variable variable2, CreateLambda * createLambda) {
+	MapStatementNode * node = malloc(sizeof(MapStatementNode));
+	node->variable1 = variable1;
+	node->size = size;
+	node->variable2 = variable2;
+	node->createLambda = createLambda;
+	return node;
+}
+
+CreateStatementNode * CreateStatementGrammarAction(Variable variable1, NumConstantIntNode size, Variable variable2, Lambda * lambda) {
+	CreateStatementNode * node = malloc(sizeof(CreateStatementNode));
+	node->variable1 = variable1;
+	node->size = size;
+	node->variable2 = variable2;
+	node->lambda = lambda;
+	return node;
+}
+
+ReduceRangeStatementNode * ReduceRangeStatementGrammarAction(Variable variable1, NumConstantIntNode size1, NumConstantIntNode size2, Variable variable2, Lambda * lambda) {
+	ReduceRangeStatementNode * node = malloc(sizeof(ReduceRangeStatementNode));
+	node->variable1 = variable1;
+	node->size1 = size1;
+	node->size2 = size2;
+	node->variable2 = variable2;
+	node->lambda = lambda;
+	return node;
+}
+
+
+FilterRangeStatementNode * FilterRangeStatementGrammarAction(Variable variable1, NumConstantIntNode size1, NumConstantIntNode size2, Variable variable2, Lambda * lambda) {
+	FilterRangeStatementNode * node = malloc(sizeof(FilterRangeStatementNode));
+	node->variable1 = variable1;
+	node->size1 = size1;
+	node->size2 = size2;
+	node->variable2 = variable2;
+	node->lambda = lambda;
+	return node;
+}
+
+ForeachRangeStatementNode * ForeachRangeStatementGrammarAction(Variable variable1, NumConstantIntNode size1, NumConstantIntNode size2, FunctionCallNode * functionCallNode) {
+	ForeachRangeStatementNode * node = malloc(sizeof(ForeachRangeStatementNode));
+	node->variable1 = variable1;
+	node->size1 = size1;
+	node->size2 = size2;
+	node->functionCallNode = functionCallNode;
+	return node;
+}
+
+MapRangeStatementNode * MapRangeStatementGrammarAction(Variable variable1, NumConstantIntNode size1, NumConstantIntNode size2, Variable variable2, CreateLambda * createLambda) {
+	MapRangeStatementNode * node = malloc(sizeof(MapRangeStatementNode));
+	node->variable1 = variable1;
+	node->size1 = size1;
+	node->size2 = size2;
+	node->variable2 = variable2;
+	node->createLambda = createLambda;
+	return node;
+}
+
+// - - - - - - Meta Commands - - - - - - - - - -
+
+MetaCommandNode * StringMetaCommandGrammarAction() {
+	MetaCommandNode * node = malloc(sizeof(MetaCommandNode));
+	node->type = String;
+	return node;
+}
+
+MetaCommandNode * FileNameMetaCommandGrammarAction() {
+	MetaCommandNode * node = malloc(sizeof(MetaCommandNode));
+	node->type = FileName;
+	return node;
+}
+
+// - - - - - -  Statement Types - - - - - - - - - - -
+
+StatementNode * MetacommandWithStatementNodeGrammarAction(StatementNode * statementNode, MetaCommandNode * metaCommandNode) {
+	StatementNode * node = malloc(sizeof(StatementNode));
+	node->type = MetaCommandWithStatement;
+	node->statement = statementNode;
+	node->metacommand = metaCommandNode;
+	node->functionDeclarationNode = NULL;
+	node->declarationNode = NULL;
+	return node;
+}
+
+StatementNode * FunctionDeclarationWithStatementNodeGrammarAction(StatementNode * statementNode,FunctionDeclarationNode *functionDeclarationNode) {
+	StatementNode * node = malloc(sizeof(StatementNode));
+	node->type = FunctionDeclarationWithStatement;
+	node->statement = statementNode;
+	node->metacommand = NULL;
+	node->functionDeclarationNode = functionDeclarationNode;
+	node->declarationNode = NULL;
+	return node;
+}
+
+StatementNode * DeclarationWithStatementNodeGrammarAction(StatementNode * statementNode ,DeclarationNode *declarationNode) {
+	StatementNode * node = malloc(sizeof(StatementNode));
+	node->type = DeclarationWithStatement;
+	node->statement = statementNode;
+	node->metacommand = NULL;
+	node->functionDeclarationNode = NULL;
+	node->declarationNode = declarationNode;
+	return node;
+}
+
+StatementNode * MetaCommandNodeGrammarAction(MetaCommandNode * metaCommandNode) {
+	StatementNode * node = malloc(sizeof(StatementNode));
+	node->type = MetaCommand;
+	node->statement = NULL;
+	node->metacommand = metaCommandNode;
+	node->functionDeclarationNode = NULL;
+	node->declarationNode = NULL;
+	return node;
+}
+
+StatementNode * FunctionDeclarationNodeGrammarAction(FunctionDeclarationNode * functionDeclarationNode) {
+	StatementNode * node = malloc(sizeof(StatementNode));
+	node->type = FunctionDeclaration;
+	node->statement = NULL;
+	node->metacommand = NULL;
+	node->functionDeclarationNode = functionDeclarationNode;
+	node->declarationNode = NULL;
+	return node;
+}
+
+StatementNode * DeclarationStatementNodeGrammarAction(DeclarationNode *declarationNode) {
+	StatementNode * node = malloc(sizeof(StatementNode));
+	node->type = Declaration;
+	node->statement = NULL;
+	node->metacommand = NULL;
+	node->functionDeclarationNode = NULL;
+	node->declarationNode = declarationNode;
+	return node;
+}	
+
+// - - - - - - Function Args - - - - - - - - - -
+
+FunctionArgNode * PointerFunctionArgGrammarAction(DataType dataType, PointerNode * Pointer, Variable variable) {
+	FunctionArgNode * node = malloc(sizeof(FunctionArgNode));
+	node->type = pointer;
+	node->dataType = dataType;
+	node->pointer = Pointer;
+	node->variable = variable;
+	return node;
+}
+
+FunctionArgNode * NoPointerFunctionArgGrammarAction(DataType dataType, Variable variable) {
+	FunctionArgNode * node = malloc(sizeof(FunctionArgNode));
+	node->type = noPointer;
+	node->dataType = dataType;
+	node->pointer = NULL;
+	node->variable = variable;
+	return node;
+}
+
+FunctionArgsNode * SingleFunctionArgsGrammarAction(FunctionArgNode * functionArgNode) {
+	FunctionArgsNode * node = malloc(sizeof(FunctionArgsNode));
+	node->type = single;
+	node->functionArgNode = functionArgNode;
+	node->functionArgsNode = NULL;
+	return node;
+}
+
+FunctionArgsNode * MultipleFunctionArgsGrammarAction(FunctionArgNode * functionArgNode, FunctionArgsNode * functionArgsNode) {
+	FunctionArgsNode * node = malloc(sizeof(FunctionArgsNode));
+	node->type = multiple;
+	node->functionArgNode = functionArgNode;
+	node->functionArgsNode = functionArgsNode;
+	return node;
+}
+
+
 
 // - - - - - - Function Declaration - - - - - -
 
@@ -1100,7 +1579,7 @@ ExpressionNode * StringOpExpressionGrammarAction(StringVar * stringVar){
 FunctionCallNode * WithArgsFunctionCallGrammarAction(Variable * variable, FunctionCallArgNode * functionCallArgNode){
 	FunctionCallNode * functionCallNode = malloc(sizeof(FunctionCallNode));
 	functionCallNode->type = WithArgs;
-	functionCallNode->Variable = variable;
+	functionCallNode->variable = variable;
 	functionCallNode->functionCallArgNode = functionCallArgNode;
 
 	return functionCallNode;
@@ -1109,7 +1588,7 @@ FunctionCallNode * WithArgsFunctionCallGrammarAction(Variable * variable, Functi
 FunctionCallNode * NoArgsFunctionCallGrammarAction(Variable * variable){
 	FunctionCallNode * functionCallNode = malloc(sizeof(FunctionCallNode));
 	functionCallNode->type = NoArgs;
-	functionCallNode->Variable = variable;
+	functionCallNode->variable = variable;
 	functionCallNode->functionCallArgNode = NULL;
 
 	return functionCallNode;

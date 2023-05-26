@@ -30,6 +30,7 @@ typedef char * Variable;
 typedef char * NumConstantIntNode;
 typedef char * NumConstantFloatNode;
 typedef char * SpecialVariable;
+typedef struct StatementNode StatementNode;
 typedef struct FunctionArgsNode FunctionArgsNode;
 typedef struct CodeBlockNode CodeBlockNode;
 typedef struct PointerNode PointerNode;
@@ -90,10 +91,13 @@ typedef struct Lambda {
 	ExpressionNode * expressionNode;
 } Lambda;
 
+
+
 typedef struct CreateLambda {
 	NumConstantIntNode * constant1;
 	NumConstantIntNode * constant2;		// el ... es obviado
 } CreateLambda;
+
 
 
 typedef struct ReduceStatementNode {
@@ -103,6 +107,7 @@ typedef struct ReduceStatementNode {
 	Lambda * lambda;
 } ReduceStatementNode;
 
+
 typedef struct FilterStatementNode {
 	Variable variable1;
 	NumConstantIntNode size;
@@ -110,11 +115,15 @@ typedef struct FilterStatementNode {
 	Lambda * lambda;
 } FilterStatementNode;
 
+
+
 typedef struct ForeachStatementNode {
 	Variable variable1;
 	NumConstantIntNode size;
 	FunctionCallNode * functionCallNode;
 } ForeachStatementNode;
+
+
 
 typedef struct MapStatementNode {
 	Variable variable1;
@@ -123,12 +132,15 @@ typedef struct MapStatementNode {
 	CreateLambda * createLambda;
 } MapStatementNode;
 
+
+
 typedef struct CreateStatementNode {
 	Variable variable1;
 	NumConstantIntNode size;
 	Variable variable2;
 	Lambda * lambda;
 } CreateStatementNode;
+
 
 typedef struct ReduceRangeStatementNode {
 	Variable variable1;
@@ -138,6 +150,7 @@ typedef struct ReduceRangeStatementNode {
 	Lambda * lambda;
 } ReduceRangeStatementNode;
 
+
 typedef struct FilterRangeStatementNode {
 	Variable variable1;
 	NumConstantIntNode size1;
@@ -146,12 +159,15 @@ typedef struct FilterRangeStatementNode {
 	Lambda * lambda;
 } FilterRangeStatementNode;
 
+
 typedef struct ForeachRangeStatementNode {
 	Variable variable1;
 	NumConstantIntNode size1;
 	NumConstantIntNode size2;
 	FunctionCallNode * functionCallNode;
 } ForeachRangeStatementNode;
+
+
 
 typedef struct MapRangeStatementNode {
 	Variable variable1;
@@ -161,18 +177,23 @@ typedef struct MapRangeStatementNode {
 	CreateLambda * createLambda;
 } MapRangeStatementNode;
 
+
+
 typedef enum MetaCommandType {
 	String,
-	File_Name
+	FileName
 } MetaCommandType;
 
 typedef struct MetaCommandNode {
 	MetaCommandType type;
 } MetaCommandNode;
 
+
 typedef enum StatementType {
-	Statement,
-	Pointer,
+	MetaCommandWithStatement,
+	FunctionDeclarationWithStatement,
+	DeclarationWithStatement,
+	MetaCommand,
 	FunctionDeclaration,
 	Declaration
 } StatementType;
@@ -181,10 +202,10 @@ typedef struct StatementNode {
 	StatementType type;
 
 	StatementNode *statement;
-	MetaCommandNode metacommand;
-	FunctionDeclarationNode functionDeclarationNode;
-	DeclarationNode declarationNode;
-} Statements;
+	MetaCommandNode *metacommand;
+	FunctionDeclarationNode *functionDeclarationNode;
+	DeclarationNode *declarationNode;
+} StatementNode;
 
 
 typedef enum FunctionArgType {
@@ -211,6 +232,7 @@ typedef struct FunctionArgsNode {
 	FunctionArgNode * functionArgNode;
 	FunctionArgsNode * functionArgsNode;
 } FunctionArgsNode;
+
 
 typedef enum FunctionDeclarationType{
 	NoArgs,
@@ -501,7 +523,7 @@ typedef enum FunctionCallType {
 typedef struct FunctionCallNode {						//(, ) son implicitos
 	FunctionCallType type;
 
-	Variable * Variable;
+	Variable * variable;
 	FunctionCallArgNode * functionCallArgNode;		//puede ser null
 }FunctionCallNode;
 
