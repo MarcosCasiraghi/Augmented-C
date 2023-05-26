@@ -1520,9 +1520,9 @@ void freePointerNode(PointerNode * node) {
 
 void freeDeclarationNode(DeclarationNode * node) {
 	if(node->singleDeclarationNode != NULL)
-		freeSingleDeclarationNode(node->singleDeclarationNode);
+		//freeSingleDeclarationNode(node->singleDeclarationNode); TODO
 	if(node->arrayDeclarationNode != NULL)
-		freeArrayDeclarationNode(node->arrayDeclarationNode);
+		//freeArrayDeclarationNode(node->arrayDeclarationNode); TODO
 	free(node);
 }
 
@@ -1531,7 +1531,7 @@ void freeDeclarationNode(DeclarationNode * node) {
 void freeSingleDeclarationNode(SingleDeclarationNode * node) {
 	free(node->variable);
 	freePointerNode(node->pointer);
-	freeSingleInitializeNode(node->singleInitializeNode);
+	//freeSingleInitializeNode(node->singleInitializeNode);  TODO
 	free(node);
 }
 
