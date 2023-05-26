@@ -129,12 +129,14 @@ DeclarationNode * DelcarationOfSingleAction(SingleDeclarationNode * singleDeclar
     DeclarationNode * node = malloc(sizeof(DeclarationNode));
     node->type = SingleDeclaration;
     node->singleDeclarationNode = singleDeclarationNode;
+	node->arrayDeclarationNode = NULL;
     return node;
 }
 
 DeclarationNode * DelcarationOfArrayAction(ArrayDeclarationNode * arrayDeclarationNode){
     DeclarationNode * node = malloc(sizeof(DeclarationNode));
     node->type = ArrayDeclaration;
+	node->singleDeclarationNode = NULL;
     node->arrayDeclarationNode = arrayDeclarationNode;
     return node;
 }
@@ -1486,6 +1488,58 @@ Lambda * LambdaAction(ExpressionNode * expressionNode) {
 
 /* = = = = = = =  FREE FUNCTIONS  = = = = = = = */
 
+// - - - - - - Free Includes - - - - - - - - 
+
+void freeMetaCommandNode(MetaCommandNode * node) {
+	free(node->type);
+	free(node);
+}
+
+// - - - - - - Free Dereferencing - - - - - -
+
+void freeSizeNode(SizeNode * node) {
+	free(node->type);
+	free(node->variable);
+	free(node->numConstantIntNode);
+	free(node);
+}
+
+void freeArrayDerefNode(ArrayDerefNode * node) {
+	freeSizeNode(node->sizeNode);
+	free(node->variable);
+	free(node);
+}
+
+// - - - - - - Free Pointer - - - - - - - - -
+
+void freePointerNode(PointerNode * node) {
+	free(node->child);
+	if(node->pointerNode != NULL)
+		freePointerNode(node->pointerNode);
+	free(node);
+}
+
+// - - - - - - Free Declaration - - - - - - -
+
+void freeDeclarationNode(DeclarationNode * node) {
+	free(node->type);
+	if(node->singleDeclarationNode != NULL)
+		freeSingleDeclarationNode(node->singleDeclarationNode);
+	if(node->arrayDeclarationNode != NULL)
+		freeArrayDeclarationNode(node->arrayDeclarationNode);
+	free(node);
+}
+
+// - - - - - - Free Single Declaration - - - -
+
+void freeSingleDeclarationNode(SingleDeclarationNode * node) {
+	free(node->type);
+	free(node->dataType);
+	free(node->variable);
+	freePointerNode(node->pointer);
+	freeSingleInitializeNode(node->singleInitializeNode);
+	free(node);
+}
 
 // - - - - - - Free Lambdas - - - - - - - - -
 
