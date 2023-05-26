@@ -1491,14 +1491,12 @@ Lambda * LambdaAction(ExpressionNode * expressionNode) {
 // - - - - - - Free Includes - - - - - - - - 
 
 void freeMetaCommandNode(MetaCommandNode * node) {
-	free(node->type);
 	free(node);
 }
 
 // - - - - - - Free Dereferencing - - - - - -
 
 void freeSizeNode(SizeNode * node) {
-	free(node->type);
 	free(node->variable);
 	free(node->numConstantIntNode);
 	free(node);
@@ -1513,7 +1511,6 @@ void freeArrayDerefNode(ArrayDerefNode * node) {
 // - - - - - - Free Pointer - - - - - - - - -
 
 void freePointerNode(PointerNode * node) {
-	free(node->child);
 	if(node->pointerNode != NULL)
 		freePointerNode(node->pointerNode);
 	free(node);
@@ -1522,7 +1519,6 @@ void freePointerNode(PointerNode * node) {
 // - - - - - - Free Declaration - - - - - - -
 
 void freeDeclarationNode(DeclarationNode * node) {
-	free(node->type);
 	if(node->singleDeclarationNode != NULL)
 		freeSingleDeclarationNode(node->singleDeclarationNode);
 	if(node->arrayDeclarationNode != NULL)
@@ -1533,8 +1529,6 @@ void freeDeclarationNode(DeclarationNode * node) {
 // - - - - - - Free Single Declaration - - - -
 
 void freeSingleDeclarationNode(SingleDeclarationNode * node) {
-	free(node->type);
-	free(node->dataType);
 	free(node->variable);
 	freePointerNode(node->pointer);
 	freeSingleInitializeNode(node->singleInitializeNode);
