@@ -34,8 +34,8 @@ int IntegerConstantGrammarAction(const int value);
 ArrayInitializeNode * ArrayInitializeEmptyGrammarAction();
 ArrayInitializeNode * ArrayInitializeWithListGrammarAction(ArrayListNode * arrayListNode);
 AssigmentNode * AssignmentWithArrayDerefGrammarAction(ArrayDerefNode * arrayDerefNode, AssignmentType type, ExpressionNode * expressionNode );
-AssigmentNode * AssignmentWithVarGrammarAction(Variable * var, AssignmentType type, ExpressionNode * expressionNode );
-ArrayDerefNode * ArrayDerefGrammarAction(Variable * var, SizeNode * sizeNode);
+AssigmentNode * AssignmentWithVarGrammarAction(Variable  var, AssignmentType type, ExpressionNode * expressionNode );
+ArrayDerefNode * ArrayDerefGrammarAction(Variable  var, SizeNode * sizeNode);
 ReturnStatementNode * ReturnStatementGrammarAction(ExpressionNode * expressionNode);
 IfElseStatementNode * IfWithoutElseStatementGrammarAction(IfStatementNode * ifStatementNode);
 IfElseStatementNode * IfWithElseStatementGrammarAction(IfStatementNode * ifStatementNode, ElseStatementNode * elseStatementNode);
@@ -46,7 +46,7 @@ ForStatementNode * ForStatementWithAssigmentGrammarAction(DeclarationNode * decl
 ForStatementNode * ForStatementWithExpressionGrammarAction(DeclarationNode * declarationNode, ExpressionNode * firstExpressionNode, ExpressionNode * secondExpressionNode, CodeBlockNode * codeBlockNode );
 SwitchStatementNode * SwitchStatementGrammarAction(ExpressionNode * expressionNode, CodeBlockNode * codeBlockNode);
 SizeNode * SizeNumConstIntGrammarAction(NumConstantIntNode * numConstantIntNode);
-SizeNode * SizeVarGrammarAction(Variable * variableNode);
+SizeNode * SizeVarGrammarAction(Variable  variableNode);
 ExpressionNode * AddOpExpressionGrammarAction(ExpressionNode * leftExpressionNode, ExpressionNode * rightExpressionNode);
 ExpressionNode * SubOpExpressionGrammarAction(ExpressionNode * leftExpressionNode, ExpressionNode * rightExpressionNode);
 ExpressionNode * MultOpExpressionGrammarAction(ExpressionNode * leftExpressionNode, ExpressionNode * rightExpressionNode);
@@ -71,16 +71,16 @@ ExpressionNode * GeOpExpressionGrammarAction(ExpressionNode * leftExpressionNode
 ExpressionNode * LtOpExpressionGrammarAction(ExpressionNode * leftExpressionNode, ExpressionNode * rightExpressionNode);
 ExpressionNode * LeOpExpressionGrammarAction(ExpressionNode * leftExpressionNode, ExpressionNode * rightExpressionNode);
 ExpressionNode * NeOpExpressionGrammarAction(ExpressionNode * leftExpressionNode, ExpressionNode * rightExpressionNode);
-ExpressionNode * variableOpExpressionGrammarAction(Variable * variable);
+ExpressionNode * variableOpExpressionGrammarAction(Variable  variable);
 ExpressionNode * NumConstantFloatOpExpressionGrammarAction(NumConstantFloatNode * numConstantFloatNode);
 ExpressionNode * NumConstantIntOpExpressionGrammarAction(NumConstantIntNode * numConstantIntNode);
-ExpressionNode * SpecialVarOpExpressionGrammarAction(SpecialVariable * specialVariableNode);
+ExpressionNode * SpecialVarOpExpressionGrammarAction(SpecialVariable  specialVariableNode);
 ExpressionNode * FunctionCallOpExpressionGrammarAction(FunctionCallNode * functionCallNode);
 ExpressionNode * ArrayDerefOpExpressionGrammarAction(ArrayDerefNode * arrayDerefNode);
 ExpressionNode * StringOpExpressionGrammarAction(StringVar * stringVar);
 
-FunctionCallNode * WithArgsFunctionCallGrammarAction(Variable * variable, FunctionCallArgNode * functionCallArgNode);
-FunctionCallNode * NoArgsFunctionCallGrammarAction(Variable * variable);
+FunctionCallNode * WithArgsFunctionCallGrammarAction(Variable  variable, FunctionCallArgNode * functionCallArgNode);
+FunctionCallNode * NoArgsFunctionCallGrammarAction(Variable  variable);
 FunctionCallArgNode * WithArgsFunctionCallArgGrammarAction(ExpressionNode * expressionNode, FunctionCallArgNode * functionCallArgNode);
 FunctionCallArgNode * NoArgsFunctionCallArgGrammarAction(ExpressionNode * expressionNode);
 
