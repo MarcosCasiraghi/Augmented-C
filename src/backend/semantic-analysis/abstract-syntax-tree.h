@@ -266,7 +266,7 @@ typedef struct CodeBlockNode{
 
 
 typedef struct PointerNode{	// * is implicit
-	HasChild child;
+	Child child;
 	PointerNode * pointerNode;
 } PointerNode;
 
@@ -285,7 +285,7 @@ typedef struct DeclarationNode{
 typedef enum SingleDeclarationType{
 	SinleWithPointer,
 	SinleWithoutPointer
-}
+}SingleDeclarationType;
 
 typedef struct SingleDeclarationNode{
 	SingleDeclarationType type;
@@ -320,7 +320,7 @@ typedef enum ArraySizeType{
 
 typedef struct ArraySizeNode{ 			// [, ],  implicit
 	ArraySizeType type;
-	HasChild child;
+	Child child;
 
 	NumConstantIntNode * numberConstant;	// NULL
 	ArraySizeNode * arraySizeNode;	// NULL
@@ -337,7 +337,7 @@ typedef struct ArrayInitializeNode{		// =,  {,  }, ;  implicit
 } ArrayInitializeNode;
 
 typedef struct ArrayListNode{			// , implicit depending on hasChild
-	HasChild child;
+	Child child;
 
 	NumConstantIntNode integer;
 
