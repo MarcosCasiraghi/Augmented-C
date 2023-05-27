@@ -70,7 +70,7 @@ typedef struct ArrayDerefNode {             //Open y Close bracket son implicito
 typedef enum DataType {
     Int,
     Float,
-    Dobule,
+    Double,
     Long,
     Short,
     Char,
@@ -376,7 +376,7 @@ typedef struct FunctionDeclarationNode{
     DataType functionType;
     Variable variable;
     CodeBlockNode * codeBlock;
-    FunctionCallArgNode * functionArgs;
+    FunctionArgsNode * functionArgs;
 } FunctionDeclarationNode;
 
 // - - - - - - C Statements  - - - - - -
@@ -422,66 +422,66 @@ typedef struct CreateLambda {
 
 typedef struct ReduceStatementNode {
     Variable variable1;
-    NumConstantIntNode size;
+    SizeNode * size;
     Variable variable2;
     Lambda * lambda;
 } ReduceStatementNode;
 
 typedef struct FilterStatementNode {
     Variable variable1;
-    NumConstantIntNode size;
+    SizeNode * size;
     Variable variable2;
     Lambda * lambda;
 } FilterStatementNode;
 
 typedef struct ForeachStatementNode {
     Variable variable1;
-    NumConstantIntNode size;
+    SizeNode * size;
     FunctionCallNode * functionCallNode;
 } ForeachStatementNode;
 
 typedef struct MapStatementNode {
     Variable variable1;
-    NumConstantIntNode size;
+    SizeNode * size;
     Variable variable2;
-    CreateLambda * createLambda;
+    Lambda * lambda;
 } MapStatementNode;
 
 typedef struct CreateStatementNode {
     Variable variable1;
     DataType dataType;
-    Lambda * lambda;
+    CreateLambda * createLambda;
 } CreateStatementNode;
 
 typedef struct ReduceRangeStatementNode {
     Variable variable1;
-    NumConstantIntNode size1;
-    NumConstantIntNode size2;
+    SizeNode * size1;
+    SizeNode * size2;
     Variable variable2;
     Lambda * lambda;
 } ReduceRangeStatementNode;
 
 typedef struct FilterRangeStatementNode {
     Variable variable1;
-    NumConstantIntNode size1;
-    NumConstantIntNode size2;
+    SizeNode * size1;
+    SizeNode * size2;
     Variable variable2;
     Lambda * lambda;
 } FilterRangeStatementNode;
 
 typedef struct ForeachRangeStatementNode {
     Variable variable1;
-    NumConstantIntNode size1;
-    NumConstantIntNode size2;
+    SizeNode * size1;
+    SizeNode * size2;
     FunctionCallNode * functionCallNode;
 } ForeachRangeStatementNode;
 
 typedef struct MapRangeStatementNode {
     Variable variable1;
-    NumConstantIntNode size1;
-    NumConstantIntNode size2;
+    SizeNode * size1;
+    SizeNode * size2;
     Variable variable2;
-    CreateLambda * createLambda;
+    Lambda * lambda;
 } MapRangeStatementNode;
 
 typedef enum SelectorNodeType{

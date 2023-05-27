@@ -24,12 +24,12 @@
 	ReduceStatementNode * reduce_statement;
 	FilterStatementNode * filter_statement;
 	MapStatementNode * map_statement;
-	ForEachStatementNode * foreach_statement;
+	ForeachStatementNode * foreach_statement;
 	CreateStatementNode * create_statement;
 	ReduceRangeStatementNode * reduce_range_statement;
 	FilterRangeStatementNode * filter_range_statement;
 	MapRangeStatementNode * map_range_statement;
-	ForEachRangeStatementNode * foreach_range_statement;
+	ForeachRangeStatementNode * foreach_range_statement;
 	SelectorNode * selector;
 	SpecialStatementNode * special_statement;
 	Lambda * lambda;
@@ -47,10 +47,9 @@
 	SingleDeclarationNode * single_declaration;
 	SingleInitializeNode * single_initialization;
 	ArrayDeclarationNode * array_declaration;
-	ArraySizeDeclaration * array_declaration_size;
+	ArraySizeNode * array_declaration_size;
 	ArrayListNode * array_list;
 	ArrayInitializeNode * array_initialization;
-	AssignmentType * assignment_type;
 	AssignmentNode * assignment;
 	ArrayDerefNode * array_deref;
 	ReturnStatementNode * return_statement;
@@ -63,11 +62,12 @@
 	SizeNode * size;
 	ExpressionNode * expression;
 	FunctionCallArgNode * function_call_arg;
-
+	AssignmentType assignment_type;
+	DataType data_type;
 
 	// Terminales.
 	token token;
-	string * variable;
+	char * variable;
 	int num_constant_int;
 	float num_constant_float;
 	int INT;
@@ -76,7 +76,7 @@
 	long LONG;
 	short SHORT;
 	char CHAR;
-	void VOID;
+	void * VOID;
 	
 	char * STRING;
 }
@@ -157,8 +157,9 @@
 %type <array_declaration_size> array_declaration_size
 %type <array_list> array_list
 %type <array_initialization> array_initialization
-%type <assignment_type> assignment_type
 %type <assignment> assignment
+%type <assignment_type> assignment_type
+%type <data_type> data_type
 
 
 
@@ -191,17 +192,17 @@ program: statements { ProgramGrammarAction(); }
 
 // = = = = = = = = = = = =  Lambda  = = = = = = = = = = = = = = = = 
 
-special_statement : START_SPECIAL selector END_SPECIAL											{ $$ = SpecialStatementAction($2); };		
+special_statement : START_SPECIAL selector END_SPECIAL											{ $$ = specialStatementAction($2); };		
 
-selector:     REDUCE COMA reduce_statement 														{ $$ = ReduceSelectorAction($3); }
-			| FILTER COMA filter_statement 														{ $$ = FilterSelectorAction($3); }
-			| FOREACH COMA foreach_statement 													{ $$ = ForeachSelectorAction($3);}		
-			| MAP COMA map_statement 															{ $$ = MapSelectorAction($3); }		
-			| CREATE COMA create_statement 														{ $$ = CreateSelectorAction($3); }
-			| REDUCERANGE COMA reduce_range_statement											{ $$ = ReduceRangeSelectorAction($3); }
-			| FILTERRANGE COMA filter_range_statement 											{ $$ = FilterRangeSelectorAction($3); }
-			| FOREACHRANGE COMA foreach_range_statement											{ $$ = ForeachRangeSelectorAction($3); }
-			| MAPRANGE COMA map_range_statement													{ $$ = MapRangeSelectorAction($3); }
+selector:     REDUCE COMA reduce_statement 														{ $$ = ReduceStatementSelectorAction($3); }
+			| FILTER COMA filter_statement 														{ $$ = FilterStatementSelectorAction($3); }
+			| FOREACH COMA foreach_statement 													{ $$ = ForeachStatementSelectorAction($3);}		
+			| MAP COMA map_statement 															{ $$ = MapStatementSelectorAction($3); }		
+			| CREATE COMA create_statement 														{ $$ = CreateStatementSelectorAction($3); }
+			| REDUCERANGE COMA reduce_range_statement											{ $$ = ReduceRangeStatementSelectorAction($3); }
+			| FILTERRANGE COMA filter_range_statement 											{ $$ = FilterRangeStatementSelectorAction($3); }
+			| FOREACHRANGE COMA foreach_range_statement											{ $$ = ForeachRangeStatementSelectorAction($3); }
+			| MAPRANGE COMA map_range_statement													{ $$ = MapRangeStatementSelectorAction($3); }
 			;
 
 
@@ -219,9 +220,9 @@ reduce_range_statement: variable COMA size COMA size COMA variable COMA lambda		
 			;
 filter_range_statement: variable COMA size COMA size COMA variable COMA boolean_lambda			{ $$ = FilterRangeStatementAction($1, $3, $5, $7, $9); }
 			;
-map_range_statement: variable COMA size COMA size COMA variable COMA lambda						{ $$ = ForeachRangeStatementAction($1, $3, $5, $7, $9); }
+map_range_statement: variable COMA size COMA size COMA variable COMA lambda						{ $$ = MapRangeStatementAction($1, $3, $5, $7, $9); }
 			;
-foreach_range_statement: variable COMA size COMA size COMA OBRACE function_call CBRACE			{ $$ = MapRangeStatementAction($1, $3, $5, $8);}
+foreach_range_statement: variable COMA size COMA size COMA OBRACE function_call CBRACE			{ $$ = ForeachRangeStatementAction($1, $3, $5, $8);}
 			;
 
 lambda: OBRACE expression CBRACE 																{ $$ = LambdaAction($2); }
@@ -234,16 +235,16 @@ create_lambda : OBRACE NUM_CONSTANT_INT THREE_DOT NUM_CONSTANT_INT CBRACE 						
 
 // = = = = = = = = = = = =  C Lang  = = = = = = = = = = = = = = = = 
 
-statements: meta_command statements																{ $$ = MetaCommandWithStatementNodeAction($1, $2); }		
-		| function_declaration statements														{ $$ = FunctionDeclarationWithStatementNodeAction($1, $2); }
-		| declaration statements																{ $$ = DeclarationWithStatementNodeAction($1, $2); }
+statements: meta_command statements																{ $$ = MetacommandWithStatementNodeAction($2, $1); }		
+		| function_declaration statements														{ $$ = FunctionDeclarationWithStatementNodeAction($2, $1); }
+		| declaration statements																{ $$ = DeclarationWithStatementNodeAction($2, $1); }
 		| meta_command																			{ $$ = MetaCommandNodeAction($1); }
 		| function_declaration																	{ $$ = FunctionDeclarationNodeAction($1); }
-		| declaration																			{ $$ = DeclarationNodeAction($1); }
+		| declaration																			{ $$ = DeclarationStatementNodeAction($1); }
 		;
 
 meta_command: NUMBER_SIGN INCLUDE STRING 														{ $$ = StringMetaCommandAction($3); }
-			| NUMBER_SIGN INCLUDE LT_OP FILE_NAME GR_OP											{ $$ = FileMetaCommandAction($4); }
+			| NUMBER_SIGN INCLUDE LT_OP FILE_NAME GR_OP											{ $$ = FileNameMetaCommandAction($4); }
 			;
 
 function_arg: data_type variable 																{ $$ = NoPointerFunctionArgAction($1, $2); }
@@ -254,10 +255,10 @@ function_args: 	function_arg 																	{ $$ = SingleFunctionArgsAction($1
 			 ;
 
 function_declaration: data_type variable OPAR CPAR OBRACE code_block CBRACE						{ $$ = FunctionDeclarationNoArgsAction($1, $2, $6); }
-					| data_type variable OPAR function_args CPAR OBRACE code_block CBRACE		{ $$ = FunctionDeclarationWithArgsAction($1, $2, $4, $7); }
-					| VOID variable OPAR CPAR OBRACE code_block CBRACE							{ $$ = VoidFunctionDeclarationNoArgsAction($2, $6); }
-					| VOID variable OPAR function_args CPAR OBRACE code_block CBRACE			{ $$ = VoidFunctionDeclarationWithArgsAction($2, $4, $7); }
-					;
+					| data_type variable OPAR function_args CPAR OBRACE code_block CBRACE		{ $$ = FunctionDeclarationWithArgsAction($1, $2, $7, $4); }
+					| data_type variable OPAR CPAR OBRACE code_block CBRACE							{ $$ = VoidFunctionDeclarationAction($2, $6, $1); }
+					| data_type variable OPAR function_args CPAR OBRACE code_block CBRACE			{ $$ = VoidFunctionDeclarationWithArgsAction($2, $4, $1, $7); }
+					;//estos antes eran VOID (se pasaba void* pero la func espera un data_type)
 
 
 code_block: declaration code_block																{ $$ = DeclarationCodeBlockActionWithChild($1, $2); }
@@ -271,7 +272,7 @@ code_block: declaration code_block																{ $$ = DeclarationCodeBlockAct
 		|	assignment SEMI_COLON code_block													{ $$ = AssignmentCodeBlockActionWithChild($1, $3); }
 
 		| 	CONTINUE SEMI_COLON	code_block														{ $$ = ContinueCodeBlockAction($3); } // WARNING: only allowed within a while or for loop
-		|	BREAK SEMI_COLON code_block															{ $$ = BreakCodeBlockAction($3) } // WARNING: only allowed in while, for or switch
+		|	BREAK SEMI_COLON code_block															{ $$ = BreakCodeBlockAction($3); } // WARNING: only allowed in while, for or switch
 
 		| 	CASE expression COLON code_block													{ $$ = CaseCodeBlockAction($2, $4); } // WARNING: only allowed in switch. Expression should only allow: variable, NUM_CONSTANT_FLOAT, function_call, string
 		|	DEFAULT COLON code_block															{ $$ = DefaultCaseCodeBlockAction($3); }// WARNING: only allowed in switch. Expression should only allow: variable, NUM_CONSTANT_FLOAT, function_call, string
@@ -297,8 +298,8 @@ declaration: single_declaration 																{ $$ = DeclarationOfSingleAction
 			| array_declaration																	{ $$ = DeclarationOfArrayAction($1); }
 			;
 
-single_declaration: data_type variable single_initialization									{ $$ = SingleWithoutPointerDeclarationAction($1, $2, $3) } // different from assignment since you cannot do: int var += 3;
-				| data_type pointers variable single_initialization								{ $$ = SingleWithPointerDeclarationAction($1, $2, $3, $4)}
+single_declaration: data_type variable single_initialization									{ $$ = SingleWithoutPointerDeclarationAction($1, $2, $3); } // different from assignment since you cannot do: int var += 3;
+				| data_type pointers variable single_initialization								{ $$ = SingleWithPointerDeclarationAction($2, $1, $3, $4); }
 				;
 single_initialization: ASSIGN expression SEMI_COLON 											{ $$ = SingleInitializationWithAssignAction($2); }
 					| SEMI_COLON																{ $$ = SingleInitializationWithoutAssignAction(); } 
@@ -308,13 +309,13 @@ array_declaration: data_type variable array_declaration_size array_initializatio
 					;
 array_declaration_size: OBRACKET CBRACKET array_declaration_size								{ $$ = ArraySizeWithoutSizeWithChildrenAction($3); }					
 					|   OBRACKET NUM_CONSTANT_INT CBRACKET array_declaration_size				{ $$ = ArraySizeWithSizeWithChildrenAction($2, $4);}
-					| 	OBRACKET NUM_CONSTANT_INT CBRACKET										{ $$ = ArraySizeWithSizzeWithoutChildrenAction($2); }
+					| 	OBRACKET NUM_CONSTANT_INT CBRACKET										{ $$ = ArraySizeWithSizeWithoutChildrenAction($2); }
 					|	OBRACKET CBRACKET														{ $$ = ArraySizeWithoutSizeNorChildrenAction(); }
 					;
 array_list: NUM_CONSTANT_INT COMA array_list													{ $$ = ArrayListManyAction($1, $3); }
 			| NUM_CONSTANT_INT																	{ $$ = ArrayListAction($1); }
 			;
-array_initialization: ASSIGN OBRACE array_list CBRACE SEMI_COLON 								{ $$ = ArrayInitializeWithListAction($3) }
+array_initialization: ASSIGN OBRACE array_list CBRACE SEMI_COLON 								{ $$ = ArrayInitializeWithListAction($3); }
 					| SEMI_COLON																{ $$ = ArrayInitializeEmptyAction();}
 					;
 
@@ -332,79 +333,86 @@ assignment: variable assignment_type expression 												{ $$ = AssignmentWit
 
 variable: VARIABLE_NAME
 		;
-array_deref: variable OBRACKET size CBRACKET													{ $$ = ArrayDerefGrammarAction($1, $3); }
+array_deref: variable OBRACKET size CBRACKET													{ $$ = ArrayDerefAction($1, $3); }
 			;
 
 
-data_type: INT | FLOAT | DOUBLE | LONG | SHORT | CHAR | VOID MULT_OP;
+data_type: INT 																					{ $$ = IntAction(); }
+		| FLOAT 																				{ $$ = FloatAction();}
+		| DOUBLE 																				{ $$ = DoubleAction(); }
+		| LONG 																					{ $$ = LongAction(); }
+		| SHORT 																				{ $$ = ShortAction(); }
+		| CHAR 																					{ $$ = CharAction();}
+		| VOID MULT_OP																			{$$ = VoidPointerAction(); }
+		;
 
-return_statement: RETURN expression SEMI_COLON													{ $$ = ReturnStatementGrammarAction($2); }
+return_statement: RETURN expression SEMI_COLON													{ $$ = ReturnStatementAction($2); }
 	;
 
-if_else_statement: if_statement 																{ $$ = IfWithoutElseStatementGrammarAction($1); }
-				 | if_statement else_statement 													{ $$ = IfWithElseStatementGrammarAction($1, $2); }
+if_else_statement: if_statement 																{ $$ = IfWithoutElseStatement($1); }
+				 | if_statement else_statement 													{ $$ = IfWithElseStatementAction($1, $2); }
 				 ;
-if_statement: IF OPAR expression CPAR OBRACE code_block CBRACE									{ $$ = IfStatementGrammarAction($3, $6); }
+if_statement: IF OPAR expression CPAR OBRACE code_block CBRACE									{ $$ = IfStatementAction($3, $6); }
 	;
-else_statement: ELSE OBRACE code_block CBRACE													{ $$ = ElseStatementGrammarAction($3); }
+else_statement: ELSE OBRACE code_block CBRACE													{ $$ = ElseStatementAction($3); }
 	;
-while_statement: WHILE OPAR expression CPAR OBRACE code_block CBRACE							{ $$ = WhileStatementGrammarAction($3, $6); }
+while_statement: WHILE OPAR expression CPAR OBRACE code_block CBRACE							{ $$ = WhileStatementAction($3, $6); }
 	;
 
 // el ; entre declaration y boolean no esta dado que declaration ya tiene uno
 
-for_statement: FOR OPAR declaration expression SEMI_COLON assignment CPAR OBRACE code_block CBRACE		{ $$ = ForStatementWithAssigmentGrammarAction($3, $4, $6, $9); }
-			|  FOR OPAR declaration expression SEMI_COLON expression CPAR OBRACE code_block CBRACE		{ $$ = ForStatementWithExpressionGrammarAction($3, $4, $6, $9); }
+for_statement: FOR OPAR declaration expression SEMI_COLON assignment CPAR OBRACE code_block CBRACE		{ $$ = ForStatementWithAssigmentAction($3, $4, $6, $9); }
+			|  FOR OPAR declaration expression SEMI_COLON expression CPAR OBRACE code_block CBRACE		{ $$ = ForStatementWithExpressionAction($3, $4, $6, $9); }
 			;
 
-switch_statement: SWITCH OPAR expression CPAR OBRACE code_block CBRACE 	 						{ $$ = SwitchStatementGrammarAction($3, $6); }
+switch_statement: SWITCH OPAR expression CPAR OBRACE code_block CBRACE 	 						{ $$ = SwitchStatementAction($3, $6); }
 	;	
 // WARNING: disallow NUM_CONSTANT_FLOAT, string, SPECIAL_VARIABLE
 
-size: variable 																					{ $$ = SizeVarGrammarAction($1); }
-	| NUM_CONSTANT_INT 																			{ $$ = SizeNumConstIntGrammarAction($1); }	
+size: variable 																					{ $$ = SizeVarAction($1); }
+	| NUM_CONSTANT_INT 																			{ $$ = SizeNumConstIntAction($1); }	
 	;
 
-expression:  expression ADD_OP expression 								{ $$ = AddOpExpressionGrammarAction($1, $3); }
-			| expression SUB_OP expression 								{ $$ = SubOpExpressionGrammarAction($1, $3); }
-			| expression MULT_OP expression 							{ $$ = MultOpExpressionGrammarAction($1, $3); }
-			| expression DIV_OP expression 								{ $$ = DivOpExpressionGrammarAction($1, $3); }
-			| expression MOD_OP expression 								{ $$ = ModOpExpressionGrammarAction($1, $3); }
-			| expression INC_OP											{ $$ = IncOpRightExpressionGrammarAction($1); }
-			| INC_OP expression											{ $$ = IncOpLeftExpressionGrammarAction($2); }
-			| expression DEC_OP											{ $$ = DecOpRightExpressionGrammarAction($1); }
-			| DEC_OP expression											{ $$ = DecOpLeftExpressionGrammarAction($2); }
-			| BIT_NOT_OP expression										{ $$ = BitNotOpExpressionGrammarAction($2); }
-			| expression BIT_RIGHT_OP expression						{ $$ = BitRightOpExpressionGrammarAction($1, $3); }
-			| expression BIT_LEFT_OP expression							{ $$ = BitLeftOpExpressionGrammarAction($1, $3); }
-			| expression BIT_XOR_OP expression							{ $$ = BitXorOpExpressionGrammarAction($1, $3); }
-			| expression BIT_OR_OP expression							{ $$ = BitOrOpExpressionGrammarAction($1, $3); }
-			| expression BIT_AND_OP expression							{ $$ = BitAndOpExpressionGrammarAction($1, $3); }
+expression:  expression ADD_OP expression 								{ $$ = AddOpExpressionAction($1, $3); }
+			| expression SUB_OP expression 								{ $$ = SubOpExpressionAction($1, $3); }
+			| expression MULT_OP expression 							{ $$ = MultOpExpressionAction($1, $3); }
+			| expression DIV_OP expression 								{ $$ = DivOpExpressionAction($1, $3); }
+			| expression MOD_OP expression 								{ $$ = ModOpExpressionAction($1, $3); }
+			| expression INC_OP											{ $$ = IncOpRightExpressionAction($1); }
+			| INC_OP expression											{ $$ = IncOpLeftExpressionAction($2); }
+			| expression DEC_OP											{ $$ = DecOpRightExpressionAction($1); }
+			| DEC_OP expression											{ $$ = DecOpLeftExpressionAction($2); }
+			| BIT_NOT_OP expression										{ $$ = BitNotOpExpressionAction($2); }
+			| expression BIT_RIGHT_OP expression						{ $$ = BitRightOpExpressionAction($1, $3); }
+			| expression BIT_LEFT_OP expression							{ $$ = BitLeftOpExpressionAction($1, $3); }
+			| expression BIT_XOR_OP expression							{ $$ = BitXorOpExpressionAction($1, $3); }
+			| expression BIT_OR_OP expression							{ $$ = BitOrOpExpressionAction($1, $3); }
+			| expression BIT_AND_OP expression							{ $$ = BitAndOpExpressionAction($1, $3); }
 
-			| expression AND_OP expression								{ $$ = AndOpExpressionGrammarAction($1, $3); }
+			| expression AND_OP expression								{ $$ = AndOpExpressionAction($1, $3); }
 			| OPAR expression CPAR										{ $$ = ParenthesisExpressionAction($2); }
-			| expression OR_OP expression								{ $$ = OrOpExpressionGrammarAction($1, $3); }
-			| NOT_OP OPAR expression CPAR								{ $$ = NotOpExpressionGrammarAction($3); }
+			| expression OR_OP expression								{ $$ = OrOpExpressionAction($1, $3); }
+			| NOT_OP OPAR expression CPAR								{ $$ = NotOpExpressionAction($3); }
 
-			| expression EQ_OP expression								{ $$ = EqOpExpressionGrammarAction($1, $3); }
-			| expression GR_OP expression								{ $$ = GrOpExpressionGrammarAction($1, $3); }
-			| expression GE_OP expression								{ $$ = GeOpExpressionGrammarAction($1, $3); }
-			| expression LT_OP expression								{ $$ = LtOpExpressionGrammarAction($1, $3); }
-			| expression LE_OP expression								{ $$ = LeOpExpressionGrammarAction($1, $3); }
-			| expression NE_OP expression								{ $$ = NeOpExpressionGrammarAction($1, $3); }
+			| expression EQ_OP expression								{ $$ = EqOpExpressionAction($1, $3); }
+			| expression GR_OP expression								{ $$ = GrOpExpressionAction($1, $3); }
+			| expression GE_OP expression								{ $$ = GeOpExpressionAction($1, $3); }
+			| expression LT_OP expression								{ $$ = LtOpExpressionAction($1, $3); }
+			| expression LE_OP expression								{ $$ = LeOpExpressionAction($1, $3); }
+			| expression NE_OP expression								{ $$ = NeOpExpressionAction($1, $3); }
 
-			| variable 													{ $$ = variableOpExpressionGrammarAction($1); }
-			| NUM_CONSTANT_FLOAT 										{ $$ = NumConstantFloatOpExpressionGrammarAction($1); }
-			| NUM_CONSTANT_INT 											{ $$ = NumConstantIntOpExpressionGrammarAction($1); }
-			| SPECIAL_VARIABLE 		/*WARNING: disallow in non special_statement context */ { $$ = SpecialVarOpExpressionGrammarAction($1); }
-			| function_call 											{ $$ = FunctionCallOpExpressionGrammarAction($1); }
-			| array_deref												{ $$ = ArrayDerefOpExpressionGrammarAction($1); }
-			| STRING													{ $$ = StringOpExpressionGrammarAction($1); }
+			| variable 													{ $$ = variableOpExpressionAction($1); }
+			| NUM_CONSTANT_FLOAT 										{ $$ = NumConstantFloatOpExpressionAction($1); }
+			| NUM_CONSTANT_INT 											{ $$ = NumConstantIntOpExpressionAction($1); }
+			| SPECIAL_VARIABLE 											{ $$ = SpecialVarOpExpressionAction($1); }
+			| function_call 											{ $$ = FunctionCallOpExpressionAction($1); }
+			| array_deref												{ $$ = ArrayDerefOpExpressionAction($1); }
+			| STRING													{ $$ = StringOpExpressionAction($1); }
 			;
 
 
-function_call: variable OPAR function_call_arg CPAR 					{ $$ = WithArgsFunctionCallGrammarAction($1, $3);}
-			| variable OPAR CPAR 										{ $$ = NoArgsFunctionCallGrammarAction($1); }
+function_call: variable OPAR function_call_arg CPAR 					{ $$ = WithArgsFunctionCallAction($1, $3);}
+			| variable OPAR CPAR 										{ $$ = NoArgsFunctionCallAction($1); }
 			;
 
 function_call_arg: expression COMA function_call_arg					{ $$ = WithArgsFunctionCallArgAction($1, $3); }

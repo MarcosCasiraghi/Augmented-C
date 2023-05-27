@@ -244,6 +244,30 @@ AssignmentType ModAssignAction() {
     return MOD_ASSIGN_TYPE;
 }
 
+// - - - - - - - Data Type - - - - - - - -
+DataType IntAction() {
+    return Int;
+}
+DataType FloatAction() {
+    return Float;
+}
+DataType DoubleAction() {
+    return Double;
+}
+DataType LongAction() {
+    return Long;
+}
+DataType ShortAction() {
+    return Short;
+}
+DataType CharAction() {
+    return Char;
+}
+DataType VoidPoinerAction() {
+    return VoidPointer;
+}
+
+ 
 // - - - - - - Array Initialize - - - - - -
 
 ArrayInitializeNode * ArrayInitializeEmptyAction() {
@@ -1154,7 +1178,7 @@ FunctionDeclarationNode* FunctionDeclarationNoArgsAction(DataType functionType, 
     return node;
 }
 
-FunctionDeclarationNode* FunctionDeclarationWithArgsAction(DataType functionType, Variable variable, CodeBlockNode * codeBlock, FunctionCallArgNode* functionArgs) {
+FunctionDeclarationNode* FunctionDeclarationWithArgsAction(DataType functionType, Variable variable, CodeBlockNode * codeBlock, FunctionArgsNode* functionArgs) {
     FunctionDeclarationNode* node = malloc(sizeof(FunctionDeclarationNode));
     node->type = FunctionDeclarationWithArgs;
     node->functionType = functionType;
@@ -1174,7 +1198,7 @@ FunctionDeclarationNode* VoidFunctionDeclarationAction(Variable variable, CodeBl
     return node;
 }
 
-FunctionDeclarationNode* VoidFunctionDeclarationWithArgsAction(Variable variable, CodeBlockNode * codeBlock, DataType functionType, FunctionCallArgNode* functionArgs) {
+FunctionDeclarationNode* VoidFunctionDeclarationWithArgsAction(Variable variable, CodeBlockNode * codeBlock, DataType functionType, FunctionArgsNode* functionArgs) {
     FunctionDeclarationNode* node = malloc(sizeof(FunctionDeclarationNode));
     node->type = FunctionDeclarationWithArgsVoid;
     node->functionType = functionType;
@@ -1400,9 +1424,13 @@ SelectorNode * MapRangeStatementSelectorAction(MapRangeStatementNode * mapRangeS
     return node;
 }
 
+// - - - - - - Lambda Expressions - - - - - - -
 
-// - - - - - - Special Statements - - - - - - -
-
+Lambda * LambdaAction(ExpressionNode * expressionNode) {
+    Lambda * node = malloc(sizeof(Lambda));
+    node->expressionNode = expressionNode;
+    return node;
+}
 CreateLambda * CreateLambdaAction(NumConstantIntNode * constant1, NumConstantIntNode * constant2) {
     CreateLambda * node = malloc(sizeof(CreateLambda));
     node->constant1 = constant1;
@@ -1410,7 +1438,8 @@ CreateLambda * CreateLambdaAction(NumConstantIntNode * constant1, NumConstantInt
     return node;
 }
 
-ReduceStatementNode * ReduceStatementAction(Variable variable1, NumConstantIntNode size, Variable variable2, Lambda * lambda) {
+// - - - - - - Special Statements - - - - - - -
+ReduceStatementNode * ReduceStatementAction(Variable variable1, SizeNode * size, Variable variable2, Lambda * lambda) {
     ReduceStatementNode * node = malloc(sizeof(ReduceStatementNode));
     node->variable1 = variable1;
     node->size = size;
@@ -1419,7 +1448,7 @@ ReduceStatementNode * ReduceStatementAction(Variable variable1, NumConstantIntNo
     return node;
 }
 
-FilterStatementNode * FilterStatementAction(Variable variable1, NumConstantIntNode size, Variable variable2, Lambda * lambda) {
+FilterStatementNode * FilterStatementAction(Variable variable1, SizeNode * size, Variable variable2, Lambda * lambda) {
     FilterStatementNode * node = malloc(sizeof(FilterStatementNode));
     node->variable1 = variable1;
     node->size = size;
@@ -1428,7 +1457,7 @@ FilterStatementNode * FilterStatementAction(Variable variable1, NumConstantIntNo
     return node;
 }
 
-ForeachStatementNode * ForeachStatementAction(Variable variable1, NumConstantIntNode size, FunctionCallNode * functionCallNode) {
+ForeachStatementNode * ForeachStatementAction(Variable variable1, SizeNode * size, FunctionCallNode * functionCallNode) {
     ForeachStatementNode * node = malloc(sizeof(ForeachStatementNode));
     node->variable1 = variable1;
     node->size = size;
@@ -1436,24 +1465,24 @@ ForeachStatementNode * ForeachStatementAction(Variable variable1, NumConstantInt
     return node;
 }
 
-MapStatementNode * MapStatementAction(Variable variable1, NumConstantIntNode size, Variable variable2, CreateLambda * createLambda) {
+MapStatementNode * MapStatementAction(Variable variable1, SizeNode * size, Variable variable2, Lambda * lambda) {
     MapStatementNode * node = malloc(sizeof(MapStatementNode));
     node->variable1 = variable1;
     node->size = size;
     node->variable2 = variable2;
-    node->createLambda = createLambda;
-    return node;
-}
-
-CreateStatementNode * CreateStatementAction(Variable variable1, DataType dataType, Lambda * lambda) {
-    CreateStatementNode * node = malloc(sizeof(CreateStatementNode));
-    node->variable1 = variable1;
-    node->dataType = dataType;
     node->lambda = lambda;
     return node;
 }
 
-ReduceRangeStatementNode * ReduceRangeStatementAction(Variable variable1, NumConstantIntNode size1, NumConstantIntNode size2, Variable variable2, Lambda * lambda) {
+CreateStatementNode * CreateStatementAction(Variable variable1, DataType dataType, CreateLambda * createLambda) {
+    CreateStatementNode * node = malloc(sizeof(CreateStatementNode));
+    node->variable1 = variable1;
+    node->dataType = dataType;
+    node->createLambda = createLambda;
+    return node;
+}
+
+ReduceRangeStatementNode * ReduceRangeStatementAction(Variable variable1, SizeNode * size1, SizeNode * size2, Variable variable2, Lambda * lambda) {
     ReduceRangeStatementNode * node = malloc(sizeof(ReduceRangeStatementNode));
     node->variable1 = variable1;
     node->size1 = size1;
@@ -1464,7 +1493,7 @@ ReduceRangeStatementNode * ReduceRangeStatementAction(Variable variable1, NumCon
 }
 
 
-FilterRangeStatementNode * FilterRangeStatementAction(Variable variable1, NumConstantIntNode size1, NumConstantIntNode size2, Variable variable2, Lambda * lambda) {
+FilterRangeStatementNode * FilterRangeStatementAction(Variable variable1, SizeNode * size1, SizeNode * size2, Variable variable2, Lambda * lambda) {
     FilterRangeStatementNode * node = malloc(sizeof(FilterRangeStatementNode));
     node->variable1 = variable1;
     node->size1 = size1;
@@ -1474,7 +1503,7 @@ FilterRangeStatementNode * FilterRangeStatementAction(Variable variable1, NumCon
     return node;
 }
 
-ForeachRangeStatementNode * ForeachRangeStatementAction(Variable variable1, NumConstantIntNode size1, NumConstantIntNode size2, FunctionCallNode * functionCallNode) {
+ForeachRangeStatementNode * ForeachRangeStatementAction(Variable variable1, SizeNode * size1, SizeNode * size2, FunctionCallNode * functionCallNode) {
     ForeachRangeStatementNode * node = malloc(sizeof(ForeachRangeStatementNode));
     node->variable1 = variable1;
     node->size1 = size1;
@@ -1483,23 +1512,17 @@ ForeachRangeStatementNode * ForeachRangeStatementAction(Variable variable1, NumC
     return node;
 }
 
-MapRangeStatementNode * MapRangeStatementAction(Variable variable1, NumConstantIntNode size1, NumConstantIntNode size2, Variable variable2, CreateLambda * createLambda) {
+MapRangeStatementNode * MapRangeStatementAction(Variable variable1, SizeNode * size1, SizeNode * size2, Variable variable2, Lambda * lambda) {
     MapRangeStatementNode * node = malloc(sizeof(MapRangeStatementNode));
     node->variable1 = variable1;
     node->size1 = size1;
     node->size2 = size2;
     node->variable2 = variable2;
-    node->createLambda = createLambda;
+    node->lambda = lambda;
     return node;
 }
 
-// - - - - - - Lambda Expressions - - - - - - -
 
-Lambda * LambdaAction(ExpressionNode * expressionNode) {
-    Lambda * node = malloc(sizeof(Lambda));
-    node->expressionNode = expressionNode;
-    return node;
-}
 
 /* = = = = = = =  FREE FUNCTIONS  = = = = = = = */
 
@@ -1592,7 +1615,7 @@ void freeMapStatementNode(MapStatementNode * node) {
     free(node->variable1);
     free(node->size);
     free(node->variable2);
-    freeCreateLambda(node->createLambda);
+    freeLambda(node->lambda);
     free(node);
 }
 
@@ -1632,7 +1655,7 @@ void freeMapRangeStatementNode(MapRangeStatementNode * node) {
     free(node->size1);
     free(node->size2);
     free(node->variable2);
-    freeCreateLambda(node->createLambda);
+    freeLambda(node->lambda);
     free(node);
 }
 
