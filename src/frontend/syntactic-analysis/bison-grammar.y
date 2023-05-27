@@ -64,20 +64,13 @@
 	FunctionCallArgNode * function_call_arg;
 	AssignmentType assignment_type;
 	DataType data_type;
+	NumConstantIntNode NUM_CONSTANT_INT;
 
 	// Terminales.
 	token token;
-	char * variable;
-	int num_constant_int;
-	float num_constant_float;
-	int INT;
-	float FLOAT;
-	double DOUBLE;
-	long LONG;
-	short SHORT;
-	char CHAR;
-	void * VOID;
-	
+
+	char * num_constant_float;
+	int num_int;
 	char * STRING;
 }
 
@@ -85,20 +78,15 @@
 //  = = = = = = = = = = = =  Definicion de simbolos y otros  = = = = = = = = = = = = 
 
 %token REDUCE MAP FILTER FOREACH CREATE REDUCERANGE MAPRANGE FILTERRANGE FOREACHRANGE START_SPECIAL END_SPECIAL 
-
-%token <INT> INT 
-%token <FLOAT> FLOAT
-%token <DOUBLE> DOUBLE
-%token <LONG> LONG
-%token <SHORT> SHORT
-%token <CHAR> CHAR
-%token <VOID> VOID
 %token <STRING> VARIABLE_NAME 
 %token <STRING> SPECIAL_VARIABLE 
 %token <num_constant_float> NUM_CONSTANT_FLOAT
-%token <num_constant_int> NUM_CONSTANT_INT
+%token <num_int> NUM_CONSTANT_INT
 %token <STRING> STRING
 %token <STRING> FILE_NAME
+%token <STRING> variable
+
+%token INT FLOAT DOUBLE LONG SHORT CHAR VOID
 
 %token ADD_OP SUB_OP MULT_OP DIV_OP MOD_OP
 %token INC_OP DEC_OP
@@ -137,7 +125,6 @@
 %type <foreach_range_statement> foreach_range_statement
 %type <selector> selector
 %type <special_statement> special_statement
-%type <variable> variable
 %type <size> size
 %type <lambda> lambda
 %type <boolean_lambda> boolean_lambda
@@ -187,7 +174,7 @@
 
 %%
 
-program: statements { ProgramGrammarAction(); }
+program: statements 																			{ ProgramAction($1); }
 		;
 
 // = = = = = = = = = = = =  Lambda  = = = = = = = = = = = = = = = = 
@@ -250,14 +237,14 @@ meta_command: NUMBER_SIGN INCLUDE STRING 														{ $$ = StringMetaCommandA
 function_arg: data_type variable 																{ $$ = NoPointerFunctionArgAction($1, $2); }
 			| data_type pointers variable 														{ $$ = PointerFunctionArgAction($1, $2, $3); }
 			;
-function_args: 	function_arg 																	{ $$ = SingleFunctionArgsAction($1); }
-			 | function_arg COMA function_args												{ $$ = MultipleFunctionArgsAction($1, $3); }
+function_args: 	function_arg 																		{ $$ = SingleFunctionArgsAction($1); }
+			 | function_arg COMA function_args														{ $$ = MultipleFunctionArgsAction($1, $3); }
 			 ;
 
-function_declaration: data_type variable OPAR CPAR OBRACE code_block CBRACE						{ $$ = FunctionDeclarationNoArgsAction($1, $2, $6); }
-					| data_type variable OPAR function_args CPAR OBRACE code_block CBRACE		{ $$ = FunctionDeclarationWithArgsAction($1, $2, $7, $4); }
-					| data_type variable OPAR CPAR OBRACE code_block CBRACE							{ $$ = VoidFunctionDeclarationAction($2, $6, $1); }
-					| data_type variable OPAR function_args CPAR OBRACE code_block CBRACE			{ $$ = VoidFunctionDeclarationWithArgsAction($2, $4, $1, $7); }
+function_declaration: data_type variable OPAR CPAR OBRACE code_block CBRACE							{ $$ = FunctionDeclarationNoArgsAction($1, $2, $6); }
+					| data_type variable OPAR function_args CPAR OBRACE code_block CBRACE			{ $$ = FunctionDeclarationWithArgsAction($1, $2, $7, $4); }
+					| VOID variable OPAR CPAR OBRACE code_block CBRACE								{ $$ = VoidFunctionDeclarationAction($2, $6); }
+					| VOID variable OPAR function_args CPAR OBRACE code_block CBRACE				{ $$ = VoidFunctionDeclarationWithArgsAction($2, $7, $4); }
 					;//estos antes eran VOID (se pasaba void* pero la func espera un data_type)
 
 
@@ -286,8 +273,8 @@ code_block: declaration code_block																{ $$ = DeclarationCodeBlockAct
 		|	while_statement																		{ $$ = WhileCodeBlockAction($1); }
 		|	switch_statement																	{ $$ = SwitchCodeBlockAction($1); }
 		|	assignment SEMI_COLON																{ $$ = AssignmentCodeBlockAction($1); }
-		| 	CONTINUE SEMI_COLON			// WARNING: only allowed within a while or for loop
-		|	BREAK SEMI_COLON			// WARNING: only allowed in while, for or switch
+		| 	CONTINUE SEMI_COLON			/* WARNING: only allowed within a while or for loop*/	{ $$ = ContinueAction(); }	
+		|	BREAK SEMI_COLON			/* WARNING: only allowed in while, for or switch*/		{ $$ = BreakAction(); }
 
 
 pointers: MULT_OP 																				{ $$ = PointerAction(); }
@@ -331,8 +318,7 @@ assignment: variable assignment_type expression 												{ $$ = AssignmentWit
 		;
 
 
-variable: VARIABLE_NAME
-		;
+
 array_deref: variable OBRACKET size CBRACKET													{ $$ = ArrayDerefAction($1, $3); }
 			;
 
@@ -349,7 +335,7 @@ data_type: INT 																					{ $$ = IntAction(); }
 return_statement: RETURN expression SEMI_COLON													{ $$ = ReturnStatementAction($2); }
 	;
 
-if_else_statement: if_statement 																{ $$ = IfWithoutElseStatement($1); }
+if_else_statement: if_statement 																{ $$ = IfWithoutElseStatementAction($1); }
 				 | if_statement else_statement 													{ $$ = IfWithElseStatementAction($1, $2); }
 				 ;
 if_statement: IF OPAR expression CPAR OBRACE code_block CBRACE									{ $$ = IfStatementAction($3, $6); }

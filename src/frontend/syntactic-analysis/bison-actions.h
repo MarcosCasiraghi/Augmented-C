@@ -12,23 +12,7 @@
  */
 
 // Programa.
-void ProgramGrammarAction();
-
-
-// Expresión.
-int AdditionExpressionAction(const int leftValue, const int rightValue);
-int SubtractionExpressionAction(const int leftValue, const int rightValue);
-int MultiplicationExpressionAction(const int leftValue, const int rightValue);
-int DivisionExpressionAction(const int leftValue, const int rightValue);
-int FactorExpressionAction(const int value);
-
-// Factores.
-int ExpressionFactorAction(const int value);
-int ConstantFactorAction(const int value);
-
-// Constantes.
-int IntegerConstantAction(const int value);
-
+ProgramNode * ProgramAction(StatementNode * statement);
 
 //AUGMENTED-C
 ReduceStatementNode * ReduceStatementAction(Variable variable1, SizeNode * size, Variable variable2, Lambda * lambda);
@@ -56,7 +40,7 @@ WhileStatementNode * WhileStatementAction(ExpressionNode * expressionNode, CodeB
 ForStatementNode * ForStatementWithAssigmentAction(DeclarationNode * declarationNode, ExpressionNode * firstExpressionNode, AssignmentNode * assignmentNode, CodeBlockNode * codeBlockNode );
 ForStatementNode * ForStatementWithExpressionAction(DeclarationNode * declarationNode, ExpressionNode * firstExpressionNode, ExpressionNode * secondExpressionNode, CodeBlockNode * codeBlockNode );
 SwitchStatementNode * SwitchStatementAction(ExpressionNode * expressionNode, CodeBlockNode * codeBlockNode);
-SizeNode * SizeNumConstIntAction(NumConstantIntNode * numConstantIntNode);
+SizeNode * SizeNumConstIntAction(NumConstantIntNode numConstantIntNode);
 SizeNode * SizeVarAction(Variable  variableNode);
 ExpressionNode * AddOpExpressionAction(ExpressionNode * leftExpressionNode, ExpressionNode * rightExpressionNode);
 ExpressionNode * SubOpExpressionAction(ExpressionNode * leftExpressionNode, ExpressionNode * rightExpressionNode);
@@ -84,12 +68,12 @@ ExpressionNode * LtOpExpressionAction(ExpressionNode * leftExpressionNode, Expre
 ExpressionNode * LeOpExpressionAction(ExpressionNode * leftExpressionNode, ExpressionNode * rightExpressionNode);
 ExpressionNode * NeOpExpressionAction(ExpressionNode * leftExpressionNode, ExpressionNode * rightExpressionNode);
 ExpressionNode * variableOpExpressionAction(Variable  variable);
-ExpressionNode * NumConstantFloatOpExpressionAction(NumConstantFloatNode * numConstantFloatNode);
-ExpressionNode * NumConstantIntOpExpressionAction(NumConstantIntNode * numConstantIntNode);
+ExpressionNode * NumConstantFloatOpExpressionAction(NumConstantFloatNode numConstantFloatNode);
+ExpressionNode * NumConstantIntOpExpressionAction(NumConstantIntNode numConstantIntNode);
 ExpressionNode * SpecialVarOpExpressionAction(SpecialVariable  specialVariableNode);
 ExpressionNode * FunctionCallOpExpressionAction(FunctionCallNode * functionCallNode);
 ExpressionNode * ArrayDerefOpExpressionAction(ArrayDerefNode * arrayDerefNode);
-ExpressionNode * StringOpExpressionAction(StringVar * stringVar);
+ExpressionNode * StringOpExpressionAction(StringVar stringVar);
 
 FunctionCallNode * WithArgsFunctionCallAction(Variable  variable, FunctionCallArgNode * functionCallArgNode);
 FunctionCallNode * NoArgsFunctionCallAction(Variable  variable);
@@ -98,8 +82,8 @@ FunctionCallArgNode * NoArgsFunctionCallArgAction(ExpressionNode * expressionNod
 
 FunctionDeclarationNode* FunctionDeclarationNoArgsAction(DataType functionType, Variable variable, CodeBlockNode * codeBlock);
 FunctionDeclarationNode* FunctionDeclarationWithArgsAction(DataType functionType, Variable variable, CodeBlockNode * codeBlock, FunctionArgsNode* functionArgs);
-FunctionDeclarationNode* VoidFunctionDeclarationAction(Variable variable, CodeBlockNode * codeBlock, DataType functionType);
-FunctionDeclarationNode* VoidFunctionDeclarationWithArgsAction(Variable variable, CodeBlockNode * codeBlock, DataType functionType, FunctionArgsNode* functionArgs);
+FunctionDeclarationNode* VoidFunctionDeclarationAction(Variable variable, CodeBlockNode * codeBlock);
+FunctionDeclarationNode* VoidFunctionDeclarationWithArgsAction(Variable variable, CodeBlockNode * codeBlock, FunctionArgsNode* functionArgs);
 CodeBlockNode * DeclarationCodeBlockAction(DeclarationNode * declarationNode);
 CodeBlockNode * SpecialStatementCodeBlockAction(SpecialStatementNode * specialStatement);
 CodeBlockNode * ExpressionCodeBlockAction(ExpressionNode * expression);
@@ -111,6 +95,8 @@ CodeBlockNode * SwitchCodeBlockAction(SwitchStatementNode * switchStatement);
 CodeBlockNode * AssingmentCodeBlockAction(AssignmentNode * assingment);
 CodeBlockNode * ContinueCodeBlockAction(CodeBlockNode * codeBlock);
 CodeBlockNode * BreakCodeBlockAction(CodeBlockNode * codeBlock);
+CodeBlockNode * BreakAction();
+CodeBlockNode * ContinueAction();
 CodeBlockNode * CaseCodeBlockAction(ExpressionNode * expression, CodeBlockNode * codeBlock);
 CodeBlockNode * DefaultCaseCodeBlockAction(CodeBlockNode * codeBlock);
 CodeBlockNode * DeclarationCodeBlockActionWithChild(DeclarationNode * declarationNode, CodeBlockNode * codeBlock);
@@ -132,9 +118,9 @@ SingleInitializeNode * SingleInitializationWithoutAssignAction();
 SingleInitializeNode * SingleInitializationWithAssignAction(ExpressionNode * expressionNode);
 ArrayDeclarationNode * ArrayDeclarationAction(DataType dataType, Variable variable, ArraySizeNode * arraySizeNode, ArrayInitializeNode * arrayInitializeNode);
 ArraySizeNode * ArraySizeWithoutSizeNorChildrenAction();
-ArraySizeNode * ArraySizeWithSizeWithoutChildrenAction(NumConstantIntNode * numberConstant);
+ArraySizeNode * ArraySizeWithSizeWithoutChildrenAction(NumConstantIntNode numberConstant);
 ArraySizeNode * ArraySizeWithoutSizeWithChildrenAction(ArraySizeNode * arraySizeNode);
-ArraySizeNode * ArraySizeWithSizeWithChildrenAction(NumConstantIntNode * numberConstant, ArraySizeNode * arraySizeNode);
+ArraySizeNode * ArraySizeWithSizeWithChildrenAction(NumConstantIntNode numberConstant, ArraySizeNode * arraySizeNode);
 
 //Assignment Type
 AssignmentType AssignAction();
@@ -179,7 +165,7 @@ SelectorNode * MapRangeStatementSelectorAction(MapRangeStatementNode * mapRangeS
 
 //Lambda Expressions
 Lambda * LambdaAction(ExpressionNode * expressionNode);
-CreateLambda * CreateLambdaAction(NumConstantIntNode * constant1, NumConstantIntNode * constant2);
+CreateLambda * CreateLambdaAction(NumConstantIntNode constant1, NumConstantIntNode constant2);
 
 //Includes
 MetaCommandNode * StringMetaCommandAction();

@@ -12,7 +12,7 @@
 */
 typedef char * StringVar;
 typedef char * Variable;
-typedef char * NumConstantIntNode;
+typedef int NumConstantIntNode;
 typedef char * NumConstantFloatNode;
 typedef char * SpecialVariable;
 typedef struct FunctionArgsNode FunctionArgsNode;
@@ -57,7 +57,7 @@ typedef enum SizeNodeType {
 typedef struct SizeNode {
     SizeNodeType type;
     Variable variable;
-    NumConstantIntNode * numConstantIntNode;
+    NumConstantIntNode numConstantIntNode;
 } SizeNode;
 
 typedef struct ArrayDerefNode {             //Open y Close bracket son implicitos
@@ -74,7 +74,8 @@ typedef enum DataType {
     Long,
     Short,
     Char,
-    VoidPointer
+    VoidPointer,
+    Void                    // only used for functions
 } DataType;
 
 typedef struct PointerNode{ // * is implicit
@@ -133,7 +134,7 @@ typedef struct ArraySizeNode{           // [, ],  implicit
     ArraySizeType type;
     Child child;
 
-    NumConstantIntNode * numberConstant;    // NULL
+    NumConstantIntNode numberConstant;    // NULL
     ArraySizeNode * arraySizeNode;  // NULL
 } ArraySizeNode;
 
@@ -243,12 +244,12 @@ typedef struct ExpressionNode {                     //(, ) son implicitos
     ExpressionNode * leftExpressionNode;
     ExpressionNode * rightExpressionNode;
     Variable Variable;
-    NumConstantIntNode * numConstantIntNode;
-    NumConstantFloatNode * numConstantFloatNode;
+    NumConstantIntNode numConstantIntNode;
+    NumConstantFloatNode numConstantFloatNode;
     SpecialVariable specialVariable;
     FunctionCallNode * functionCallNode;
     ArrayDerefNode * arrayDerefNode;
-    StringVar * StringNode;
+    StringVar StringNode;
 }ExpressionNode;
 
 // - - - - - - Scope Code  - - - - - -
@@ -401,9 +402,9 @@ typedef struct StatementNode {
 
 // - - - - - - Program  - - - - - -
 
-typedef struct Program{
+typedef struct ProgramNode{
     StatementNode * statementNode;
-}Program;
+}ProgramNode;
 
 
 
@@ -416,8 +417,8 @@ typedef struct Lambda {
 } Lambda;
 
 typedef struct CreateLambda {
-    NumConstantIntNode * constant1;
-    NumConstantIntNode * constant2;     // el ... es obviado
+    NumConstantIntNode constant1;
+    NumConstantIntNode constant2;     // el ... es obviado
 } CreateLambda;
 
 typedef struct ReduceStatementNode {

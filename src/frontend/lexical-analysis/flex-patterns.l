@@ -23,9 +23,9 @@
 
 digit	[0-9]
 alpha	[a-zA-Z]
-alnum	{digit}|{alpha}
-alnumext {alnum}|_
-alphaext {alpha}|_
+alnum	[a-zA-Z0-9]
+alnumext [a-zA-Z0-9_]
+alphaext [a-zA-Z_]
 any 	[ -~]
 
 whitespace [ \t\r\f\n]+

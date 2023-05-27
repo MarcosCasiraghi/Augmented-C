@@ -49,20 +49,11 @@ void yyerror(const char * string) {
 //  return value;
 // }
 
-void ProgramGrammarAction() {
-    /*
-    * "state" es una variable global que almacena el estado del compilador,
-    * cuyo campo "succeed" indica si la compilación fue o no exitosa, la cual
-    * es utilizada en la función "main".
-    */
+ProgramNode * ProgramAction(StatementNode * statement) {
+    ProgramNode * node = malloc(sizeof(ProgramNode));
+    node->statementNode = statement;
     state.succeed = true;
-    /*
-    * Por otro lado, "result" contiene el resultado de aplicar el análisis
-    * sintáctico mediante Bison, y almacenar el nood raíz del AST construido
-    * en esta variable. Para el ejemplo de la calculadora, no hay AST porque
-    * la expresión se computa on-the-fly, y es la razón por la cual esta
-    * variable es un simple entero, en lugar de un nodo.
-    */
+    return node;
 }
 
 // - - - - - - Includes - - - - - - - - - -
@@ -81,7 +72,7 @@ MetaCommandNode * FileNameMetaCommandAction() {
 
 // - - - - - - Dereferencing  - - - - - -
 
-SizeNode * SizeNumConstIntAction(NumConstantIntNode * numConstantIntNode){
+SizeNode * SizeNumConstIntAction(NumConstantIntNode numConstantIntNode){
     SizeNode * sizeNode = malloc(sizeof(SizeNode));
     sizeNode->type = ConstantSize;
     sizeNode->numConstantIntNode = numConstantIntNode;
@@ -93,7 +84,7 @@ SizeNode * SizeNumConstIntAction(NumConstantIntNode * numConstantIntNode){
 SizeNode * SizeVarAction(Variable variableNode){
     SizeNode * sizeNode = malloc(sizeof(SizeNode));
     sizeNode->type = VariableSize;
-    sizeNode->numConstantIntNode = NULL;
+    sizeNode->numConstantIntNode = 0;
     sizeNode->variable = variableNode;
 
     return sizeNode;
@@ -198,7 +189,7 @@ ArraySizeNode * ArraySizeWithoutSizeNorChildrenAction() {
     return node;
 }
 
-ArraySizeNode * ArraySizeWithSizeWithoutChildrenAction(NumConstantIntNode * numberConstant) {
+ArraySizeNode * ArraySizeWithSizeWithoutChildrenAction(NumConstantIntNode numberConstant) {
     ArraySizeNode * node = malloc(sizeof(ArraySizeNode));
     node->type = Sized;
     node->child = NoChild;
@@ -214,7 +205,7 @@ ArraySizeNode * ArraySizeWithoutSizeWithChildrenAction(ArraySizeNode * arraySize
     return node;
 }
 
-ArraySizeNode * ArraySizeWithSizeWithChildrenAction(NumConstantIntNode * numberConstant, ArraySizeNode * arraySizeNode) {
+ArraySizeNode * ArraySizeWithSizeWithChildrenAction(NumConstantIntNode numberConstant, ArraySizeNode * arraySizeNode) {
     ArraySizeNode * node = malloc(sizeof(ArraySizeNode));
     node->type = Sized;
     node->child = NoChild;
@@ -263,7 +254,7 @@ DataType ShortAction() {
 DataType CharAction() {
     return Char;
 }
-DataType VoidPoinerAction() {
+DataType VoidPointerAction() {
     return VoidPointer;
 }
 
@@ -369,7 +360,7 @@ ExpressionNode * AddOpExpressionAction(ExpressionNode * leftExpressionNode, Expr
     expressionNode->leftExpressionNode = leftExpressionNode;
     expressionNode->rightExpressionNode = rightExpressionNode;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = NULL;
@@ -385,7 +376,7 @@ ExpressionNode * SubOpExpressionAction(ExpressionNode * leftExpressionNode, Expr
     expressionNode->leftExpressionNode = leftExpressionNode;
     expressionNode->rightExpressionNode = rightExpressionNode;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = NULL;
@@ -401,7 +392,7 @@ ExpressionNode * MultOpExpressionAction(ExpressionNode * leftExpressionNode, Exp
     expressionNode->leftExpressionNode = leftExpressionNode;
     expressionNode->rightExpressionNode = rightExpressionNode;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = NULL;
@@ -417,7 +408,7 @@ ExpressionNode * DivOpExpressionAction(ExpressionNode * leftExpressionNode, Expr
     expressionNode->leftExpressionNode = leftExpressionNode;
     expressionNode->rightExpressionNode = rightExpressionNode;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = NULL;
@@ -433,7 +424,7 @@ ExpressionNode * ModOpExpressionAction(ExpressionNode * leftExpressionNode, Expr
     expressionNode->leftExpressionNode = leftExpressionNode;
     expressionNode->rightExpressionNode = rightExpressionNode;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = NULL;
@@ -449,7 +440,7 @@ ExpressionNode * IncOpRightExpressionAction(ExpressionNode * leftExpressionNode)
     expressionNode->leftExpressionNode = leftExpressionNode;
     expressionNode->rightExpressionNode = NULL;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = NULL;
@@ -465,7 +456,7 @@ ExpressionNode * IncOpLeftExpressionAction(ExpressionNode * rightExpressionNode)
     expressionNode->leftExpressionNode = NULL;
     expressionNode->rightExpressionNode = rightExpressionNode;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = NULL;
@@ -481,7 +472,7 @@ ExpressionNode * DecOpRightExpressionAction(ExpressionNode * leftExpressionNode)
     expressionNode->leftExpressionNode = leftExpressionNode;
     expressionNode->rightExpressionNode = NULL;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = NULL;
@@ -497,7 +488,7 @@ ExpressionNode * DecOpLeftExpressionAction(ExpressionNode * rightExpressionNode)
     expressionNode->leftExpressionNode = NULL;
     expressionNode->rightExpressionNode = rightExpressionNode;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = NULL;
@@ -513,7 +504,7 @@ ExpressionNode * BitNotOpExpressionAction(ExpressionNode * rightExpressionNode){
     expressionNode->leftExpressionNode = NULL;
     expressionNode->rightExpressionNode = rightExpressionNode;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = NULL;
@@ -529,7 +520,7 @@ ExpressionNode * BitRightOpExpressionAction(ExpressionNode * leftExpressionNode,
     expressionNode->leftExpressionNode = leftExpressionNode;
     expressionNode->rightExpressionNode = rightExpressionNode;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = NULL;
@@ -545,7 +536,7 @@ ExpressionNode * BitLeftOpExpressionAction(ExpressionNode * leftExpressionNode, 
     expressionNode->leftExpressionNode = leftExpressionNode;
     expressionNode->rightExpressionNode = rightExpressionNode;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = NULL;
@@ -561,7 +552,7 @@ ExpressionNode * BitXorOpExpressionAction(ExpressionNode * leftExpressionNode, E
     expressionNode->leftExpressionNode = leftExpressionNode;
     expressionNode->rightExpressionNode = rightExpressionNode;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = NULL;
@@ -577,7 +568,7 @@ ExpressionNode * BitOrOpExpressionAction(ExpressionNode * leftExpressionNode, Ex
     expressionNode->leftExpressionNode = leftExpressionNode;
     expressionNode->rightExpressionNode = rightExpressionNode;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = NULL;
@@ -593,7 +584,7 @@ ExpressionNode * BitAndOpExpressionAction(ExpressionNode * leftExpressionNode, E
     expressionNode->leftExpressionNode = leftExpressionNode;
     expressionNode->rightExpressionNode = rightExpressionNode;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = NULL;
@@ -609,7 +600,7 @@ ExpressionNode * AndOpExpressionAction(ExpressionNode * leftExpressionNode, Expr
     expressionNode->leftExpressionNode = leftExpressionNode;
     expressionNode->rightExpressionNode = rightExpressionNode;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = NULL;
@@ -625,7 +616,7 @@ ExpressionNode * ParenthesisExpressionAction(ExpressionNode * rightExpressionNod
     expressionNode->leftExpressionNode = NULL;
     expressionNode->rightExpressionNode = rightExpressionNode;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = NULL;
@@ -641,7 +632,7 @@ ExpressionNode * OrOpExpressionAction(ExpressionNode * leftExpressionNode, Expre
     expressionNode->leftExpressionNode = leftExpressionNode;
     expressionNode->rightExpressionNode = rightExpressionNode;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = NULL;
@@ -657,7 +648,7 @@ ExpressionNode * NotOpExpressionAction(ExpressionNode * rightExpressionNode){
     expressionNode->leftExpressionNode = NULL;
     expressionNode->rightExpressionNode = rightExpressionNode;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = NULL;
@@ -673,7 +664,7 @@ ExpressionNode * EqOpExpressionAction(ExpressionNode * leftExpressionNode, Expre
     expressionNode->leftExpressionNode = leftExpressionNode;
     expressionNode->rightExpressionNode = rightExpressionNode;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = NULL;
@@ -689,7 +680,7 @@ ExpressionNode * GrOpExpressionAction(ExpressionNode * leftExpressionNode, Expre
     expressionNode->leftExpressionNode = leftExpressionNode;
     expressionNode->rightExpressionNode = rightExpressionNode;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = NULL;
@@ -705,7 +696,7 @@ ExpressionNode * GeOpExpressionAction(ExpressionNode * leftExpressionNode, Expre
     expressionNode->leftExpressionNode = leftExpressionNode;
     expressionNode->rightExpressionNode = rightExpressionNode;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = NULL;
@@ -721,7 +712,7 @@ ExpressionNode * LtOpExpressionAction(ExpressionNode * leftExpressionNode, Expre
     expressionNode->leftExpressionNode = leftExpressionNode;
     expressionNode->rightExpressionNode = rightExpressionNode;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = NULL;
@@ -737,7 +728,7 @@ ExpressionNode * LeOpExpressionAction(ExpressionNode * leftExpressionNode, Expre
     expressionNode->leftExpressionNode = leftExpressionNode;
     expressionNode->rightExpressionNode = rightExpressionNode;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = NULL;
@@ -753,7 +744,7 @@ ExpressionNode * NeOpExpressionAction(ExpressionNode * leftExpressionNode, Expre
     expressionNode->leftExpressionNode = leftExpressionNode;
     expressionNode->rightExpressionNode = rightExpressionNode;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = NULL;
@@ -769,7 +760,7 @@ ExpressionNode * variableOpExpressionAction(Variable variable){
     expressionNode->leftExpressionNode = NULL;
     expressionNode->rightExpressionNode = NULL;
     expressionNode->Variable = variable;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = NULL;
@@ -779,13 +770,13 @@ ExpressionNode * variableOpExpressionAction(Variable variable){
     return  expressionNode;
 }
 
-ExpressionNode * NumConstantFloatOpExpressionAction(NumConstantFloatNode * numConstantFloatNode){
+ExpressionNode * NumConstantFloatOpExpressionAction(NumConstantFloatNode numConstantFloatNode){
     ExpressionNode * expressionNode = malloc(sizeof(ExpressionNode));
     expressionNode->op = NumConstantFloat;
     expressionNode->leftExpressionNode = NULL;
     expressionNode->rightExpressionNode = NULL;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = numConstantFloatNode;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = NULL;
@@ -795,7 +786,7 @@ ExpressionNode * NumConstantFloatOpExpressionAction(NumConstantFloatNode * numCo
     return  expressionNode;
 }
 
-ExpressionNode * NumConstantIntOpExpressionAction(NumConstantIntNode * numConstantIntNode){
+ExpressionNode * NumConstantIntOpExpressionAction(NumConstantIntNode numConstantIntNode){
     ExpressionNode * expressionNode = malloc(sizeof(ExpressionNode));
     expressionNode->op = NumConstantInt;
     expressionNode->leftExpressionNode = NULL;
@@ -817,7 +808,7 @@ ExpressionNode * SpecialVarOpExpressionAction(SpecialVariable specialVariableNod
     expressionNode->leftExpressionNode = NULL;
     expressionNode->rightExpressionNode = NULL;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = specialVariableNode;
     expressionNode->functionCallNode = NULL;
@@ -833,7 +824,7 @@ ExpressionNode * FunctionCallOpExpressionAction(FunctionCallNode * functionCallN
     expressionNode->leftExpressionNode = NULL;
     expressionNode->rightExpressionNode = NULL;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = functionCallNode;
@@ -849,7 +840,7 @@ ExpressionNode * ArrayDerefOpExpressionAction(ArrayDerefNode * arrayDerefNode){
     expressionNode->leftExpressionNode = NULL;
     expressionNode->rightExpressionNode = NULL;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = NULL;
@@ -859,13 +850,13 @@ ExpressionNode * ArrayDerefOpExpressionAction(ArrayDerefNode * arrayDerefNode){
     return  expressionNode;
 }
 
-ExpressionNode * StringOpExpressionAction(StringVar * stringVar){
+ExpressionNode * StringOpExpressionAction(StringVar stringVar){
     ExpressionNode * expressionNode = malloc(sizeof(ExpressionNode));
     expressionNode->op = String;
     expressionNode->leftExpressionNode = NULL;
     expressionNode->rightExpressionNode = NULL;
     expressionNode->Variable = NULL;
-    expressionNode->numConstantIntNode = NULL;
+    expressionNode->numConstantIntNode = 0;
     expressionNode->numConstantFloatNode = NULL;
     expressionNode->specialVariable = NULL;
     expressionNode->functionCallNode = NULL;
@@ -1039,6 +1030,21 @@ CodeBlockNode * BreakCodeBlockAction(CodeBlockNode * codeBlock) {
     node->codeBlock = codeBlock;
     return node;
 }
+
+CodeBlockNode * ContinueAction() {
+    CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
+    node->child = NoChild;
+    node->type = ContinueStatement;
+    node->codeBlock = NULL;
+    return node;
+}
+CodeBlockNode * BreakAction() {
+    CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
+    node->child = NoChild;
+    node->type = BreakStatement;
+    node->codeBlock = NULL;
+    return node;
+}
 CodeBlockNode * CaseCodeBlockAction(ExpressionNode * expression, CodeBlockNode * codeBlock) {
     CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
     node->child = HasChild;
@@ -1188,20 +1194,20 @@ FunctionDeclarationNode* FunctionDeclarationWithArgsAction(DataType functionType
     return node;
 }
 
-FunctionDeclarationNode* VoidFunctionDeclarationAction(Variable variable, CodeBlockNode * codeBlock, DataType functionType) {
+FunctionDeclarationNode* VoidFunctionDeclarationAction(Variable variable, CodeBlockNode * codeBlock) {
     FunctionDeclarationNode* node = malloc(sizeof(FunctionDeclarationNode));
     node->type = FunctionDeclarationNoArgsVoid;
-    node->functionType = functionType;
+    node->functionType = Void;
     node->variable = variable;
     node->codeBlock = codeBlock;
     node->functionArgs = NULL;
     return node;
 }
 
-FunctionDeclarationNode* VoidFunctionDeclarationWithArgsAction(Variable variable, CodeBlockNode * codeBlock, DataType functionType, FunctionArgsNode* functionArgs) {
+FunctionDeclarationNode* VoidFunctionDeclarationWithArgsAction(Variable variable, CodeBlockNode * codeBlock, FunctionArgsNode* functionArgs) {
     FunctionDeclarationNode* node = malloc(sizeof(FunctionDeclarationNode));
     node->type = FunctionDeclarationWithArgsVoid;
-    node->functionType = functionType;
+    node->functionType = Void;
     node->variable = variable;
     node->codeBlock = codeBlock;
     node->functionArgs = functionArgs;
@@ -1431,7 +1437,7 @@ Lambda * LambdaAction(ExpressionNode * expressionNode) {
     node->expressionNode = expressionNode;
     return node;
 }
-CreateLambda * CreateLambdaAction(NumConstantIntNode * constant1, NumConstantIntNode * constant2) {
+CreateLambda * CreateLambdaAction(NumConstantIntNode constant1, NumConstantIntNode constant2) {
     CreateLambda * node = malloc(sizeof(CreateLambda));
     node->constant1 = constant1;
     node->constant2 = constant2;
@@ -1527,7 +1533,7 @@ MapRangeStatementNode * MapRangeStatementAction(Variable variable1, SizeNode * s
 /* = = = = = = =  FREE FUNCTIONS  = = = = = = = */
 
 // - - - - - - Free Includes - - - - - - - - 
-
+/*
 void freeMetaCommandNode(MetaCommandNode * node) {
 	free(node);
 }
@@ -1691,5 +1697,5 @@ void freeSelectorNode(SelectorNode * node) {
     }
     free(node);
 }
-
+*/
 
