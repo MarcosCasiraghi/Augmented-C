@@ -53,8 +53,8 @@ string 			\"{any}*\"
 "include"					{ BEGIN(INCLUDE_STATE); return INCLUDE; }
 <INCLUDE_STATE>{space}		{ ; }
 <INCLUDE_STATE>"<"			{ return LT_OP; }
-<INCLUDE_STATE>{file_name}	{ return FILE_NAME; }
-<INCLUDE_STATE>{string}		{ BEGIN(INITIAL); return STRING; }
+<INCLUDE_STATE>{file_name}	{ return FileNamePatternAction(yytext, yyleng); }
+<INCLUDE_STATE>{string}		{ BEGIN(INITIAL); return StringPatternAction(yytext, yyleng); }
 <INCLUDE_STATE>">"			{ BEGIN(INITIAL); return GR_OP; }
 <INCLUDE_STATE>.			{ return UnknownPatternAction(yytext, yyleng); }
 
@@ -121,11 +121,11 @@ string 			\"{any}*\"
 "char"               	{  return CHAR; }
 "void"				 	{  return VOID; }
 
-{string}			 { return STRING; }
-{variable}			 { return VARIABLE_NAME; }
+{string}			 { return StringPatternAction(yytext, yyleng); }
+{variable}			 { return VariableNamePatternAction(yytext, yyleng); }
 
-{num_constant_float} { return NUM_CONSTANT_FLOAT; }	
-{num_constant_int}   { return NUM_CONSTANT_INT; }
+{num_constant_float} { return NumConstantFloatPatternAction(yytext, yyleng); }	
+{num_constant_int}   { return NumConstantIntPatternAction(yytext, yyleng); }
 	
 
 "<{"									{ BEGIN(SPECIAL_STATEMENT); return START_SPECIAL; } /* deberia poder devolver el "<{" */
@@ -149,10 +149,10 @@ string 			\"{any}*\"
 <SPECIAL_STATEMENT>"..."                { return THREE_DOT; }
 
 <SPECIAL_STATEMENT>"," 					{ return COMA; }
-<SPECIAL_STATEMENT>{num_constant_float} { return NUM_CONSTANT_FLOAT; }				/*aca le tengo que pasar la el integer posta */
-<SPECIAL_STATEMENT>{num_constant_int}   { return NUM_CONSTANT_INT; }
-<SPECIAL_STATEMENT>{variable} 			{ return VARIABLE_NAME; }				/*aca le tengo que pasar la variable posta */
-<SPECIAL_STATEMENT>{string}				{ return STRING; }
+<SPECIAL_STATEMENT>{num_constant_float} { return NumConstantFloatPatternAction(yytext, yyleng); }				/*aca le tengo que pasar la el integer posta */
+<SPECIAL_STATEMENT>{num_constant_int}   { return NumConstantIntPatternAction(yytext, yyleng); }
+<SPECIAL_STATEMENT>{variable} 			{ return VariableNamePatternAction(yytext, yyleng); }				/*aca le tengo que pasar la variable posta */
+<SPECIAL_STATEMENT>{string}				{ return StringPatternAction(yytext, yyleng); }
 
 <SPECIAL_STATEMENT>"@elem"				{ return SPECIAL_VARIABLE; }
 

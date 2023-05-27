@@ -255,7 +255,7 @@ code_block: declaration code_block																{ $$ = DeclarationCodeBlockAct
 		|	switch_statement code_block															{ $$ = SwitchCodeBlockActionWithChild($1, $2); }
 		|	assignment SEMI_COLON code_block													{ $$ = AssignmentCodeBlockActionWithChild($1, $3); }
 
-		| 	CONTINUE SEMI_COLON	code_block														{ $$ = ContinueCodeBlockAction($3); } } // WARNING: only allowed within a while or for loop
+		| 	CONTINUE SEMI_COLON	code_block														{ $$ = ContinueCodeBlockAction($3); } // WARNING: only allowed within a while or for loop
 		|	BREAK SEMI_COLON code_block															{ $$ = BreakCodeBlockAction($3); } // WARNING: only allowed in while, for or switch
 
 		| 	CASE expression COLON code_block													{ $$ = CaseCodeBlockAction($2, $4); } 

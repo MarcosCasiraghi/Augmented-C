@@ -1,6 +1,8 @@
 #ifndef FLEX_ACTIONS_HEADER
 #define FLEX_ACTIONS_HEADER
 
+#include <string.h>
+#include <stdlib.h>
 #include "../../backend/support/shared.h"
 #include "../syntactic-analysis/bison-parser.h"
 
@@ -19,18 +21,13 @@
  * largo de aquello que se va a almacenar.
  */
 
-// Bloque de comentarios multilínea.
-void BeginCommentPatternAction();
-void EndCommentPatternAction();
+token StringPatternAction(const char * lexeme, const int length);
+token FileNamePatternAction(const char * lexeme, const int length);
+token VariableNamePatternAction(const char * lexeme, const int length);
+token NumConstantFloatPatternAction(const char * lexeme, const int length);
+token NumConstantIntPatternAction(const char * Lexeme, const int length);
 
-// Patrones terminales del lenguaje diseñado.
-token AdditionOperatorPatternAction(const char * lexeme);
-token CloseParenthesisPatternAction(const char * lexeme);
-token DivisionOperatorPatternAction(const char * lexeme);
-token IntegerPatternAction(const char * lexeme, const int length);
-token MultiplicationOperatorPatternAction(const char * lexeme);
-token OpenParenthesisPatternAction(const char * lexeme);
-token SubtractionOperatorPatternAction(const char * lexeme);
+
 
 // Patrón desconocido, permite abortar debido a un error de sintaxis.
 token UnknownPatternAction(const char * lexeme, const int length);
