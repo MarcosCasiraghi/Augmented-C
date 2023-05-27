@@ -109,14 +109,14 @@ ArrayDerefNode * ArrayDerefAction(Variable var, SizeNode * sizeNode){
 
 // - - - - - - Pointer - - - - - -
 
-PointerNode * PointerAction(){
+PointerNode * PointerAction() {
     PointerNode * node = malloc(sizeof(PointerNode));
     node->child = NoChild;
 
     return node;
 }
 
-PointerNode * PointerActionWithChild(PointerNode * pointerNode){
+PointerNode * PointerActionWithChild(PointerNode * pointerNode) {
     PointerNode * node = malloc(sizeof(PointerNode));
     node->child = NoChild;
     node->pointerNode = pointerNode;
@@ -125,7 +125,7 @@ PointerNode * PointerActionWithChild(PointerNode * pointerNode){
 
 // - - - - - - Declaration - - - - - -
 
-DeclarationNode * DelcarationOfSingleAction(SingleDeclarationNode * singleDeclarationNode){
+DeclarationNode * DeclarationOfSingleAction(SingleDeclarationNode * singleDeclarationNode) {
     DeclarationNode * node = malloc(sizeof(DeclarationNode));
     node->type = SingleDeclaration;
     node->singleDeclarationNode = singleDeclarationNode;
@@ -133,7 +133,7 @@ DeclarationNode * DelcarationOfSingleAction(SingleDeclarationNode * singleDeclar
     return node;
 }
 
-DeclarationNode * DelcarationOfArrayAction(ArrayDeclarationNode * arrayDeclarationNode){
+DeclarationNode * DeclarationOfArrayAction(ArrayDeclarationNode * arrayDeclarationNode) {
     DeclarationNode * node = malloc(sizeof(DeclarationNode));
     node->type = ArrayDeclaration;
 	node->singleDeclarationNode = NULL;
@@ -144,7 +144,7 @@ DeclarationNode * DelcarationOfArrayAction(ArrayDeclarationNode * arrayDeclarati
 
 // - - - - - - Single Declaration - - - - - -
 
-SingleDeclarationNode * SingleWithPointerDelcarationAction(PointerNode * pointer, DataType dataType, Variable variable, SingleInitializeNode * singleInitializeNode){
+SingleDeclarationNode * SingleWithPointerDeclarationAction(PointerNode * pointer, DataType dataType, Variable variable, SingleInitializeNode * singleInitializeNode) {
     SingleDeclarationNode * node = malloc(sizeof(SingleDeclarationNode));
     node->type = SinleWithPointer;
     node->pointer = pointer;
@@ -155,7 +155,7 @@ SingleDeclarationNode * SingleWithPointerDelcarationAction(PointerNode * pointer
 }
 
 
-SingleDeclarationNode * SingleWithoutPointerDelcarationAction(DataType dataType, Variable variable, SingleInitializeNode * singleInitializeNode){
+SingleDeclarationNode * SingleWithoutPointerDeclarationAction(DataType dataType, Variable variable, SingleInitializeNode * singleInitializeNode) {
     SingleDeclarationNode * node = malloc(sizeof(SingleDeclarationNode));
     node->type = SinleWithoutPointer;
     node->dataType = dataType;
@@ -166,12 +166,12 @@ SingleDeclarationNode * SingleWithoutPointerDelcarationAction(DataType dataType,
 
 // - - - - - - Single Initialization - - - - - -
 
-SingleInitializeNode * SingleInitializationWithoutAssignAction(){
+SingleInitializeNode * SingleInitializationWithoutAssignAction() {
     SingleInitializeNode * node = malloc(sizeof(SingleInitializeNode));
     node->type = NoAssign;
     return node;
 }
-SingleInitializeNode * SingleInitializationWithAssignAction(ExpressionNode * expressionNode){
+SingleInitializeNode * SingleInitializationWithAssignAction(ExpressionNode * expressionNode) {
     SingleInitializeNode * node = malloc(sizeof(SingleInitializeNode));
     node->type = AssignSingle;
     node->expressionNode = expressionNode;
@@ -180,7 +180,7 @@ SingleInitializeNode * SingleInitializationWithAssignAction(ExpressionNode * exp
 
 // - - - - - - Array Declaration - - - - - -
 
-ArrayDeclarationNode * ArrayDeclarationAction(DataType dataType, Variable variable, ArraySizeNode * arraySizeNode, ArrayInitializeNode * arrayInitializeNode){
+ArrayDeclarationNode * ArrayDeclarationAction(DataType dataType, Variable variable, ArraySizeNode * arraySizeNode, ArrayInitializeNode * arrayInitializeNode) {
     ArrayDeclarationNode * node = malloc(sizeof(ArrayDeclarationNode));
     node->dataType = dataType;
     node->variable = variable;
@@ -191,14 +191,14 @@ ArrayDeclarationNode * ArrayDeclarationAction(DataType dataType, Variable variab
 
 // - - - - - - Array Size - - - - - -
 
-ArraySizeNode * ArraySizeWithoutSizeNorChildrenAction(){
+ArraySizeNode * ArraySizeWithoutSizeNorChildrenAction() {
     ArraySizeNode * node = malloc(sizeof(ArraySizeNode));
     node->type = NotSizedSingle;
     node->child = NoChild;
     return node;
 }
 
-ArraySizeNode * ArraySizeWithSizeWithoutChildrenAction(NumConstantIntNode * numberConstant){
+ArraySizeNode * ArraySizeWithSizeWithoutChildrenAction(NumConstantIntNode * numberConstant) {
     ArraySizeNode * node = malloc(sizeof(ArraySizeNode));
     node->type = Sized;
     node->child = NoChild;
@@ -206,7 +206,7 @@ ArraySizeNode * ArraySizeWithSizeWithoutChildrenAction(NumConstantIntNode * numb
     return node;
 }
 
-ArraySizeNode * ArraySizeWithoutSizeWithChildrenAction(ArraySizeNode * arraySizeNode){
+ArraySizeNode * ArraySizeWithoutSizeWithChildrenAction(ArraySizeNode * arraySizeNode) {
     ArraySizeNode * node = malloc(sizeof(ArraySizeNode));
     node->type = NotSizedSingle;
     node->child = HasChild;
@@ -214,7 +214,7 @@ ArraySizeNode * ArraySizeWithoutSizeWithChildrenAction(ArraySizeNode * arraySize
     return node;
 }
 
-ArraySizeNode * ArraySizeWithSizeWithChildrenAction(NumConstantIntNode * numberConstant, ArraySizeNode * arraySizeNode){
+ArraySizeNode * ArraySizeWithSizeWithChildrenAction(NumConstantIntNode * numberConstant, ArraySizeNode * arraySizeNode) {
     ArraySizeNode * node = malloc(sizeof(ArraySizeNode));
     node->type = Sized;
     node->child = NoChild;
@@ -223,35 +223,35 @@ ArraySizeNode * ArraySizeWithSizeWithChildrenAction(NumConstantIntNode * numberC
     return node;
 }
 
-// - - - - - - Assingment Type  - - - - - -
+// - - - - - - Assignment Type  - - - - - -
 
-AssingmentType AssignAction(){
+AssignmentType AssignAction() {
     return ASSIGN_TYPE;
 }
-AssingmentType SumAssignAction(){
+AssignmentType SumAssignAction() {
     return SUM_ASSIGN_TYPE;
 }
-AssingmentType SubAssignAction(){
+AssignmentType SubAssignAction() {
     return SUB_ASSIGN_TYPE;
 }
-AssingmentType MultAssignAction(){
+AssignmentType MultAssignAction() {
     return MULT_ASSIGN_TYPE;
 }
-AssingmentType DivAssignAction(){
+AssignmentType DivAssignAction() {
     return DIV_ASSIGN_TYPE;
 }
-AssingmentType ModAssignAction(){
+AssignmentType ModAssignAction() {
     return MOD_ASSIGN_TYPE;
 }
 
 // - - - - - - Array Initialize - - - - - -
 
-ArrayInitializeNode * ArrayInitializeEmptyAction(){
+ArrayInitializeNode * ArrayInitializeEmptyAction() {
     ArrayInitializeNode * node = malloc(sizeof(ArrayInitializeNode));
     node->type = Empty;
     return node;
 }
-ArrayInitializeNode * ArrayInitializeWithListAction(ArrayListNode * arrayListNode){
+ArrayInitializeNode * ArrayInitializeWithListAction(ArrayListNode * arrayListNode) {
     ArrayInitializeNode * node = malloc(sizeof(ArrayInitializeNode));
     node->type = WithList;
     node->arrayListNode = arrayListNode;
@@ -261,13 +261,13 @@ ArrayInitializeNode * ArrayInitializeWithListAction(ArrayListNode * arrayListNod
 
 // - - - - - - Array Initialize List - - - - - -
 
-ArrayListNode * ArrayListAction(NumConstantIntNode integer){
+ArrayListNode * ArrayListAction(NumConstantIntNode integer) {
     ArrayListNode * node = malloc(sizeof(ArrayListNode));
     node->child = NoChild;
     node->integer = integer;
     return node;
 }
-ArrayListNode * ArrayListManyAction(NumConstantIntNode integer, ArrayListNode * arrayListNode){
+ArrayListNode * ArrayListManyAction(NumConstantIntNode integer, ArrayListNode * arrayListNode) {
     ArrayListNode * node = malloc(sizeof(ArrayListNode));
     node->child = HasChild;
     node->integer = integer;
@@ -277,31 +277,31 @@ ArrayListNode * ArrayListManyAction(NumConstantIntNode integer, ArrayListNode * 
 
 // - - - - - - Assignment - - - - - -
 
-AssigmentNode * AssignmentWithVarAction(Variable var, AssignmentType type, ExpressionNode * expressionNode ){
-    AssigmentNode * assigmentNode = malloc(sizeof(AssigmentNode));
-    assigmentNode->withType = withVar;
-    assigmentNode->assignmentType = type;
-    assigmentNode->variable = var;
-    assigmentNode->expressionNode = expressionNode;
-    assigmentNode->arrayDefinitionNode = NULL;
+AssignmentNode * AssignmentWithVarAction(Variable var, AssignmentType type, ExpressionNode * expressionNode ) {
+    AssignmentNode * assignmentNode = malloc(sizeof(AssignmentNode));
+    assignmentNode->withType = withVar;
+    assignmentNode->assignmentType = type;
+    assignmentNode->variable = var;
+    assignmentNode->expressionNode = expressionNode;
+    assignmentNode->arrayDefinitionNode = NULL;
 
-    return assigmentNode;
+    return assignmentNode;
 }
 
-AssigmentNode * AssignmentWithArrayDerefAction(ArrayDerefNode * arrayDerefNode, AssignmentType type, ExpressionNode * expressionNode ){
-    AssigmentNode * assigmentNode = malloc(sizeof(AssigmentNode));
-    assigmentNode->withType = withArrayDeref;
-    assigmentNode->assignmentType = type;
-    assigmentNode->variable = NULL;
-    assigmentNode->expressionNode = expressionNode;
-    assigmentNode->arrayDefinitionNode = arrayDerefNode;
+AssignmentNode * AssignmentWithArrayDerefAction(ArrayDerefNode * arrayDerefNode, AssignmentType type, ExpressionNode * expressionNode ) {
+    AssignmentNode * assignmentNode = malloc(sizeof(AssignmentNode));
+    assignmentNode->withType = withArrayDeref;
+    assignmentNode->assignmentType = type;
+    assignmentNode->variable = NULL;
+    assignmentNode->expressionNode = expressionNode;
+    assignmentNode->arrayDefinitionNode = arrayDerefNode;
 
-    return assigmentNode;
+    return assignmentNode;
 }
 
 // - - - - - - Function Call - - - - - - - - - -
 
-FunctionCallNode * WithArgsFunctionCallAction(Variable variable, FunctionCallArgNode * functionCallArgNode){
+FunctionCallNode * WithArgsFunctionCallAction(Variable variable, FunctionCallArgNode * functionCallArgNode) {
     FunctionCallNode * functionCallNode = malloc(sizeof(FunctionCallNode));
     functionCallNode->type = WithArgs;
     functionCallNode->Variable = variable;
@@ -901,14 +901,14 @@ WhileStatementNode * WhileStatementAction(ExpressionNode * expressionNode, CodeB
     return whileStatementNode;
 }
 
-ForStatementNode * ForStatementWithAssigmentAction(DeclarationNode * declarationNode, ExpressionNode * firstExpressionNode, AssigmentNode * assignmentNode, CodeBlockNode * codeBlockNode ){
+ForStatementNode * ForStatementWithAssigmentAction(DeclarationNode * declarationNode, ExpressionNode * firstExpressionNode, AssignmentNode * assignmentNode, CodeBlockNode * codeBlockNode ){
     ForStatementNode * forStatementNode = malloc(sizeof(ForStatementNode));
     forStatementNode->type = withExpression;
     forStatementNode->declarationNode = declarationNode;
     forStatementNode->firstExpressionNode = firstExpressionNode;
     forStatementNode->expressionNode = NULL;
     forStatementNode->codeBlockNode = codeBlockNode;
-    forStatementNode->assigmentNode = assignmentNode;
+    forStatementNode->AssignmentNode = assignmentNode;
 
     return forStatementNode;
 }
@@ -920,7 +920,7 @@ ForStatementNode * ForStatementWithExpressionAction(DeclarationNode * declaratio
     forStatementNode->firstExpressionNode = firstExpressionNode;
     forStatementNode->expressionNode = secondExpressionNode;
     forStatementNode->codeBlockNode = codeBlockNode;
-    forStatementNode->assigmentNode = NULL;
+    forStatementNode->AssignmentNode = NULL;
 
     return forStatementNode;
 }
@@ -936,21 +936,21 @@ SwitchStatementNode * SwitchStatementAction(ExpressionNode * expressionNode, Cod
 // - - - - - - Code Block - - - - - -
 
 
-CodeBlockNode * DelcalartionCodeBlockAction(DeclarationNode * declarationNode){
+CodeBlockNode * DeclarationCodeBlockAction(DeclarationNode * declarationNode) {
     CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
     node->child = NoChild;
     node->type = DeclarationStatement;
     node->declarationNode = declarationNode;
     return node;
 }
-CodeBlockNode * SpecialStatementCodeBlockAction(SpecialStatementNode * specialStatement){
+CodeBlockNode * SpecialStatementCodeBlockAction(SpecialStatementNode * specialStatement) {
     CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
     node->child = NoChild;
     node->type = SpecialStatement;
     node->specialStatement = specialStatement;
     return node;
 }
-CodeBlockNode * ExpressionCodeBlockAction(ExpressionNode * expression){
+CodeBlockNode * ExpressionCodeBlockAction(ExpressionNode * expression) {
     CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
     node->child = NoChild;
     node->type = ExpressionStatement;
@@ -958,7 +958,7 @@ CodeBlockNode * ExpressionCodeBlockAction(ExpressionNode * expression){
     return node;
 }
 
-CodeBlockNode * ReturnCodeBlockAction(ReturnStatementNode * returnStatementNode){
+CodeBlockNode * ReturnCodeBlockAction(ReturnStatementNode * returnStatementNode) {
     CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
     node->child = NoChild;
     node->type = ReturnStatement;
@@ -966,49 +966,63 @@ CodeBlockNode * ReturnCodeBlockAction(ReturnStatementNode * returnStatementNode)
     return node;
 }
 
-CodeBlockNode * IfElseCodeBlockAction(IfElseStatementNode * ifElse){
+CodeBlockNode * IfElseCodeBlockAction(IfElseStatementNode * ifElse) {
     CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
     node->child = NoChild;
     node->type = IfElseStatement;
     node->ifElse = ifElse;
     return node;
 }
-CodeBlockNode * ForCodeBlockAction(ForStatementNode * forStatement){
+CodeBlockNode * ForCodeBlockAction(ForStatementNode * forStatement) {
     CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
     node->child = NoChild;
     node->type = ForStatement;
     node->forStatement = forStatement;
     return node;
 }
-CodeBlockNode * WhileCodeBlockAction(WhileStatementNode * whileStatement){
+CodeBlockNode * WhileCodeBlockAction(WhileStatementNode * whileStatement) {
     CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
     node->child = NoChild;
     node->type = WhileStatement;
     node->whileStatement = whileStatement;
     return node;
 }
-CodeBlockNode * SwitchCodeBlockAction(SwitchStatementNode * switchStatement){
+CodeBlockNode * SwitchCodeBlockAction(SwitchStatementNode * switchStatement) {
     CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
     node->child = NoChild;
     node->type = SwitchStatement;
     node->switchStatement = switchStatement;
     return node;
 }
-CodeBlockNode * AssingmentCodeBlockAction(AssigmentNode * assingment){
+CodeBlockNode * AssignmentCodeBlockAction(AssignmentNode * assingment) {
     CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
     node->child = NoChild;
     node->type = AssignmentStatement;
     node->assingment = assingment;
     return node;
 }
-CodeBlockNode * CaseCodeBlockAction(ExpressionNode * expression, CodeBlockNode * codeBlock){
+CodeBlockNode * ContinueCodeBlockAction(CodeBlockNode * codeBlock) {
+    CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
+    node->child = HasChild;
+    node->type = ContinueStatement;
+    node->codeBlock = codeBlock;
+    return node;
+}
+CodeBlockNode * BreakCodeBlockAction(CodeBlockNode * codeBlock) {
+    CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
+    node->child = HasChild;
+    node->type = BreakStatement;
+    node->codeBlock = codeBlock;
+    return node;
+}
+CodeBlockNode * CaseCodeBlockAction(ExpressionNode * expression, CodeBlockNode * codeBlock) {
     CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
     node->child = HasChild;
     node->type = AssignmentStatement;
     node->codeBlock = codeBlock;
     return node;
 }
-CodeBlockNode * DefaultCaseCodeBlockAction(ExpressionNode * expression, CodeBlockNode * codeBlock){
+CodeBlockNode * DefaultCaseCodeBlockAction(ExpressionNode * expression, CodeBlockNode * codeBlock) {
     CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
     node->child = HasChild;
     node->type = DefaultCaseStatement;
@@ -1016,7 +1030,7 @@ CodeBlockNode * DefaultCaseCodeBlockAction(ExpressionNode * expression, CodeBloc
     return node;
 }
 
-CodeBlockNode * DelcalartionCodeBlockActionWithChild(DeclarationNode * declarationNode, CodeBlockNode * codeBlock){
+CodeBlockNode * DeclarFtionCodeBlockActionWithChild(DeclarationNode * declarationNode, CodeBlockNode * codeBlock) {
     CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
     node->child = HasChild;
     node->type = DeclarationStatement;
@@ -1024,7 +1038,7 @@ CodeBlockNode * DelcalartionCodeBlockActionWithChild(DeclarationNode * declarati
     node->codeBlock = codeBlock;
     return node;
 }
-CodeBlockNode * SpecialStatementCodeBlockActionWithChild(SpecialStatementNode * specialStatement, CodeBlockNode * codeBlock){
+CodeBlockNode * SpecialStatementCodeBlockActionWithChild(SpecialStatementNode * specialStatement, CodeBlockNode * codeBlock) {
     CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
     node->child = HasChild;
     node->type = SpecialStatement;
@@ -1032,7 +1046,7 @@ CodeBlockNode * SpecialStatementCodeBlockActionWithChild(SpecialStatementNode * 
     node->codeBlock = codeBlock;
     return node;
 }
-CodeBlockNode * ExpressionCodeBlockActionWithChild(ExpressionNode * expression, CodeBlockNode * codeBlock){
+CodeBlockNode * ExpressionCodeBlockActionWithChild(ExpressionNode * expression, CodeBlockNode * codeBlock) {
     CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
     node->child = HasChild;
     node->type = ExpressionStatement;
@@ -1041,7 +1055,7 @@ CodeBlockNode * ExpressionCodeBlockActionWithChild(ExpressionNode * expression, 
     return node;
 }
 
-CodeBlockNode * ReturnCodeBlockActionWithChild(ReturnStatementNode * returnStatementNode, CodeBlockNode * codeBlock){
+CodeBlockNode * ReturnCodeBlockActionWithChild(ReturnStatementNode * returnStatementNode, CodeBlockNode * codeBlock) {
     CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
     node->child = HasChild;
     node->type = ReturnStatement;
@@ -1050,7 +1064,7 @@ CodeBlockNode * ReturnCodeBlockActionWithChild(ReturnStatementNode * returnState
     return node;
 }
 
-CodeBlockNode * IfElseCodeBlockActionWithChild(IfElseStatementNode * ifElse, CodeBlockNode * codeBlock){
+CodeBlockNode * IfElseCodeBlockActionWithChild(IfElseStatementNode * ifElse, CodeBlockNode * codeBlock) {
     CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
     node->child = HasChild;
     node->type = IfElseStatement;
@@ -1058,7 +1072,7 @@ CodeBlockNode * IfElseCodeBlockActionWithChild(IfElseStatementNode * ifElse, Cod
     node->codeBlock = codeBlock;
     return node;
 }
-CodeBlockNode * ForCodeBlockActionWithChild(ForStatementNode * forStatement, CodeBlockNode * codeBlock){
+CodeBlockNode * ForCodeBlockActionWithChild(ForStatementNode * forStatement, CodeBlockNode * codeBlock) {
     CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
     node->child = HasChild;
     node->type = ForStatement;
@@ -1066,7 +1080,7 @@ CodeBlockNode * ForCodeBlockActionWithChild(ForStatementNode * forStatement, Cod
     node->codeBlock = codeBlock;
     return node;
 }
-CodeBlockNode * WhileCodeBlockActionWithChild(WhileStatementNode * whileStatement, CodeBlockNode * codeBlock){
+CodeBlockNode * WhileCodeBlockActionWithChild(WhileStatementNode * whileStatement, CodeBlockNode * codeBlock) {
     CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
     node->child = HasChild;
     node->type = WhileStatement;
@@ -1074,7 +1088,7 @@ CodeBlockNode * WhileCodeBlockActionWithChild(WhileStatementNode * whileStatemen
     node->codeBlock = codeBlock;
     return node;
 }
-CodeBlockNode * SwitchCodeBlockActionWithChild(SwitchStatementNode * switchStatement, CodeBlockNode * codeBlock){
+CodeBlockNode * SwitchCodeBlockActionWithChild(SwitchStatementNode * switchStatement, CodeBlockNode * codeBlock) {
     CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
     node->child = HasChild;
     node->type = SwitchStatement;
@@ -1082,7 +1096,7 @@ CodeBlockNode * SwitchCodeBlockActionWithChild(SwitchStatementNode * switchState
     node->codeBlock = codeBlock;
     return node;
 }
-CodeBlockNode * AssingmentCodeBlockActionWithChild(AssigmentNode * assingment, CodeBlockNode * codeBlock){
+CodeBlockNode * AssignmentCodeBlockActionWithChild(AssignmentNode * assingment, CodeBlockNode * codeBlock) {
     CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
     node->child = HasChild;
     node->type = AssignmentStatement;
@@ -1242,6 +1256,11 @@ StatementNode * DeclarationStatementNodeAction(DeclarationNode *declarationNode)
 
 /* = = = = = = =  SPECIAL STATEMENT ACTIONS  = = = = = = = */
 
+SpecialStatementNode * specialStatementAction(SelectorNode * selectorNode) {
+    SpecialStatementNode * node = malloc(sizeof(SpecialStatementNode));
+    node->selectorNode = selectorNode;
+    return node;
+}
 
 // - - - - - - Special Statement Selector - - - - - - - - - - - -
 
@@ -1425,11 +1444,10 @@ MapStatementNode * MapStatementAction(Variable variable1, NumConstantIntNode siz
     return node;
 }
 
-CreateStatementNode * CreateStatementAction(Variable variable1, NumConstantIntNode size, Variable variable2, Lambda * lambda) {
+CreateStatementNode * CreateStatementAction(Variable variable1, DataType dataType, Lambda * lambda) {
     CreateStatementNode * node = malloc(sizeof(CreateStatementNode));
     node->variable1 = variable1;
-    node->size = size;
-    node->variable2 = variable2;
+    node->dataType = dataType;
     node->lambda = lambda;
     return node;
 }
@@ -1481,10 +1499,6 @@ Lambda * LambdaAction(ExpressionNode * expressionNode) {
     node->expressionNode = expressionNode;
     return node;
 }
-
-
-
-
 
 /* = = = = = = =  FREE FUNCTIONS  = = = = = = = */
 
@@ -1583,8 +1597,6 @@ void freeMapStatementNode(MapStatementNode * node) {
 
 void freeCreateStatementNode(CreateStatementNode * node) {
     free(node->variable1);
-    free(node->size);
-    free(node->variable2);
     free(node);
 }
 

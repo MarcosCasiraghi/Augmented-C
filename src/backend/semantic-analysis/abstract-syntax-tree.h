@@ -169,7 +169,7 @@ typedef enum AssignmentNodeType{
     withArrayDeref
 }AssignmentNodeType;
 
-typedef struct AssigmentNode{
+typedef struct AssignmentNode{
     AssignmentNodeType withType;
     AssignmentType assignmentType;
 
@@ -177,7 +177,7 @@ typedef struct AssigmentNode{
 
     Variable variable;                          // NULL
     ArrayDerefNode * arrayDefinitionNode;       // NULL
-} AssigmentNode;
+} AssignmentNode;
 
 // - - - - - - Expression and Derivatives  - - - - - -
 
@@ -292,7 +292,7 @@ typedef struct ForStatementNode {               //for, (, ), ;, {, } son implici
     ForStatementType type;
     DeclarationNode * declarationNode;
     ExpressionNode * firstExpressionNode;
-    AssigmentNode * assigmentNode;          //either one of these
+    AssignmentNode * AssignmentNode;          //either one of these
     ExpressionNode * expressionNode;        //
     CodeBlockNode * codeBlockNode;
 } ForStatementNode;
@@ -330,7 +330,7 @@ typedef struct CodeBlockNode{
     ForStatementNode * forStatement;
     WhileStatementNode * whileStatement;
     SwitchStatementNode * switchStatement;
-    AssigmentNode * assingment;
+    AssignmentNode * assingment;
     ExpressionNode * expressionNode;
 
     CodeBlockNode * codeBlock;
@@ -449,8 +449,7 @@ typedef struct MapStatementNode {
 
 typedef struct CreateStatementNode {
     Variable variable1;
-    NumConstantIntNode size;
-    Variable variable2;
+    DataType dataType;
     Lambda * lambda;
 } CreateStatementNode;
 
