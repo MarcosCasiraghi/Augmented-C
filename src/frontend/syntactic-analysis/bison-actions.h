@@ -63,6 +63,7 @@ ExpressionNode * BitXorOpExpressionGrammarAction(ExpressionNode * leftExpression
 ExpressionNode * BitOrOpExpressionGrammarAction(ExpressionNode * leftExpressionNode, ExpressionNode * rightExpressionNode);
 ExpressionNode * BitAndOpExpressionGrammarAction(ExpressionNode * leftExpressionNode, ExpressionNode * rightExpressionNode);
 ExpressionNode * AndOpExpressionGrammarAction(ExpressionNode * leftExpressionNode, ExpressionNode * rightExpressionNode);
+ExpressionNode * ParenthesisExpressionAction(ExpressionNode * rightExpressionNode);
 ExpressionNode * OrOpExpressionGrammarAction(ExpressionNode * leftExpressionNode, ExpressionNode * rightExpressionNode);
 ExpressionNode * NotOpExpressionGrammarAction(ExpressionNode * rightExpressionNode);
 ExpressionNode * EqOpExpressionGrammarAction(ExpressionNode * leftExpressionNode, ExpressionNode * rightExpressionNode);
