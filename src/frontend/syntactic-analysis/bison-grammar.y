@@ -84,7 +84,6 @@
 %token <num_int> NUM_CONSTANT_INT
 %token <STRING> STRING
 %token <STRING> FILE_NAME
-%token <STRING> variable
 
 %token INT FLOAT DOUBLE LONG SHORT CHAR VOID
 
@@ -103,7 +102,6 @@
 %token NUMBER_SIGN INCLUDE RETURN IF WHILE FOR ELSE CONTINUE BREAK CASE DEFAULT SWITCH
 
 // Tipos de dato para los no-terminales generados desde Bison.
-// %type <variable> variable  creo que no va
 %type <array_deref> array_deref
 %type <return_statement> return_statement
 %type <if_else_statement> if_else_statement
@@ -193,23 +191,23 @@ selector:     REDUCE COMA reduce_statement 														{ $$ = ReduceStatementS
 			;
 
 
-reduce_statement: variable COMA size COMA variable COMA lambda 									{ $$ = ReduceStatementAction($1, $3, $5, $7); }
+reduce_statement: VARIABLE_NAME COMA size COMA VARIABLE_NAME COMA lambda 									{ $$ = ReduceStatementAction($1, $3, $5, $7); }
 			;
-filter_statement: variable COMA size COMA variable COMA boolean_lambda							{ $$ = FilterStatementAction($1, $3, $5, $7); }
+filter_statement: VARIABLE_NAME COMA size COMA VARIABLE_NAME COMA boolean_lambda							{ $$ = FilterStatementAction($1, $3, $5, $7); }
 			;
-map_statement: variable COMA size COMA variable COMA lambda 									{ $$ = MapStatementAction($1, $3, $5, $7); }
+map_statement: VARIABLE_NAME COMA size COMA VARIABLE_NAME COMA lambda 									{ $$ = MapStatementAction($1, $3, $5, $7); }
 			;
-foreach_statement: variable COMA size COMA OBRACE function_call CBRACE							{ $$ = ForeachStatementAction($1, $3, $6); }
+foreach_statement: VARIABLE_NAME COMA size COMA OBRACE function_call CBRACE							{ $$ = ForeachStatementAction($1, $3, $6); }
 			;				
-create_statement: variable COMA data_type COMA create_lambda 									{ $$ = CreateStatementAction($1, $3, $5); }
+create_statement: VARIABLE_NAME COMA data_type COMA create_lambda 									{ $$ = CreateStatementAction($1, $3, $5); }
 			;
-reduce_range_statement: variable COMA size COMA size COMA variable COMA lambda					{ $$ = ReduceRangeStatementAction($1, $3, $5, $7, $9); }
+reduce_range_statement: VARIABLE_NAME COMA size COMA size COMA VARIABLE_NAME COMA lambda					{ $$ = ReduceRangeStatementAction($1, $3, $5, $7, $9); }
 			;
-filter_range_statement: variable COMA size COMA size COMA variable COMA boolean_lambda			{ $$ = FilterRangeStatementAction($1, $3, $5, $7, $9); }
+filter_range_statement: VARIABLE_NAME COMA size COMA size COMA VARIABLE_NAME COMA boolean_lambda			{ $$ = FilterRangeStatementAction($1, $3, $5, $7, $9); }
 			;
-map_range_statement: variable COMA size COMA size COMA variable COMA lambda						{ $$ = MapRangeStatementAction($1, $3, $5, $7, $9); }
+map_range_statement: VARIABLE_NAME COMA size COMA size COMA VARIABLE_NAME COMA lambda						{ $$ = MapRangeStatementAction($1, $3, $5, $7, $9); }
 			;
-foreach_range_statement: variable COMA size COMA size COMA OBRACE function_call CBRACE			{ $$ = ForeachRangeStatementAction($1, $3, $5, $8);}
+foreach_range_statement: VARIABLE_NAME COMA size COMA size COMA OBRACE function_call CBRACE			{ $$ = ForeachRangeStatementAction($1, $3, $5, $8);}
 			;
 
 lambda: OBRACE expression CBRACE 																{ $$ = LambdaAction($2); }
@@ -234,18 +232,17 @@ meta_command: NUMBER_SIGN INCLUDE STRING 														{ $$ = StringMetaCommandA
 			| NUMBER_SIGN INCLUDE LT_OP FILE_NAME GR_OP											{ $$ = FileNameMetaCommandAction($4); }
 			;
 
-function_arg: data_type variable 																{ $$ = NoPointerFunctionArgAction($1, $2); }
-			| data_type pointers variable 														{ $$ = PointerFunctionArgAction($1, $2, $3); }
+function_arg: data_type VARIABLE_NAME 																{ $$ = NoPointerFunctionArgAction($1, $2); }
+			| data_type pointers VARIABLE_NAME 														{ $$ = PointerFunctionArgAction($1, $2, $3); }
 			;
 function_args: 	function_arg 																		{ $$ = SingleFunctionArgsAction($1); }
 			 | function_arg COMA function_args														{ $$ = MultipleFunctionArgsAction($1, $3); }
 			 ;
 
-function_declaration: data_type variable OPAR CPAR OBRACE code_block CBRACE							{ $$ = FunctionDeclarationNoArgsAction($1, $2, $6); }
-					| data_type variable OPAR function_args CPAR OBRACE code_block CBRACE			{ $$ = FunctionDeclarationWithArgsAction($1, $2, $7, $4); }
-					| VOID variable OPAR CPAR OBRACE code_block CBRACE								{ $$ = VoidFunctionDeclarationAction($2, $6); }
-					| VOID variable OPAR function_args CPAR OBRACE code_block CBRACE				{ $$ = VoidFunctionDeclarationWithArgsAction($2, $7, $4); }
-					;//estos antes eran VOID (se pasaba void* pero la func espera un data_type)
+function_declaration: data_type VARIABLE_NAME OPAR CPAR OBRACE code_block CBRACE							{ $$ = FunctionDeclarationNoArgsAction($1, $2, $6); }
+					| data_type VARIABLE_NAME OPAR function_args CPAR OBRACE code_block CBRACE			{ $$ = FunctionDeclarationWithArgsAction($1, $2, $7, $4); }
+					| VOID VARIABLE_NAME OPAR CPAR OBRACE code_block CBRACE								{ $$ = VoidFunctionDeclarationAction($2, $6); }
+					| VOID VARIABLE_NAME OPAR function_args CPAR OBRACE code_block CBRACE				{ $$ = VoidFunctionDeclarationWithArgsAction($2, $7, $4); }
 
 
 code_block: declaration code_block																{ $$ = DeclarationCodeBlockActionWithChild($1, $2); }
@@ -258,11 +255,11 @@ code_block: declaration code_block																{ $$ = DeclarationCodeBlockAct
 		|	switch_statement code_block															{ $$ = SwitchCodeBlockActionWithChild($1, $2); }
 		|	assignment SEMI_COLON code_block													{ $$ = AssignmentCodeBlockActionWithChild($1, $3); }
 
-		| 	CONTINUE SEMI_COLON	code_block														{ $$ = ContinueCodeBlockAction($3); } // WARNING: only allowed within a while or for loop
+		| 	CONTINUE SEMI_COLON	code_block														{ $$ = ContinueCodeBlockAction($3); } } // WARNING: only allowed within a while or for loop
 		|	BREAK SEMI_COLON code_block															{ $$ = BreakCodeBlockAction($3); } // WARNING: only allowed in while, for or switch
 
-		| 	CASE expression COLON code_block													{ $$ = CaseCodeBlockAction($2, $4); } // WARNING: only allowed in switch. Expression should only allow: variable, NUM_CONSTANT_FLOAT, function_call, string
-		|	DEFAULT COLON code_block															{ $$ = DefaultCaseCodeBlockAction($3); }// WARNING: only allowed in switch. Expression should only allow: variable, NUM_CONSTANT_FLOAT, function_call, string
+		| 	CASE expression COLON code_block													{ $$ = CaseCodeBlockAction($2, $4); } 
+		|	DEFAULT COLON code_block															{ $$ = DefaultCaseCodeBlockAction($3); }
 
 		|	declaration																			{ $$ = DeclarationCodeBlockAction($1); }		
 		|	special_statement																	{ $$ = SpecialStatementCodeBlockAction($1); }
@@ -285,14 +282,14 @@ declaration: single_declaration 																{ $$ = DeclarationOfSingleAction
 			| array_declaration																	{ $$ = DeclarationOfArrayAction($1); }
 			;
 
-single_declaration: data_type variable single_initialization									{ $$ = SingleWithoutPointerDeclarationAction($1, $2, $3); } // different from assignment since you cannot do: int var += 3;
-				| data_type pointers variable single_initialization								{ $$ = SingleWithPointerDeclarationAction($2, $1, $3, $4); }
+single_declaration: data_type VARIABLE_NAME single_initialization									{ $$ = SingleWithoutPointerDeclarationAction($1, $2, $3); } // different from assignment since you cannot do: int var += 3;
+				| data_type pointers VARIABLE_NAME single_initialization								{ $$ = SingleWithPointerDeclarationAction($2, $1, $3, $4); }
 				;
 single_initialization: ASSIGN expression SEMI_COLON 											{ $$ = SingleInitializationWithAssignAction($2); }
 					| SEMI_COLON																{ $$ = SingleInitializationWithoutAssignAction(); } 
 					; 
 
-array_declaration: data_type variable array_declaration_size array_initialization				{ $$ = ArrayDeclarationAction($1, $2, $3, $4); }
+array_declaration: data_type VARIABLE_NAME array_declaration_size array_initialization				{ $$ = ArrayDeclarationAction($1, $2, $3, $4); }
 					;
 array_declaration_size: OBRACKET CBRACKET array_declaration_size								{ $$ = ArraySizeWithoutSizeWithChildrenAction($3); }					
 					|   OBRACKET NUM_CONSTANT_INT CBRACKET array_declaration_size				{ $$ = ArraySizeWithSizeWithChildrenAction($2, $4);}
@@ -313,13 +310,13 @@ assignment_type: ASSIGN 																		{ $$ = AssignAction();}
 				| DIV_ASSIGN 																	{ $$ = DivAssignAction(); }
 				| MOD_ASSIGN																	{ $$ = ModAssignAction(); }
 				;
-assignment: variable assignment_type expression 												{ $$ = AssignmentWithVarAction($1, $2, $3); }
+assignment: VARIABLE_NAME assignment_type expression 												{ $$ = AssignmentWithVarAction($1, $2, $3); }
 		| array_deref assignment_type expression												{ $$ = AssignmentWithArrayDerefAction($1, $2, $3); }
 		;
 
 
 
-array_deref: variable OBRACKET size CBRACKET													{ $$ = ArrayDerefAction($1, $3); }
+array_deref: VARIABLE_NAME OBRACKET size CBRACKET													{ $$ = ArrayDerefAction($1, $3); }
 			;
 
 
@@ -345,17 +342,15 @@ else_statement: ELSE OBRACE code_block CBRACE													{ $$ = ElseStatementAc
 while_statement: WHILE OPAR expression CPAR OBRACE code_block CBRACE							{ $$ = WhileStatementAction($3, $6); }
 	;
 
-// el ; entre declaration y boolean no esta dado que declaration ya tiene uno
 
 for_statement: FOR OPAR declaration expression SEMI_COLON assignment CPAR OBRACE code_block CBRACE		{ $$ = ForStatementWithAssigmentAction($3, $4, $6, $9); }
 			|  FOR OPAR declaration expression SEMI_COLON expression CPAR OBRACE code_block CBRACE		{ $$ = ForStatementWithExpressionAction($3, $4, $6, $9); }
 			;
 
 switch_statement: SWITCH OPAR expression CPAR OBRACE code_block CBRACE 	 						{ $$ = SwitchStatementAction($3, $6); }
-	;	
-// WARNING: disallow NUM_CONSTANT_FLOAT, string, SPECIAL_VARIABLE
 
-size: variable 																					{ $$ = SizeVarAction($1); }
+
+size: VARIABLE_NAME 																					{ $$ = SizeVarAction($1); }
 	| NUM_CONSTANT_INT 																			{ $$ = SizeNumConstIntAction($1); }	
 	;
 
@@ -387,7 +382,7 @@ expression:  expression ADD_OP expression 								{ $$ = AddOpExpressionAction($
 			| expression LE_OP expression								{ $$ = LeOpExpressionAction($1, $3); }
 			| expression NE_OP expression								{ $$ = NeOpExpressionAction($1, $3); }
 
-			| variable 													{ $$ = variableOpExpressionAction($1); }
+			| VARIABLE_NAME 													{ $$ = variableOpExpressionAction($1); }
 			| NUM_CONSTANT_FLOAT 										{ $$ = NumConstantFloatOpExpressionAction($1); }
 			| NUM_CONSTANT_INT 											{ $$ = NumConstantIntOpExpressionAction($1); }
 			| SPECIAL_VARIABLE 											{ $$ = SpecialVarOpExpressionAction($1); }
@@ -397,8 +392,8 @@ expression:  expression ADD_OP expression 								{ $$ = AddOpExpressionAction($
 			;
 
 
-function_call: variable OPAR function_call_arg CPAR 					{ $$ = WithArgsFunctionCallAction($1, $3);}
-			| variable OPAR CPAR 										{ $$ = NoArgsFunctionCallAction($1); }
+function_call: VARIABLE_NAME OPAR function_call_arg CPAR 					{ $$ = WithArgsFunctionCallAction($1, $3);}
+			| VARIABLE_NAME OPAR CPAR 										{ $$ = NoArgsFunctionCallAction($1); }
 			;
 
 function_call_arg: expression COMA function_call_arg					{ $$ = WithArgsFunctionCallArgAction($1, $3); }
