@@ -68,7 +68,17 @@
 	// Terminales.
 	token token;
 	string * variable;
-	//string * size;
+	int num_constant_int;
+	float num_constant_float;
+	int INT;
+	float FLOAT;
+	double DOUBLE;
+	long LONG;
+	short SHORT;
+	char CHAR;
+	void VOID;
+	
+	char * STRING;
 }
 
 
@@ -76,9 +86,19 @@
 
 %token REDUCE MAP FILTER FOREACH CREATE REDUCERANGE MAPRANGE FILTERRANGE FOREACHRANGE START_SPECIAL END_SPECIAL 
 
-%token INT FLOAT DOUBLE LONG SHORT CHAR VOID
-%token VARIABLE_NAME NUM_CONSTANT_FLOAT NUM_CONSTANT_INT SPECIAL_VARIABLE STRING
-%token FILE_NAME
+%token <INT> INT 
+%token <FLOAT> FLOAT
+%token <DOUBLE> DOUBLE
+%token <LONG> LONG
+%token <SHORT> SHORT
+%token <CHAR> CHAR
+%token <VOID> VOID
+%token <STRING> VARIABLE_NAME 
+%token <STRING> SPECIAL_VARIABLE 
+%token <num_constant_float> NUM_CONSTANT_FLOAT
+%token <num_constant_int> NUM_CONSTANT_INT
+%token <STRING> STRING
+%token <STRING> FILE_NAME
 
 %token ADD_OP SUB_OP MULT_OP DIV_OP MOD_OP
 %token INC_OP DEC_OP
@@ -223,7 +243,7 @@ statements: meta_command statements																{ $$ = MetaCommandWithStateme
 		;
 
 meta_command: NUMBER_SIGN INCLUDE STRING 														{ $$ = StringMetaCommandAction($3); }
-			| NUMBER_SIGN INCLUDE LT_OP FILE_NAME GR_OP											{ $$ = FileMetaCommandAction($3); }
+			| NUMBER_SIGN INCLUDE LT_OP FILE_NAME GR_OP											{ $$ = FileMetaCommandAction($4); }
 			;
 
 function_arg: data_type variable 																{ $$ = NoPointerFunctionArgAction($1, $2); }
@@ -235,26 +255,26 @@ function_args: 	function_arg 																	{ $$ = SingleFunctionArgsAction($1
 
 function_declaration: data_type variable OPAR CPAR OBRACE code_block CBRACE						{ $$ = FunctionDeclarationNoArgsAction($1, $2, $6); }
 					| data_type variable OPAR function_args CPAR OBRACE code_block CBRACE		{ $$ = FunctionDeclarationWithArgsAction($1, $2, $4, $7); }
-					| VOID variable OPAR CPAR OBRACE code_block CBRACE							{ $$ = VoidFunctionDeclarationNoArgsAction($2, $5); }
+					| VOID variable OPAR CPAR OBRACE code_block CBRACE							{ $$ = VoidFunctionDeclarationNoArgsAction($2, $6); }
 					| VOID variable OPAR function_args CPAR OBRACE code_block CBRACE			{ $$ = VoidFunctionDeclarationWithArgsAction($2, $4, $7); }
 					;
 
 
 code_block: declaration code_block																{ $$ = DeclarationCodeBlockActionWithChild($1, $2); }
 		|	special_statement code_block														{ $$ = SpecialStatementCodeBlockActionWithChild($1, $2); }
-		|	expression SEMI_COLON code_block													{ $$ = ExpressionCodeBlockActionWithChild($1, $2); }
+		|	expression SEMI_COLON code_block													{ $$ = ExpressionCodeBlockActionWithChild($1, $3); }
 		| 	return_statement code_block															{ $$ = ReturnCodeBlockActionWithChild($1, $2); }
 		|	if_else_statement code_block														{ $$ = IfElseCodeBlockActionWithChild($1, $2); }
 		|	for_statement code_block															{ $$ = ForCodeBlockActionWithChild($1, $2); }
 		|	while_statement code_block															{ $$ = WhileCodeBlockActionWithChild($1, $2); }
 		|	switch_statement code_block															{ $$ = SwitchCodeBlockActionWithChild($1, $2); }
-		|	assignment SEMI_COLON code_block													{ $$ = AssignmentCodeBlockActionWithChild($1, $2); }
+		|	assignment SEMI_COLON code_block													{ $$ = AssignmentCodeBlockActionWithChild($1, $3); }
 
-		| 	CONTINUE SEMI_COLON	code_block														{ $$ = ContinueCodeBlockAction($2); } // WARNING: only allowed within a while or for loop
-		|	BREAK SEMI_COLON	code_block														{ $$ = BreakCodeBlockAction($2) } // WARNING: only allowed in while, for or switch
+		| 	CONTINUE SEMI_COLON	code_block														{ $$ = ContinueCodeBlockAction($3); } // WARNING: only allowed within a while or for loop
+		|	BREAK SEMI_COLON code_block															{ $$ = BreakCodeBlockAction($3) } // WARNING: only allowed in while, for or switch
 
-		| 	CASE expression COLON code_block													{ $$ = CaseCodeBlockAction($1, $3); } // WARNING: only allowed in switch. Expression should only allow: variable, NUM_CONSTANT_FLOAT, function_call, string
-		|	DEFAULT COLON code_block															{ $$ = DefaultCaseCodeBlockAction($1, $3); }// WARNING: only allowed in switch. Expression should only allow: variable, NUM_CONSTANT_FLOAT, function_call, string
+		| 	CASE expression COLON code_block													{ $$ = CaseCodeBlockAction($2, $4); } // WARNING: only allowed in switch. Expression should only allow: variable, NUM_CONSTANT_FLOAT, function_call, string
+		|	DEFAULT COLON code_block															{ $$ = DefaultCaseCodeBlockAction($3); }// WARNING: only allowed in switch. Expression should only allow: variable, NUM_CONSTANT_FLOAT, function_call, string
 
 		|	declaration																			{ $$ = DeclarationCodeBlockAction($1); }		
 		|	special_statement																	{ $$ = SpecialStatementCodeBlockAction($1); }
@@ -265,7 +285,6 @@ code_block: declaration code_block																{ $$ = DeclarationCodeBlockAct
 		|	while_statement																		{ $$ = WhileCodeBlockAction($1); }
 		|	switch_statement																	{ $$ = SwitchCodeBlockAction($1); }
 		|	assignment SEMI_COLON																{ $$ = AssignmentCodeBlockAction($1); }
-
 		| 	CONTINUE SEMI_COLON			// WARNING: only allowed within a while or for loop
 		|	BREAK SEMI_COLON			// WARNING: only allowed in while, for or switch
 
@@ -295,7 +314,7 @@ array_declaration_size: OBRACKET CBRACKET array_declaration_size								{ $$ = A
 array_list: NUM_CONSTANT_INT COMA array_list													{ $$ = ArrayListManyAction($1, $3); }
 			| NUM_CONSTANT_INT																	{ $$ = ArrayListAction($1); }
 			;
-array_initialization: ASSIGN OBRACE array_list CBRACE SEMI_COLON 								{ $$ = ArrayInitializeWithListAction($2) }
+array_initialization: ASSIGN OBRACE array_list CBRACE SEMI_COLON 								{ $$ = ArrayInitializeWithListAction($3) }
 					| SEMI_COLON																{ $$ = ArrayInitializeEmptyAction();}
 					;
 
@@ -323,8 +342,8 @@ return_statement: RETURN expression SEMI_COLON													{ $$ = ReturnStatemen
 	;
 
 if_else_statement: if_statement 																{ $$ = IfWithoutElseStatementGrammarAction($1); }
-| if_statement else_statement 																	{ $$ = IfWithElseStatementGrammarAction($1, $2); }
-	;
+				 | if_statement else_statement 													{ $$ = IfWithElseStatementGrammarAction($1, $2); }
+				 ;
 if_statement: IF OPAR expression CPAR OBRACE code_block CBRACE									{ $$ = IfStatementGrammarAction($3, $6); }
 	;
 else_statement: ELSE OBRACE code_block CBRACE													{ $$ = ElseStatementGrammarAction($3); }

@@ -1022,15 +1022,16 @@ CodeBlockNode * CaseCodeBlockAction(ExpressionNode * expression, CodeBlockNode *
     node->codeBlock = codeBlock;
     return node;
 }
-CodeBlockNode * DefaultCaseCodeBlockAction(ExpressionNode * expression, CodeBlockNode * codeBlock) {
+CodeBlockNode * DefaultCaseCodeBlockAction(CodeBlockNode * codeBlock) {
     CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
     node->child = HasChild;
     node->type = DefaultCaseStatement;
+    node->expression = NULL;
     node->codeBlock = codeBlock;
     return node;
 }
 
-CodeBlockNode * DeclarFtionCodeBlockActionWithChild(DeclarationNode * declarationNode, CodeBlockNode * codeBlock) {
+CodeBlockNode * DeclarationCodeBlockActionWithChild(DeclarationNode * declarationNode, CodeBlockNode * codeBlock) {
     CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
     node->child = HasChild;
     node->type = DeclarationStatement;
