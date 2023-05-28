@@ -21,6 +21,10 @@
 	
 
 	//Variable variable;		creo que no va
+	RangeNode * range;
+	ConsumerFunctionNode * consumer_function;
+	UnboundedParametersNode * unbounded_parameters;
+	BoundedParametersNode * bounded_parameters;
 	ReduceStatementNode * reduce_statement;
 	FilterStatementNode * filter_statement;
 	MapStatementNode * map_statement;
@@ -102,6 +106,10 @@
 %token NUMBER_SIGN INCLUDE RETURN IF WHILE FOR ELSE CONTINUE BREAK CASE DEFAULT SWITCH
 
 // Tipos de dato para los no-terminales generados desde Bison.
+%type <range> range
+%type <consumer_function> consumer_function
+%type <unbounded_parameters> unbounded_parameters
+%type <bounded_parameters> bounded_parameters
 %type <array_deref> array_deref
 %type <return_statement> return_statement
 %type <if_else_statement> if_else_statement
@@ -191,24 +199,34 @@ selector:     REDUCE COMA reduce_statement 														{ $$ = ReduceStatementS
 			;
 
 
-reduce_statement: VARIABLE_NAME COMA size COMA VARIABLE_NAME COMA lambda 									{ $$ = ReduceStatementAction($1, $3, $5, $7); }
+reduce_statement: unbounded_parameters COMA lambda 									{ $$ = ReduceStatementAction($1, $3); }
 			;
-filter_statement: VARIABLE_NAME COMA size COMA VARIABLE_NAME COMA boolean_lambda							{ $$ = FilterStatementAction($1, $3, $5, $7); }
+filter_statement: unbounded_parameters COMA boolean_lambda							{ $$ = FilterStatementAction($1, $3); }
 			;
-map_statement: VARIABLE_NAME COMA size COMA VARIABLE_NAME COMA lambda 									{ $$ = MapStatementAction($1, $3, $5, $7); }
+map_statement: unbounded_parameters COMA lambda 									{ $$ = MapStatementAction($1, $3); }
 			;
-foreach_statement: VARIABLE_NAME COMA size COMA OBRACE function_call CBRACE							{ $$ = ForeachStatementAction($1, $3, $6); }
+foreach_statement: VARIABLE_NAME COMA size COMA consumer_function					{ $$ = ForeachStatementAction($1, $3, $5); }
 			;				
-create_statement: VARIABLE_NAME COMA data_type COMA create_lambda 									{ $$ = CreateStatementAction($1, $3, $5); }
+create_statement: VARIABLE_NAME COMA data_type COMA create_lambda 					{ $$ = CreateStatementAction($1, $3, $5); }
 			;
-reduce_range_statement: VARIABLE_NAME COMA size COMA size COMA VARIABLE_NAME COMA lambda					{ $$ = ReduceRangeStatementAction($1, $3, $5, $7, $9); }
+reduce_range_statement: bounded_parameters COMA lambda								{ $$ = ReduceRangeStatementAction($1, $3); }
 			;
-filter_range_statement: VARIABLE_NAME COMA size COMA size COMA VARIABLE_NAME COMA boolean_lambda			{ $$ = FilterRangeStatementAction($1, $3, $5, $7, $9); }
+filter_range_statement: bounded_parameters COMA boolean_lambda						{ $$ = FilterRangeStatementAction($1, $3); }
 			;
-map_range_statement: VARIABLE_NAME COMA size COMA size COMA VARIABLE_NAME COMA lambda						{ $$ = MapRangeStatementAction($1, $3, $5, $7, $9); }
+map_range_statement: bounded_parameters COMA lambda									{ $$ = MapRangeStatementAction($1, $3); }
 			;
-foreach_range_statement: VARIABLE_NAME COMA size COMA size COMA OBRACE function_call CBRACE			{ $$ = ForeachRangeStatementAction($1, $3, $5, $8);}
+foreach_range_statement: VARIABLE_NAME COMA range COMA consumer_function			{ $$ = ForeachRangeStatementAction($1, $3, $5);}
 			;
+
+range: size COMA size																{ $$ = RangeAction($1, $3); }
+		;
+
+consumer_function: OBRACE function_call CBRACE										{ $$ = ConsumerFunctionAction($2); }
+		;
+unbounded_parameters: VARIABLE_NAME COMA size COMA VARIABLE_NAME					{ $$ = UnboundedParametersAction($1, $3, $5); }
+		;
+bounded_parameters: VARIABLE_NAME COMA range COMA VARIABLE_NAME						{ $$ = BoundedParametersAction($1, $3, $5); }
+		;
 
 lambda: OBRACE expression CBRACE 																{ $$ = LambdaAction($2); }
 			;

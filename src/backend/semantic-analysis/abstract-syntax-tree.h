@@ -412,6 +412,27 @@ typedef struct ProgramNode{
 
 // - - - - - - Special Statements  - - - - - -
 
+typedef struct RangeNode {
+    SizeNode * sizeNode1;
+    SizeNode * sizeNode2;
+}RangeNode;
+
+typedef struct ConsumerFunctionNode{
+    FunctionCallNode * functionCallNode;
+}ConsumerFunctionNode;
+
+typedef struct UnboundedParametersNode {
+    Variable variable1;
+    SizeNode * SizeNode;
+    Variable variable2;
+}UnboundedParametersNode;
+
+typedef struct BoundedParametersNode{
+    Variable variable1;
+    RangeNode * rangeNode;
+    Variable variable2;
+}BoundedParametersNode;
+
 typedef struct Lambda {
     ExpressionNode * expressionNode;
 } Lambda;
@@ -422,29 +443,23 @@ typedef struct CreateLambda {
 } CreateLambda;
 
 typedef struct ReduceStatementNode {
-    Variable variable1;
-    SizeNode * size;
-    Variable variable2;
+    UnboundedParametersNode * unboundedParametersNode;
     Lambda * lambda;
 } ReduceStatementNode;
 
 typedef struct FilterStatementNode {
-    Variable variable1;
-    SizeNode * size;
-    Variable variable2;
+    UnboundedParametersNode * unboundedParametersNode;
     Lambda * lambda;
 } FilterStatementNode;
 
 typedef struct ForeachStatementNode {
-    Variable variable1;
-    SizeNode * size;
-    FunctionCallNode * functionCallNode;
+    Variable variable;
+    SizeNode * sizeNode;
+    ConsumerFunctionNode * consumerFunctionNode;
 } ForeachStatementNode;
 
 typedef struct MapStatementNode {
-    Variable variable1;
-    SizeNode * size;
-    Variable variable2;
+    UnboundedParametersNode * unboundedParametersNode;
     Lambda * lambda;
 } MapStatementNode;
 
@@ -455,33 +470,23 @@ typedef struct CreateStatementNode {
 } CreateStatementNode;
 
 typedef struct ReduceRangeStatementNode {
-    Variable variable1;
-    SizeNode * size1;
-    SizeNode * size2;
-    Variable variable2;
+    BoundedParametersNode * boundedParametersNode;
     Lambda * lambda;
 } ReduceRangeStatementNode;
 
 typedef struct FilterRangeStatementNode {
-    Variable variable1;
-    SizeNode * size1;
-    SizeNode * size2;
-    Variable variable2;
+    BoundedParametersNode * boundedParametersNode;
     Lambda * lambda;
 } FilterRangeStatementNode;
 
 typedef struct ForeachRangeStatementNode {
-    Variable variable1;
-    SizeNode * size1;
-    SizeNode * size2;
-    FunctionCallNode * functionCallNode;
+    Variable variable;
+    RangeNode * rangeNode;
+    ConsumerFunctionNode * consumerFunctionNode;
 } ForeachRangeStatementNode;
 
 typedef struct MapRangeStatementNode {
-    Variable variable1;
-    SizeNode * size1;
-    SizeNode * size2;
-    Variable variable2;
+    BoundedParametersNode * boundedParametersNode;
     Lambda * lambda;
 } MapRangeStatementNode;
 

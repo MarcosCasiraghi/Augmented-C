@@ -15,15 +15,20 @@
 ProgramNode * ProgramAction(StatementNode * statement);
 
 //AUGMENTED-C
-ReduceStatementNode * ReduceStatementAction(Variable variable1, SizeNode * size, Variable variable2, Lambda * lambda);
-FilterStatementNode * FilterStatementAction(Variable variable1, SizeNode * size, Variable variable2, Lambda * lambda);
-ForeachStatementNode * ForeachStatementAction(Variable variable1, SizeNode * size, FunctionCallNode * functionCallNode);
-MapStatementNode * MapStatementAction(Variable variable1, SizeNode * size, Variable variable2, Lambda * lambda);
+RangeNode * RangeAction(SizeNode * sizeNode1, SizeNode * sizeNode2);
+ConsumerFunctionNode * ConsumerFunctionAction(FunctionCallNode * functionCallNode);
+UnboundedParametersNode * UnboundedParametersAction(Variable variable1, SizeNode * sizeNode, Variable variable2 );
+BoundedParametersNode * BoundedParametersAction(Variable variable1, RangeNode * rangeNode, Variable variable2);
+
+ReduceStatementNode * ReduceStatementAction(UnboundedParametersNode * unboundedParametersNode, Lambda * lambda);
+FilterStatementNode * FilterStatementAction(UnboundedParametersNode * unboundedParametersNode, Lambda * lambda);
+ForeachStatementNode * ForeachStatementAction(Variable variable, SizeNode * sizeNode, ConsumerFunctionNode * consumerFunctionNode);
+MapStatementNode * MapStatementAction(UnboundedParametersNode * unboundedParametersNode, Lambda * lambda);
 CreateStatementNode * CreateStatementAction(Variable variable1, DataType dataType, CreateLambda * createLambda);
-ReduceRangeStatementNode * ReduceRangeStatementAction(Variable variable1, SizeNode * size1, SizeNode * size2, Variable variable2, Lambda * lambda);
-FilterRangeStatementNode * FilterRangeStatementAction(Variable variable1, SizeNode * size1, SizeNode * size2, Variable variable2, Lambda * lambda);
-ForeachRangeStatementNode * ForeachRangeStatementAction(Variable variable1, SizeNode * size1, SizeNode * size2, FunctionCallNode * functionCallNode);
-MapRangeStatementNode * MapRangeStatementAction(Variable variable1, SizeNode * size1, SizeNode * size2, Variable variable2, Lambda * lambda);
+ReduceRangeStatementNode * ReduceRangeStatementAction(BoundedParametersNode * boundedParametersNode, Lambda * lambda);
+FilterRangeStatementNode * FilterRangeStatementAction(BoundedParametersNode * boundedParametersNode, Lambda * lambda);
+ForeachRangeStatementNode * ForeachRangeStatementAction(Variable variable, RangeNode * rangeNode, ConsumerFunctionNode * consumerFunctionNode);
+MapRangeStatementNode * MapRangeStatementAction(BoundedParametersNode * boundedParametersNode, Lambda * lambda);
 
 //ANSI C
 ArrayInitializeNode * ArrayInitializeEmptyAction();

@@ -1432,6 +1432,39 @@ SelectorNode * MapRangeStatementSelectorAction(MapRangeStatementNode * mapRangeS
 
 // - - - - - - Lambda Expressions - - - - - - -
 
+RangeNode * RangeAction(SizeNode * sizeNode1, SizeNode * sizeNode2){
+    RangeNode * rangeNode = malloc(sizeof(RangeNode));
+    rangeNode->sizeNode1 = sizeNode1;
+    rangeNode->sizeNode2 = sizeNode2;
+
+    return rangeNode;
+}
+
+ConsumerFunctionNode * ConsumerFunctionAction(FunctionCallNode * functionCallNode){
+    ConsumerFunctionNode * consumerFunctionNode = malloc(sizeof(ConsumerFunctionNode));
+    consumerFunctionNode->functionCallNode = functionCallNode;
+
+    return consumerFunctionNode;
+}
+
+UnboundedParametersNode * UnboundedParametersAction(Variable variable1, SizeNode * sizeNode, Variable variable2 ){
+    UnboundedParametersNode * unboundedParametersNode = malloc(sizeof(UnboundedParametersNode));
+    unboundedParametersNode->variable1 = variable1;
+    unboundedParametersNode->SizeNode = sizeNode;
+    unboundedParametersNode->variable2 = variable2;
+
+    return unboundedParametersNode;
+}
+
+BoundedParametersNode * BoundedParametersAction(Variable variable1, RangeNode * rangeNode, Variable variable2){
+    BoundedParametersNode * boundedParametersNode = malloc(sizeof(BoundedParametersNode));
+    boundedParametersNode->variable1 = variable1;
+    boundedParametersNode->rangeNode = rangeNode;
+    boundedParametersNode->variable2 = variable2;
+
+    return boundedParametersNode;
+}
+
 Lambda * LambdaAction(ExpressionNode * expressionNode) {
     Lambda * node = malloc(sizeof(Lambda));
     node->expressionNode = expressionNode;
@@ -1445,37 +1478,31 @@ CreateLambda * CreateLambdaAction(NumConstantIntNode constant1, NumConstantIntNo
 }
 
 // - - - - - - Special Statements - - - - - - -
-ReduceStatementNode * ReduceStatementAction(Variable variable1, SizeNode * size, Variable variable2, Lambda * lambda) {
+ReduceStatementNode * ReduceStatementAction(UnboundedParametersNode * unboundedParametersNode, Lambda * lambda) {
     ReduceStatementNode * node = malloc(sizeof(ReduceStatementNode));
-    node->variable1 = variable1;
-    node->size = size;
-    node->variable2 = variable2;
+    node->unboundedParametersNode = unboundedParametersNode;
     node->lambda = lambda;
     return node;
 }
 
-FilterStatementNode * FilterStatementAction(Variable variable1, SizeNode * size, Variable variable2, Lambda * lambda) {
+FilterStatementNode * FilterStatementAction(UnboundedParametersNode * unboundedParametersNode, Lambda * lambda) {
     FilterStatementNode * node = malloc(sizeof(FilterStatementNode));
-    node->variable1 = variable1;
-    node->size = size;
-    node->variable2 = variable2;
+    node->unboundedParametersNode = unboundedParametersNode;
     node->lambda = lambda;
     return node;
 }
 
-ForeachStatementNode * ForeachStatementAction(Variable variable1, SizeNode * size, FunctionCallNode * functionCallNode) {
+ForeachStatementNode * ForeachStatementAction(Variable variable, SizeNode * sizeNode, ConsumerFunctionNode * consumerFunctionNode) {
     ForeachStatementNode * node = malloc(sizeof(ForeachStatementNode));
-    node->variable1 = variable1;
-    node->size = size;
-    node->functionCallNode = functionCallNode;
+    node->variable = variable;
+    node->sizeNode = sizeNode;
+    node->consumerFunctionNode = consumerFunctionNode;
     return node;
 }
 
-MapStatementNode * MapStatementAction(Variable variable1, SizeNode * size, Variable variable2, Lambda * lambda) {
+MapStatementNode * MapStatementAction(UnboundedParametersNode * unboundedParametersNode, Lambda * lambda) {
     MapStatementNode * node = malloc(sizeof(MapStatementNode));
-    node->variable1 = variable1;
-    node->size = size;
-    node->variable2 = variable2;
+    node->unboundedParametersNode = unboundedParametersNode;
     node->lambda = lambda;
     return node;
 }
@@ -1488,42 +1515,32 @@ CreateStatementNode * CreateStatementAction(Variable variable1, DataType dataTyp
     return node;
 }
 
-ReduceRangeStatementNode * ReduceRangeStatementAction(Variable variable1, SizeNode * size1, SizeNode * size2, Variable variable2, Lambda * lambda) {
+ReduceRangeStatementNode * ReduceRangeStatementAction(BoundedParametersNode * boundedParametersNode, Lambda * lambda) {
     ReduceRangeStatementNode * node = malloc(sizeof(ReduceRangeStatementNode));
-    node->variable1 = variable1;
-    node->size1 = size1;
-    node->size2 = size2;
-    node->variable2 = variable2;
+    node->boundedParametersNode = boundedParametersNode;
     node->lambda = lambda;
     return node;
 }
 
 
-FilterRangeStatementNode * FilterRangeStatementAction(Variable variable1, SizeNode * size1, SizeNode * size2, Variable variable2, Lambda * lambda) {
+FilterRangeStatementNode * FilterRangeStatementAction(BoundedParametersNode * boundedParametersNode, Lambda * lambda) {
     FilterRangeStatementNode * node = malloc(sizeof(FilterRangeStatementNode));
-    node->variable1 = variable1;
-    node->size1 = size1;
-    node->size2 = size2;
-    node->variable2 = variable2;
+    node->boundedParametersNode = boundedParametersNode;
     node->lambda = lambda;
     return node;
 }
 
-ForeachRangeStatementNode * ForeachRangeStatementAction(Variable variable1, SizeNode * size1, SizeNode * size2, FunctionCallNode * functionCallNode) {
+ForeachRangeStatementNode * ForeachRangeStatementAction(Variable variable, RangeNode * rangeNode, ConsumerFunctionNode * consumerFunctionNode) {
     ForeachRangeStatementNode * node = malloc(sizeof(ForeachRangeStatementNode));
-    node->variable1 = variable1;
-    node->size1 = size1;
-    node->size2 = size2;
-    node->functionCallNode = functionCallNode;
+    node->variable = variable;
+    node->rangeNode = rangeNode;
+    node->consumerFunctionNode = consumerFunctionNode;
     return node;
 }
 
-MapRangeStatementNode * MapRangeStatementAction(Variable variable1, SizeNode * size1, SizeNode * size2, Variable variable2, Lambda * lambda) {
+MapRangeStatementNode * MapRangeStatementAction(BoundedParametersNode * boundedParametersNode, Lambda * lambda) {
     MapRangeStatementNode * node = malloc(sizeof(MapRangeStatementNode));
-    node->variable1 = variable1;
-    node->size1 = size1;
-    node->size2 = size2;
-    node->variable2 = variable2;
+    node->boundedParametersNode = boundedParametersNode;
     node->lambda = lambda;
     return node;
 }
