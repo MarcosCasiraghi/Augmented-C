@@ -3,6 +3,8 @@
 
 #include "../../backend/support/shared.h"
 #include "../../backend/semantic-analysis/abstract-syntax-tree.h"
+#include "../../backend/semantic-analysis/symbol-list.h"
+
 
 /**
  * Se definen las acciones a ejecutar sobre cada regla de producción de la
@@ -13,6 +15,9 @@
 
 // Programa.
 ProgramNode * ProgramAction(StatementNode * statement);
+
+// ADD TO SYMBOL TABLE
+void addToSymbolList(DataType dataType, Variable variable, bool is_pointer, bool is_array, bool is_function);
 
 //AUGMENTED-C
 RangeNode * RangeAction(SizeNode * sizeNode1, SizeNode * sizeNode2);

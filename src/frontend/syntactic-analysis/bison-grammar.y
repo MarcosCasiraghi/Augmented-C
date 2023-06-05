@@ -257,7 +257,7 @@ function_args: 	function_arg 																		{ $$ = SingleFunctionArgsAction($
 			 | function_arg COMA function_args														{ $$ = MultipleFunctionArgsAction($1, $3); }
 			 ;
 
-function_declaration: data_type VARIABLE_NAME OPAR CPAR OBRACE code_block CBRACE							{ $$ = FunctionDeclarationNoArgsAction($1, $2, $6); }
+function_declaration: data_type VARIABLE_NAME OPAR CPAR OBRACE code_block CBRACE						{ $$ = FunctionDeclarationNoArgsAction($1, $2, $6); }
 					| data_type VARIABLE_NAME OPAR function_args CPAR OBRACE code_block CBRACE			{ $$ = FunctionDeclarationWithArgsAction($1, $2, $7, $4); }
 					| VOID VARIABLE_NAME OPAR CPAR OBRACE code_block CBRACE								{ $$ = VoidFunctionDeclarationAction($2, $6); }
 					| VOID VARIABLE_NAME OPAR function_args CPAR OBRACE code_block CBRACE				{ $$ = VoidFunctionDeclarationWithArgsAction($2, $7, $4); }
@@ -300,14 +300,14 @@ declaration: single_declaration 																{ $$ = DeclarationOfSingleAction
 			| array_declaration																	{ $$ = DeclarationOfArrayAction($1); }
 			;
 
-single_declaration: data_type VARIABLE_NAME single_initialization									{ $$ = SingleWithoutPointerDeclarationAction($1, $2, $3); } // different from assignment since you cannot do: int var += 3;
-				| data_type pointers VARIABLE_NAME single_initialization								{ $$ = SingleWithPointerDeclarationAction($2, $1, $3, $4); }
+single_declaration: data_type VARIABLE_NAME single_initialization								{ $$ = SingleWithoutPointerDeclarationAction($1, $2, $3); } // different from assignment since you cannot do: int var += 3;
+				| data_type pointers VARIABLE_NAME single_initialization						{ $$ = SingleWithPointerDeclarationAction($2, $1, $3, $4); }
 				;
 single_initialization: ASSIGN expression SEMI_COLON 											{ $$ = SingleInitializationWithAssignAction($2); }
 					| SEMI_COLON																{ $$ = SingleInitializationWithoutAssignAction(); } 
 					; 
 
-array_declaration: data_type VARIABLE_NAME array_declaration_size array_initialization				{ $$ = ArrayDeclarationAction($1, $2, $3, $4); }
+array_declaration: data_type VARIABLE_NAME array_declaration_size array_initialization			{ $$ = ArrayDeclarationAction($1, $2, $3, $4); }
 					;
 array_declaration_size: OBRACKET CBRACKET array_declaration_size								{ $$ = ArraySizeWithoutSizeWithChildrenAction($3); }					
 					|   OBRACKET NUM_CONSTANT_INT CBRACKET array_declaration_size				{ $$ = ArraySizeWithSizeWithChildrenAction($2, $4);}

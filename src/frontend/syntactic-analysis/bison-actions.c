@@ -1,3 +1,4 @@
+#include "../../backend/semantic-analysis/symbol-list.h"
 #include "../../backend/domain-specific/calculator.h"
 #include "../../backend/support/logger.h"
 #include "bison-actions.h"
@@ -54,6 +55,19 @@ ProgramNode * ProgramAction(StatementNode * statement) {
     node->statementNode = statement;
     state.succeed = true;
     return node;
+}
+
+// - - - - - - Add to symbol list - - - - - 
+
+void addToSymbolList(DataType dataType, Variable variable, bool is_pointer, bool is_array, bool is_function){
+    symbol_node * list_node = malloc(sizeof(symbol_node));
+    list_node->type = dataType;
+    list_node->name = variable;
+    list_node->is_pointer = is_pointer;
+    list_node->is_array = is_array;
+    list_node->is_function = is_function;
+    list_node->next = NULL;
+    add_symbol(state.list, list_node);
 }
 
 // - - - - - - Includes - - - - - - - - - -
@@ -142,6 +156,10 @@ SingleDeclarationNode * SingleWithPointerDeclarationAction(PointerNode * pointer
     node->dataType = dataType;
     node->variable = variable;
     node->singleInitializeNode = singleInitializeNode;
+
+    //se agrega a la tabla de simbolos
+    addToSymbolList(dataType, variable, true, false, false);
+    
     return node;
 }
 
@@ -152,6 +170,10 @@ SingleDeclarationNode * SingleWithoutPointerDeclarationAction(DataType dataType,
     node->dataType = dataType;
     node->variable = variable;
     node->singleInitializeNode = singleInitializeNode;
+
+    //se agrega a la tabla de simbolos
+    addToSymbolList(dataType, variable, false, false, false);
+
     return node;
 }
 
@@ -177,6 +199,10 @@ ArrayDeclarationNode * ArrayDeclarationAction(DataType dataType, Variable variab
     node->variable = variable;
     node->arraySizeNode = arraySizeNode;
     node->arrayInitializeNode;
+
+    //se agrega a la tabla de simbolos
+    addToSymbolList(dataType, variable, false, true, false);
+
     return node;
 }
 
@@ -1181,6 +1207,10 @@ FunctionDeclarationNode* FunctionDeclarationNoArgsAction(DataType functionType, 
     node->variable = variable;
     node->codeBlock = codeBlock;
     node->functionArgs = NULL;
+
+    //se agrega a la tabla de simbolos
+    addToSymbolList(functionType, variable, false, false, true);
+
     return node;
 }
 
@@ -1191,6 +1221,10 @@ FunctionDeclarationNode* FunctionDeclarationWithArgsAction(DataType functionType
     node->variable = variable;
     node->codeBlock = codeBlock;
     node->functionArgs = functionArgs;
+
+    //se agrega a la tabla de simbolos
+    addToSymbolList(functionType, variable, false, false, true);
+
     return node;
 }
 
@@ -1201,6 +1235,10 @@ FunctionDeclarationNode* VoidFunctionDeclarationAction(Variable variable, CodeBl
     node->variable = variable;
     node->codeBlock = codeBlock;
     node->functionArgs = NULL;
+
+    //se agrega a la tabla de simbolos
+    addToSymbolList(Void, variable, false, false, true);
+
     return node;
 }
 
@@ -1211,6 +1249,10 @@ FunctionDeclarationNode* VoidFunctionDeclarationWithArgsAction(Variable variable
     node->variable = variable;
     node->codeBlock = codeBlock;
     node->functionArgs = functionArgs;
+
+    //se agrega a la tabla de simbolos
+    addToSymbolList(Void, variable, false, false, true);
+
     return node;
 }
 

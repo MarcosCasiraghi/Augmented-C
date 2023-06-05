@@ -2,7 +2,9 @@
 #include "backend/support/logger.h"
 #include "backend/support/shared.h"
 #include "frontend/syntactic-analysis/bison-parser.h"
+#include "backend/semantic-analysis/symbol-list.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 // Estado de la aplicación.
 CompilerState state;
@@ -13,6 +15,15 @@ const int main(const int argumentCount, const char ** arguments) {
 	state.program = NULL;
 	state.result = 0;
 	state.succeed = false;
+
+	//tabla de simbolos
+	symbol_list * list = malloc(sizeof(symbol_list));
+    if( list == NULL ){
+        //TODO - manejo de error
+    }else{
+        state.list = list;
+    }
+	init_list(list);
 
 	// Mostrar parámetros recibidos por consola.
 	for (int i = 0; i < argumentCount; ++i) {
