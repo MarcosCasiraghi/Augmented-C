@@ -101,6 +101,12 @@ SizeNode * SizeVarAction(Variable variableNode){
     sizeNode->numConstantIntNode = 0;
     sizeNode->variable = variableNode;
 
+      //chequeo si existen variable 1 y 2
+    if( !contains_symbol(state.list, variableNode) ){
+        //TODO - handle error
+        printf("variable: %s not declared\n", variableNode );
+    }
+
     return sizeNode;
 }
 
@@ -348,6 +354,12 @@ FunctionCallNode * WithArgsFunctionCallAction(Variable variable, FunctionCallArg
     functionCallNode->Variable = variable;
     functionCallNode->functionCallArgNode = functionCallArgNode;
 
+    //chequeo si existe funcion
+    if( !contains_symbol(state.list, variable) ){
+        //TODO - handle error
+        printf("function: %s not declared\n", variable );
+    }
+
     return functionCallNode;
 }
 
@@ -356,6 +368,14 @@ FunctionCallNode * NoArgsFunctionCallAction(Variable variable){
     functionCallNode->type = NoArgs;
     functionCallNode->Variable = variable;
     functionCallNode->functionCallArgNode = NULL;
+
+    //chequeo si existe funcion
+    if( !contains_symbol(state.list, variable) ){
+        //TODO - handle error
+        //tal vez no hacer este chequeo porque se podrian llegar a llamar
+        //funciones de otro lado - como printf
+        printf("function: %s not declared\n", variable );
+    }
 
     return functionCallNode;
 }
@@ -1495,6 +1515,15 @@ UnboundedParametersNode * UnboundedParametersAction(Variable variable1, SizeNode
     unboundedParametersNode->SizeNode = sizeNode;
     unboundedParametersNode->variable2 = variable2;
 
+    //chequeo si existen variable 1 y 2
+    if( !contains_symbol(state.list, variable1) ){
+        //TODO - handle error
+        printf("variable: %s not declared\n", variable1 );
+    }
+    if( !contains_symbol(state.list, variable2) ){
+        printf("variable: %s not declared\n", variable2 );
+    }
+
     return unboundedParametersNode;
 }
 
@@ -1503,6 +1532,15 @@ BoundedParametersNode * BoundedParametersAction(Variable variable1, RangeNode * 
     boundedParametersNode->variable1 = variable1;
     boundedParametersNode->rangeNode = rangeNode;
     boundedParametersNode->variable2 = variable2;
+
+     //chequeo si existen variable 1 y 2
+    if( !contains_symbol(state.list, variable1) ){
+        //TODO - handle error
+        printf("variable: %s not declared\n", variable1 );
+    }
+    if( !contains_symbol(state.list, variable2) ){
+        printf("variable: %s not declared\n", variable2 );
+    }
 
     return boundedParametersNode;
 }
@@ -1539,6 +1577,14 @@ ForeachStatementNode * ForeachStatementAction(Variable variable, SizeNode * size
     node->variable = variable;
     node->sizeNode = sizeNode;
     node->consumerFunctionNode = consumerFunctionNode;
+
+    //chequeo si existen variable 1 y 2
+    if( !contains_symbol(state.list, variable) ){
+        //TODO - handle error
+        printf("variable: %s not declared\n", variable );
+    }
+       
+
     return node;
 }
 
@@ -1554,6 +1600,10 @@ CreateStatementNode * CreateStatementAction(Variable variable1, DataType dataTyp
     node->variable1 = variable1;
     node->dataType = dataType;
     node->createLambda = createLambda;
+
+    //se agrega a symbol list
+    addToSymbolList(dataType, variable1, false, true, false);
+
     return node;
 }
 
@@ -1577,6 +1627,13 @@ ForeachRangeStatementNode * ForeachRangeStatementAction(Variable variable, Range
     node->variable = variable;
     node->rangeNode = rangeNode;
     node->consumerFunctionNode = consumerFunctionNode;
+
+      //chequeo si existen variable 1 y 2
+    if( !contains_symbol(state.list, variable) ){
+        //TODO - handle error
+        printf("variable: %s not declared\n", variable );
+    }
+       
     return node;
 }
 
