@@ -95,8 +95,8 @@ typedef struct SingleInitializeNode{    // =, ; implicit
 } SingleInitializeNode;
 
 typedef enum SingleDeclarationType{
-    SinleWithPointer,
-    SinleWithoutPointer
+    SingleWithPointer,
+    SingleWithoutPointer
 }SingleDeclarationType;
 
 typedef struct SingleDeclarationNode{

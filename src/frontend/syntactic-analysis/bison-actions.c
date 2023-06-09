@@ -131,7 +131,7 @@ PointerNode * PointerAction() {
 
 PointerNode * PointerActionWithChild(PointerNode * pointerNode) {
     PointerNode * node = malloc(sizeof(PointerNode));
-    node->child = NoChild;
+    node->child = HasChild;
     node->pointerNode = pointerNode;
     return node;
 }
@@ -159,7 +159,7 @@ DeclarationNode * DeclarationOfArrayAction(ArrayDeclarationNode * arrayDeclarati
 
 SingleDeclarationNode * SingleWithPointerDeclarationAction(PointerNode * pointer, DataType dataType, Variable variable, SingleInitializeNode * singleInitializeNode) {
     SingleDeclarationNode * node = malloc(sizeof(SingleDeclarationNode));
-    node->type = SinleWithPointer;
+    node->type = SingleWithPointer;
     node->pointer = pointer;
     node->dataType = dataType;
     node->variable = variable;
@@ -174,7 +174,7 @@ SingleDeclarationNode * SingleWithPointerDeclarationAction(PointerNode * pointer
 
 SingleDeclarationNode * SingleWithoutPointerDeclarationAction(DataType dataType, Variable variable, SingleInitializeNode * singleInitializeNode) {
     SingleDeclarationNode * node = malloc(sizeof(SingleDeclarationNode));
-    node->type = SinleWithoutPointer;
+    node->type = SingleWithoutPointer;
     node->dataType = dataType;
     node->variable = variable;
     node->singleInitializeNode = singleInitializeNode;
