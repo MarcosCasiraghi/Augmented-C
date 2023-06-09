@@ -178,8 +178,8 @@ Lambda * LambdaAction(ExpressionNode * expressionNode);
 CreateLambda * CreateLambdaAction(NumConstantIntNode constant1, NumConstantIntNode constant2);
 
 //Includes
-MetaCommandNode * StringMetaCommandAction();
-MetaCommandNode * FileNameMetaCommandAction();
+MetaCommandNode * StringMetaCommandAction(StringVar string);
+MetaCommandNode * FileNameMetaCommandAction(StringVar fileName);
 
 //C statements
 StatementNode * FunctionDeclarationWithStatementNodeAction(StatementNode * statementNode,FunctionDeclarationNode *functionDeclarationNode);

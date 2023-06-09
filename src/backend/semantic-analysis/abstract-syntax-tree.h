@@ -45,6 +45,7 @@ typedef enum MetaCommandType {
 
 typedef struct MetaCommandNode {
     MetaCommandType type;
+    StringVar string;
 } MetaCommandNode;
 
 // - - - - - - Dereferencing  - - - - - -

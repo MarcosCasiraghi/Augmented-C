@@ -72,15 +72,17 @@ void addToSymbolList(DataType dataType, Variable variable, bool is_pointer, bool
 
 // - - - - - - Includes - - - - - - - - - -
 
-MetaCommandNode * StringMetaCommandAction() {
+MetaCommandNode * StringMetaCommandAction(StringVar string) {
     MetaCommandNode * node = malloc(sizeof(MetaCommandNode));
     node->type = MetaCommandString;
+    node->string = string;
     return node;
 }
 
-MetaCommandNode * FileNameMetaCommandAction() {
+MetaCommandNode * FileNameMetaCommandAction(StringVar fileName) {
     MetaCommandNode * node = malloc(sizeof(MetaCommandNode));
     node->type = MetaCommandFileName;
+    node->string = fileName;
     return node;
 }
 
