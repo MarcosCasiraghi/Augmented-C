@@ -1096,7 +1096,8 @@ CodeBlockNode * BreakAction() {
 CodeBlockNode * CaseCodeBlockAction(ExpressionNode * expression, CodeBlockNode * codeBlock) {
     CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
     node->child = HasChild;
-    node->type = AssignmentStatement;
+    node->type = CaseStatement;
+    node->expression = expression;
     node->codeBlock = codeBlock;
     return node;
 }
