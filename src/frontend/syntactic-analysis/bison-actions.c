@@ -54,6 +54,7 @@ ProgramNode * ProgramAction(StatementNode * statement) {
     ProgramNode * node = malloc(sizeof(ProgramNode));
     node->statementNode = statement;
     state.succeed = true;
+    state.program = node;
     return node;
 }
 
@@ -206,7 +207,7 @@ ArrayDeclarationNode * ArrayDeclarationAction(DataType dataType, Variable variab
     node->dataType = dataType;
     node->variable = variable;
     node->arraySizeNode = arraySizeNode;
-    node->arrayInitializeNode;
+    node->arrayInitializeNode = arrayInitializeNode;
 
     //se agrega a la tabla de simbolos
     addToSymbolList(dataType, variable, false, true, false);
@@ -357,10 +358,10 @@ FunctionCallNode * WithArgsFunctionCallAction(Variable variable, FunctionCallArg
     functionCallNode->functionCallArgNode = functionCallArgNode;
 
     //chequeo si existe funcion
-    if( !contains_symbol(state.list, variable) ){
-        //TODO - handle error
-        printf("function: %s not declared\n", variable );
-    }
+    // if( !contains_symbol(state.list, variable) ){
+    //     //TODO - handle error
+    //     printf("function: %s not declared\n", variable );
+    // }
 
     return functionCallNode;
 }
@@ -372,19 +373,19 @@ FunctionCallNode * NoArgsFunctionCallAction(Variable variable){
     functionCallNode->functionCallArgNode = NULL;
 
     //chequeo si existe funcion
-    if( !contains_symbol(state.list, variable) ){
-        //TODO - handle error
-        //tal vez no hacer este chequeo porque se podrian llegar a llamar
-        //funciones de otro lado - como printf
-        printf("function: %s not declared\n", variable );
-    }
+    // if( !contains_symbol(state.list, variable) ){
+    //     //TODO - handle error
+    //     //tal vez no hacer este chequeo porque se podrian llegar a llamar
+    //     //funciones de otro lado - como printf
+    //     printf("function: %s not declared\n", variable );
+    // }
 
     return functionCallNode;
 }
 
 FunctionCallArgNode * WithArgsFunctionCallArgAction(ExpressionNode * expressionNode, FunctionCallArgNode * functionCallArgNode){
     FunctionCallArgNode * node = malloc(sizeof(FunctionCallArgNode));
-    node->type = FunctionCallWithNoArgs;
+    node->type = FunctionCallWithArgs;
     node->expressionNode = expressionNode;
     node->functionCallArgNode = functionCallArgNode;
 
@@ -393,7 +394,7 @@ FunctionCallArgNode * WithArgsFunctionCallArgAction(ExpressionNode * expressionN
 
 FunctionCallArgNode * NoArgsFunctionCallArgAction(ExpressionNode * expressionNode){
     FunctionCallArgNode * functionCallArgNode = malloc(sizeof(FunctionCallArgNode));
-    functionCallArgNode->type = FunctionCallWithArgs;
+    functionCallArgNode->type = FunctionCallWithNoArgs;
     functionCallArgNode->expressionNode = expressionNode;
     functionCallArgNode->functionCallArgNode = NULL;
 
@@ -1017,7 +1018,7 @@ CodeBlockNode * ExpressionCodeBlockAction(ExpressionNode * expression) {
     CodeBlockNode * node = malloc(sizeof(CodeBlockNode));
     node->child = NoChild;
     node->type = ExpressionStatement;
-    node->expression = expression;
+    node->expressionNode = expression;
     return node;
 }
 

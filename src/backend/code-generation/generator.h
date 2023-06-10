@@ -31,6 +31,9 @@ void GenFunctionArgNode(FunctionArgNode * node);
 void GenFunctionArgsNode(FunctionArgsNode * node);
 void GenFunctionDeclarationNode(FunctionDeclarationNode * node);
 void GenStatementNode(StatementNode * node);
+void GenProgramNode(ProgramNode * node);
+
+//---------- Special Statement -------------
 void GenSpecialStatementNode(SpecialStatementNode * node);
 
 

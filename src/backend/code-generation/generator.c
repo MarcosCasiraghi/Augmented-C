@@ -46,8 +46,8 @@ void GenSingleInitializeNode(SingleInitializeNode * node){
 	if( node->type == AssignSingle) {
 		printf(" = ");
 		GenExpressionNode(node->expressionNode);
-	}
-	printf(";\n");
+	}else
+		printf(";\n");
 }
 
 void GenSingleDeclarationNode(SingleDeclarationNode * node){
@@ -55,7 +55,7 @@ void GenSingleDeclarationNode(SingleDeclarationNode * node){
 	if( node->type == SingleWithPointer){
 		GenPointerNode(node->pointer);
 	}
-	printf(" %s", node->variable);
+	printf("%s", node->variable);
 	GenSingleInitializeNode(node->singleInitializeNode);
 }
 
@@ -183,11 +183,11 @@ void GenAssignmentNode(AssignmentNode * node) {
 }
 
 void GenFunctionCallNode(FunctionCallNode * node) {
-	printf("%s (", node->Variable);
+	printf("%s(", node->Variable);
 	if(node->type == WithArgs) {
 		GenFunctionCallArgNode(node->functionCallArgNode);
 	}
-	printf(")\n");
+	printf(");\n");
 }
 
 void GenFunctionCallArgNode(FunctionCallArgNode * node) {
@@ -291,10 +291,10 @@ void GenExpressionNode(ExpressionNode * node) {
 				printf("%s", node->Variable);
 				break;
 			case NumConstantFloat:
-				printf("float %s", node->numConstantFloatNode);
+				printf("%s", node->numConstantFloatNode);
 				break;
 			case NumConstantInt:
-				printf("int %d", node->numConstantIntNode);
+				printf("%d", node->numConstantIntNode);
 				break;
 			case specialVariable:
 				printf("%s", node->specialVariable);
@@ -312,7 +312,6 @@ void GenExpressionNode(ExpressionNode * node) {
 				break; //impossible
 		}
 	}
-	printf(";\n");
 }
 
 void GenReturnStatementNode(ReturnStatementNode * node) {
@@ -358,9 +357,9 @@ void GenWhileStatementNode(WhileStatementNode * node) {
 void GenForStatementNode(ForStatementNode * node) {
 	printf("for (");
 	GenDeclarationNode(node->declarationNode);
-	printf(", ");
+	printf("; ");
 	GenExpressionNode(node->firstExpressionNode);
-	printf(", ");
+	printf("; ");
 	if(node->type == withAssignment) {
 		GenAssignmentNode(node->AssignmentNode);
 	}
@@ -391,7 +390,6 @@ void GenCodeBlockNode(CodeBlockNode * node) {
 			break;
 		case ExpressionStatement:
 			GenExpressionNode(node->expressionNode);
-			printf(";\n");
 			break;
 		case ReturnStatement:
 			GenReturnStatementNode(node->returnStatement);
@@ -440,10 +438,10 @@ void GenCodeBlockNode(CodeBlockNode * node) {
 
 void GenFunctionArgNode(FunctionArgNode * node) {
 	GenDataType(node->dataType);
-	if(node->pointer == pointer) {
+	if(node->type == pointer) {
 		GenPointerNode(node->pointer);
 	}
-	printf("%s\n", node->variable);
+	printf("%s", node->variable);
 }
 
 void GenFunctionArgsNode(FunctionArgsNode * node) {
@@ -456,22 +454,22 @@ void GenFunctionArgsNode(FunctionArgsNode * node) {
 
 void GenFunctionDeclarationNode(FunctionDeclarationNode * node) {
 	if(node->type == FunctionDeclarationNoArgs) {
-		GenDataType(node->type);
-		printf("%s ( ) {\n", node->variable);
+		GenDataType(node->functionType);
+		printf("%s() {\n", node->variable);
 	} else if(node->type == FunctionDeclarationWithArgs) {
-		GenDataType(node->type);
-		printf("%s (", node->variable);
+		GenDataType(node->functionType);
+		printf("%s(", node->variable);
 		GenFunctionArgsNode(node->functionArgs);
 		printf(") {\n");
 	} else if(node->type == FunctionDeclarationNoArgsVoid) {
-		printf("void %s () {\n", node->variable);
+		printf("void %s() {\n", node->variable);
 	} else {
-		printf("void %s (", node->variable);
+		printf("void %s(", node->variable);
 		GenFunctionArgsNode(node->functionArgs);
 		printf(") {\n");
 	}
 	GenCodeBlockNode(node->codeBlock);
-	printf("}");
+	printf("}\n");
 }
 
 void GenStatementNode(StatementNode * node) {
@@ -492,6 +490,10 @@ void GenStatementNode(StatementNode * node) {
 	if(node->child == HasChild){
 		GenStatementNode(node->statement);
 	}
+}
+
+void GenProgramNode(ProgramNode * node){
+	GenStatementNode(node->statementNode);
 }
 
 void GenSpecialStatementNode(SpecialStatementNode * node) {

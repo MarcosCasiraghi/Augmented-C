@@ -17,7 +17,7 @@
 	
 
 	// No-terminales (frontend).
-	int program;
+	// int program;
 	
 
 	//Variable variable;		creo que no va
@@ -69,6 +69,7 @@
 	AssignmentType assignment_type;
 	DataType data_type;
 	NumConstantIntNode NUM_CONSTANT_INT;
+	ProgramNode * program;
 
 	// Terminales.
 	token token;
@@ -153,7 +154,7 @@
 %type <assignment> assignment
 %type <assignment_type> assignment_type
 %type <data_type> data_type
-
+%type <program> program
 
 
 //  = = = = = = = = = = = = Reglas de asociatividad y precedencia  = = = = = = = = = = = = 
@@ -180,7 +181,7 @@
 
 %%
 
-program: statements 																			{ ProgramAction($1); }
+program: statements 																			{ $$ = ProgramAction($1); }
 		;
 
 // = = = = = = = = = = = =  Lambda  = = = = = = = = = = = = = = = = 
@@ -400,7 +401,7 @@ expression:  expression ADD_OP expression 								{ $$ = AddOpExpressionAction($
 			| expression LE_OP expression								{ $$ = LeOpExpressionAction($1, $3); }
 			| expression NE_OP expression								{ $$ = NeOpExpressionAction($1, $3); }
 
-			| VARIABLE_NAME 													{ $$ = variableOpExpressionAction($1); }
+			| VARIABLE_NAME 											{ $$ = variableOpExpressionAction($1); }
 			| NUM_CONSTANT_FLOAT 										{ $$ = NumConstantFloatOpExpressionAction($1); }
 			| NUM_CONSTANT_INT 											{ $$ = NumConstantIntOpExpressionAction($1); }
 			| SPECIAL_VARIABLE 											{ $$ = SpecialVarOpExpressionAction($1); }
