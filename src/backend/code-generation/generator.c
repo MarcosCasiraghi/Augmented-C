@@ -42,21 +42,27 @@ void GenPointerNode(PointerNode * node){
 	}
 }
 
-void GenSingleInitializeNode(SingleInitializeNode * node){
+void GenSingleInitializeNode(SingleInitializeNode * node, int isFor){
 	if( node->type == AssignSingle) {
 		printf(" = ");
 		GenExpressionNode(node->expressionNode);
-	}else
+	}
+	if(!isFor && node->expressionNode == NULL) {
 		printf(";\n");
+		return;
+	}
+	if(!isFor && node->expressionNode->functionCallNode == NULL){
+		printf(";\n");
+	}
 }
 
-void GenSingleDeclarationNode(SingleDeclarationNode * node){
+void GenSingleDeclarationNode(SingleDeclarationNode * node, int isFor){
 	GenDataType(node->dataType);
 	if( node->type == SingleWithPointer){
 		GenPointerNode(node->pointer);
 	}
 	printf("%s", node->variable);
-	GenSingleInitializeNode(node->singleInitializeNode);
+	GenSingleInitializeNode(node->singleInitializeNode, isFor);
 }
 
 static void GenDataType(DataType dataType){
@@ -132,10 +138,10 @@ void GenArrayDeclarationNode(ArrayDeclarationNode * node){
 
 // las de mg
 
-void GenDeclarationNode(DeclarationNode * node) {
+void GenDeclarationNode(DeclarationNode * node, int isFor) {
 	switch(node->type) {
 		case SingleDeclaration:
-			GenSingleDeclarationNode(node->singleDeclarationNode);
+			GenSingleDeclarationNode(node->singleDeclarationNode, isFor);
 			break;
 		case ArrayDeclaration:
 			GenArrayDeclarationNode(node->arrayDeclarationNode);
@@ -170,7 +176,7 @@ void GenAssignmentType(AssignmentType type) {
 	}
 }
 
-void GenAssignmentNode(AssignmentNode * node) {
+void GenAssignmentNode(AssignmentNode * node, int isForArg) {
 	if(node->withType == withVar) {
 		printf("%s", node->variable);
 	} else if(node->withType == withArrayDeref) {
@@ -312,6 +318,7 @@ void GenExpressionNode(ExpressionNode * node) {
 				break; //impossible
 		}
 	}
+	
 }
 
 void GenReturnStatementNode(ReturnStatementNode * node) {
@@ -356,12 +363,12 @@ void GenWhileStatementNode(WhileStatementNode * node) {
 
 void GenForStatementNode(ForStatementNode * node) {
 	printf("for (");
-	GenDeclarationNode(node->declarationNode);
+	GenDeclarationNode(node->declarationNode, 1);
 	printf("; ");
 	GenExpressionNode(node->firstExpressionNode);
 	printf("; ");
 	if(node->type == withAssignment) {
-		GenAssignmentNode(node->AssignmentNode);
+		GenAssignmentNode(node->AssignmentNode, 1);
 	}
 	else {
 		GenExpressionNode(node->expressionNode);
@@ -383,7 +390,7 @@ void GenSwitchStatementNode(SwitchStatementNode * node) {
 void GenCodeBlockNode(CodeBlockNode * node) {
 	switch( node->type ) {
 		case DeclarationStatement:
-			GenDeclarationNode(node->declarationNode);
+			GenDeclarationNode(node->declarationNode, 0);
 			break;
 		case SpecialStatement:
 			GenSpecialStatementNode(node->specialStatement);
@@ -412,7 +419,7 @@ void GenCodeBlockNode(CodeBlockNode * node) {
 			GenSwitchStatementNode(node->switchStatement);
 			break;
 		case AssignmentStatement:
-			GenAssignmentNode(node->assingment);
+			GenAssignmentNode(node->assingment, 0);
 			printf(";\n");
 			break;
 		case CaseStatement:
@@ -436,9 +443,7 @@ void GenCodeBlockNode(CodeBlockNode * node) {
 	if(node->child == HasChild) {
 		GenCodeBlockNode(node->codeBlock);
 	}
-	// if(node->type == CaseStatement) {
-	// 	printf("break;\n");
-	// }
+
 }
 
 void GenFunctionArgNode(FunctionArgNode * node) {
@@ -486,7 +491,7 @@ void GenStatementNode(StatementNode * node) {
 			GenFunctionDeclarationNode(node->functionDeclarationNode);
 			break;
 		case Declaration:
-			GenDeclarationNode(node->declarationNode);
+			GenDeclarationNode(node->declarationNode, 0);
 			break;
 		default:
 			break;
