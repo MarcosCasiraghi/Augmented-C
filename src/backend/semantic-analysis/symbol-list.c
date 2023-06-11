@@ -35,3 +35,34 @@ int add_symbol(symbol_list * list, symbol_node * node){
     list_node->next = node;
     return 1;
 }
+
+char * generateNewIndex(symbol_list * list){
+    char* variable_name = (char*)malloc(sizeof(char) * 3);
+    strcpy(variable_name, "a");
+
+    while (contains_symbol(list, variable_name)) {
+        int len = strlen(variable_name);
+
+        // If we've reached the end of the alphabet, append two letters
+        if (variable_name[len - 1] == 'z') {
+            variable_name = (char*)realloc(variable_name, (len + 2) * sizeof(char));
+            variable_name[len] = 'a';
+            variable_name[len + 1] = 'a';
+            variable_name[len + 2] = '\0';
+        }
+        // Increment the last character by one
+        else {
+            variable_name[len - 1]++;
+        }
+    }
+
+    symbol_node * node = malloc(sizeof(symbol_node));
+    node->is_array = false;
+    node->is_function = false;
+    node->is_pointer = false;
+    node->name = variable_name;
+    node->next = NULL;
+    node->type = Int;
+    add_symbol(list, node);
+    return variable_name;
+}

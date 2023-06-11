@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "abstract-syntax-tree.h"
+#include <stdlib.h>
 
 typedef struct symbol_node symbol_node;
 
@@ -28,5 +29,7 @@ void init_list( symbol_list * list);
 bool contains_symbol(symbol_list * list, char * node_name);
 
 int add_symbol(symbol_list * list, symbol_node * node);
+
+char * generateNewIndex(symbol_list * list);
 
 #endif

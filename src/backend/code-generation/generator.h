@@ -2,6 +2,8 @@
 #define GENERATOR_HEADER
 
 #include "../semantic-analysis/abstract-syntax-tree.h"
+#include "../support/shared.h"
+#include "../semantic-analysis/symbol-list.h"
 
 void Generator(int result);
 void GenMetaCommandNode(MetaCommandNode * node);
