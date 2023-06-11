@@ -25,7 +25,7 @@ void GenSizeNode(SizeNode * node){
 	if (node->type == VariableSize ){
 		printf("%s\n", node->variable);
 	}else{
-		printf("int %d", node->numConstantIntNode);
+		printf("%d", node->numConstantIntNode);
 	}
 }
 

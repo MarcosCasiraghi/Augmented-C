@@ -967,7 +967,7 @@ WhileStatementNode * WhileStatementAction(ExpressionNode * expressionNode, CodeB
 
 ForStatementNode * ForStatementWithAssigmentAction(DeclarationNode * declarationNode, ExpressionNode * firstExpressionNode, AssignmentNode * assignmentNode, CodeBlockNode * codeBlockNode ){
     ForStatementNode * forStatementNode = malloc(sizeof(ForStatementNode));
-    forStatementNode->type = withExpression;
+    forStatementNode->type = withAssignment;
     forStatementNode->declarationNode = declarationNode;
     forStatementNode->firstExpressionNode = firstExpressionNode;
     forStatementNode->expressionNode = NULL;
