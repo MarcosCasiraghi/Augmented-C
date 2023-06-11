@@ -35,6 +35,18 @@ void GenProgramNode(ProgramNode * node);
 
 //---------- Special Statement -------------
 void GenSpecialStatementNode(SpecialStatementNode * node);
-
-
+void GenSelectorNode(SelectorNode * node);
+void GenReduceStatementNode(ReduceStatementNode * node);
+void GenReduceRangeStatementNode(ReduceRangeStatementNode * node);
+void GenFilterStatementNode(FilterStatementNode * node);
+void GenFilterRangeStatementNode(FilterRangeStatementNode * node);
+void GenForeachStatementNode(ForeachStatementNode * node);
+void GenForeachRangeStatementNode(ForeachRangeStatementNode * node);
+void GenMapStatementNode(MapStatementNode * node);
+void GenMapRangeStatementNode(MapRangeStatementNode * node);
+void GenCreateStatementNode(CreateStatementNode * node);
+void GenRangeNode(RangeNode * node);
+void GenConsumerFunctionNode(ConsumerFunctionNode * node);
+void GenUnboundedParametersNode(UnboundedParametersNode * node);
+void GenBoundedParametersNode(BoundedParametersNode * node);
 #endif

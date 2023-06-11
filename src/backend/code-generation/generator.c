@@ -176,7 +176,7 @@ void GenAssignmentType(AssignmentType type) {
 	}
 }
 
-void GenAssignmentNode(AssignmentNode * node, int isForArg) {
+void GenAssignmentNode(AssignmentNode * node, int isFor) {
 	if(node->withType == withVar) {
 		printf("%s", node->variable);
 	} else if(node->withType == withArrayDeref) {
@@ -185,7 +185,7 @@ void GenAssignmentNode(AssignmentNode * node, int isForArg) {
 		return; // error
 	}
 	GenAssignmentType(node->assignmentType);
-	GenExpressionNode(node->expressionNode, 0);
+	GenExpressionNode(node->expressionNode, isFor);
 }
 
 void GenFunctionCallNode(FunctionCallNode * node, int isFor) {
@@ -397,8 +397,6 @@ void GenCodeBlockNode(CodeBlockNode * node) {
 			GenSpecialStatementNode(node->specialStatement);
 			break;
 		case ExpressionStatement:
-			if( node->expression && node->expressionNode)
-				printf("\n\n\nlos 2 al mismo tiempo\n\n\n");
 			if( node->expression){
 				GenExpressionNode(node->expression, 0);
 			}else if(node->expressionNode )
@@ -503,10 +501,84 @@ void GenStatementNode(StatementNode * node) {
 	}
 }
 
-void GenProgramNode(ProgramNode * node){
+void GenProgramNode(ProgramNode * node) {
 	GenStatementNode(node->statementNode);
 }
 
 void GenSpecialStatementNode(SpecialStatementNode * node) {
+	GenSelectorNode(node->selectorNode);
+}
+
+void GenSelectorNode(SelectorNode * node) {
+	switch(node->selectorNodeType) {
+		case ReduceStatement:
+			GenReduceStatementNode(node->reduceStatement);
+			break;
+		case FilterStatement:
+			GenFilterStatementNode(node->filterStatement);
+			break;
+		case ForeachStatement:
+			GenForeachStatementNode(node->foreachStatement);
+			break;
+		case MapStatement:
+			GenMapStatementNode(node->mapStatement);
+			break;
+		case CreateStatement:
+			GenCreateStatementNode(node->createStatement);
+			break;
+		case ReduceRangeStatement:
+			GenReduceRangeStatementNode(node->reduceRangeStatement);
+			break;
+		case FilterRangeStatement:
+			GenFilterRangeStatementNode(node->filterRangeStatement);
+			break;
+		case ForeachRangeStatement:
+			GenForeachRangeStatementNode(node->foreachRangeStatement);
+			break;
+		case MapRangeStatement:
+			GenMapRangeStatementNode(node->mapRangeStatement);
+			break;
+		default:
+			break; //impossible
+	}
+}
+
+void GenReduceStatementNode(ReduceStatementNode * node) {
+
+}
+void GenReduceRangeStatementNode(ReduceRangeStatementNode * node) {
+
+}
+void GenFilterStatementNode(FilterStatementNode * node) {
+
+}
+void GenFilterRangeStatementNode(FilterRangeStatementNode * node) {
+
+}
+void GenForeachStatementNode(ForeachStatementNode * node) {
+
+}
+void GenForeachRangeStatementNode(ForeachRangeStatementNode * node) {
+
+}
+void GenMapStatementNode(MapStatementNode * node) {
+
+}
+void GenMapRangeStatementNode(MapRangeStatementNode * node) {
+
+}
+void GenCreateStatementNode(CreateStatementNode * node) {
+
+}
+void GenRangeNode(RangeNode * node) {
+
+}
+void GenConsumerFunctionNode(ConsumerFunctionNode * node) {
+
+}
+void GenUnboundedParametersNode(UnboundedParametersNode * node) {
+
+}
+void GenBoundedParametersNode(BoundedParametersNode * node) {
 
 }
