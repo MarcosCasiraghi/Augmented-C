@@ -247,7 +247,6 @@ typedef struct ExpressionNode {                     //(, ) son implicitos
     Variable Variable;
     NumConstantIntNode numConstantIntNode;
     NumConstantFloatNode numConstantFloatNode;
-    SpecialVariable specialVariable;
     FunctionCallNode * functionCallNode;
     ArrayDerefNode * arrayDerefNode;
     StringVar StringNode;

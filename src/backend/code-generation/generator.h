@@ -20,7 +20,7 @@ void GenDeclarationNode(DeclarationNode * node, int isFor);
 void GenAssignmentNode(AssignmentNode * node, int isFor);
 void GenFunctionCallNode(FunctionCallNode * node, int isFor);
 void GenFunctionCallArgNode(FunctionCallArgNode * node, int isFor);
-void GenExpressionNode(ExpressionNode * node, int isFor);
+void GenExpressionNode(ExpressionNode * node, int isFor, char * variableName, char * index);
 void GenReturnStatementNode(ReturnStatementNode * node);
 void GenIfStatementNode(IfStatementNode * node);
 void GenElseStatementNode(ElseStatementNode * node);
@@ -48,7 +48,7 @@ void GenMapStatementNode(MapStatementNode * node);
 void GenMapRangeStatementNode(MapRangeStatementNode * node);
 void GenCreateStatementNode(CreateStatementNode * node);
 void GenRangeNode(RangeNode * node);
-void GenConsumerFunctionNode(ConsumerFunctionNode * node);
+void GenConsumerFunctionNode(ConsumerFunctionNode * node, int isFor);
 void GenUnboundedParametersNode(UnboundedParametersNode * node);
 void GenBoundedParametersNode(BoundedParametersNode * node);
 #endif

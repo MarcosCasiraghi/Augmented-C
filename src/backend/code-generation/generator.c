@@ -45,7 +45,7 @@ void GenPointerNode(PointerNode * node){
 void GenSingleInitializeNode(SingleInitializeNode * node, int isFor){
 	if( node->type == AssignSingle) {
 		printf(" = ");
-		GenExpressionNode(node->expressionNode, isFor);
+		GenExpressionNode(node->expressionNode, isFor, NULL, NULL);
 	}
 	if(!isFor && node->expressionNode == NULL) {
 		printf(";\n");
@@ -185,7 +185,7 @@ void GenAssignmentNode(AssignmentNode * node, int isFor) {
 		return; // error
 	}
 	GenAssignmentType(node->assignmentType);
-	GenExpressionNode(node->expressionNode, isFor);
+	GenExpressionNode(node->expressionNode, isFor, NULL, NULL);
 }
 
 void GenFunctionCallNode(FunctionCallNode * node, int isFor) {
@@ -198,7 +198,7 @@ void GenFunctionCallNode(FunctionCallNode * node, int isFor) {
 }
 
 void GenFunctionCallArgNode(FunctionCallArgNode * node, int isFor) {
-	GenExpressionNode(node->expressionNode, isFor);
+	GenExpressionNode(node->expressionNode, isFor, NULL, NULL);
 	if(node->type == FunctionCallWithArgs) {
 		printf(", ");
 		GenFunctionCallArgNode(node->functionCallArgNode, isFor);
@@ -281,13 +281,13 @@ static void GenExpressionType(ExpressionNodeType type) {
 	}
 }
 
-void GenExpressionNode(ExpressionNode * node, int isFor) {
+void GenExpressionNode(ExpressionNode * node, int isFor, char * variableName, char * index) {
 	if(node->leftExpressionNode != NULL) {
-		GenExpressionNode(node->leftExpressionNode, isFor);
+		GenExpressionNode(node->leftExpressionNode, isFor, variableName, index);
 	}
 	GenExpressionType(node->op);
 	if(node->rightExpressionNode != NULL) {
-		GenExpressionNode(node->rightExpressionNode, isFor);
+		GenExpressionNode(node->rightExpressionNode, isFor, NULL, NULL);
 	}
 	if(node->op == NotOp || node->op == WithParenthesis) {
 		printf(")");
@@ -304,7 +304,7 @@ void GenExpressionNode(ExpressionNode * node, int isFor) {
 				printf("%d", node->numConstantIntNode);
 				break;
 			case specialVariable:
-				printf("%s", node->specialVariable);
+				printf("%s[%s]", variableName, index);
 				break;
 			case functionCall:
 				GenFunctionCallNode(node->functionCallNode, isFor);
@@ -324,13 +324,13 @@ void GenExpressionNode(ExpressionNode * node, int isFor) {
 
 void GenReturnStatementNode(ReturnStatementNode * node) {
 	printf("return ");
-	GenExpressionNode(node->expressionNode, 0);
+	GenExpressionNode(node->expressionNode, 0, NULL, NULL);
 	printf(";\n");
 }
 
 void GenIfStatementNode(IfStatementNode * node) {
 	printf("if (");
-	GenExpressionNode(node->expressionNode, 0);
+	GenExpressionNode(node->expressionNode, 0, NULL, NULL);
 	printf(") {\n");
 	GenCodeBlockNode(node->codeBlockNode);
 	printf("}\n");
@@ -356,7 +356,7 @@ void GenIfElseStatementNode(IfElseStatementNode * node) {
 
 void GenWhileStatementNode(WhileStatementNode * node) {
 	printf("while(");
-	GenExpressionNode(node->expressionNode, 0);
+	GenExpressionNode(node->expressionNode, 0, NULL, NULL);
 	printf(") {\n");
 	GenCodeBlockNode(node->codeBlockNode);
 	printf("}\n");
@@ -366,13 +366,13 @@ void GenForStatementNode(ForStatementNode * node) {
 	printf("for (");
 	GenDeclarationNode(node->declarationNode, 1);
 	printf("; ");
-	GenExpressionNode(node->firstExpressionNode, 1);
+	GenExpressionNode(node->firstExpressionNode, 1, NULL, NULL);
 	printf("; ");
 	if(node->type == withAssignment) {
 		GenAssignmentNode(node->AssignmentNode, 1);
 	}
 	else {
-		GenExpressionNode(node->expressionNode, 1);
+		GenExpressionNode(node->expressionNode, 1, NULL, NULL);
 	}
 	printf(") {\n");
 	GenCodeBlockNode(node->codeBlockNode);
@@ -381,7 +381,7 @@ void GenForStatementNode(ForStatementNode * node) {
 
 void GenSwitchStatementNode(SwitchStatementNode * node) {
 	printf("switch (");
-	GenExpressionNode(node->expressionNode, 0);
+	GenExpressionNode(node->expressionNode, 0, NULL, NULL);
 	printf(") {\n");
 	GenCodeBlockNode(node->codeBlockNode);
 	printf("\n}\n");
@@ -398,9 +398,9 @@ void GenCodeBlockNode(CodeBlockNode * node) {
 			break;
 		case ExpressionStatement:
 			if( node->expression){
-				GenExpressionNode(node->expression, 0);
+				GenExpressionNode(node->expression, 0, NULL, NULL);
 			}else if(node->expressionNode )
-				GenExpressionNode(node->expressionNode, 0);
+				GenExpressionNode(node->expressionNode, 0, NULL, NULL);
 			break;
 		case ReturnStatement:
 			GenReturnStatementNode(node->returnStatement);
@@ -423,7 +423,7 @@ void GenCodeBlockNode(CodeBlockNode * node) {
 			break;
 		case CaseStatement:
 			printf("case ");
-			GenExpressionNode(node->expression, 0);
+			GenExpressionNode(node->expression, 0, NULL, NULL);
 			printf(":\n");
 			break;
 		case ContinueStatement:
@@ -544,7 +544,13 @@ void GenSelectorNode(SelectorNode * node) {
 }
 
 void GenReduceStatementNode(ReduceStatementNode * node) {
-
+	char * index = generateNewIndex(state.list);
+	printf("for(int %s = 0; %s < ", index, index);
+	GenSizeNode(node->unboundedParametersNode->SizeNode);
+	printf(" ; %s++ {\n", index);
+	printf("%s = ", node->unboundedParametersNode->variable2);
+	GenExpressionNode(node->lambda->expressionNode, 0, node->unboundedParametersNode->variable1, index);
+	printf(";\n}\n");
 }
 void GenReduceRangeStatementNode(ReduceRangeStatementNode * node) {
 
@@ -571,14 +577,29 @@ void GenCreateStatementNode(CreateStatementNode * node) {
 
 }
 void GenRangeNode(RangeNode * node) {
-
+	GenSizeNode(node->sizeNode1);
+	GenSizeNode(node->sizeNode2);
 }
-void GenConsumerFunctionNode(ConsumerFunctionNode * node) {
-
+void GenConsumerFunctionNode(ConsumerFunctionNode * node, int isFor) {
+	printf("(");
+	GenFunctionCallNode(node->functionCallNode, isFor);
+	printf(")");
 }
 void GenUnboundedParametersNode(UnboundedParametersNode * node) {
-
+	printf("%s, ",node->variable1);
+	GenSizeNode(node->SizeNode);
+	printf(", %s", node->variable2);
 }
 void GenBoundedParametersNode(BoundedParametersNode * node) {
-
+	printf("%s, ", node->variable1);
+	GenRangeNode(node->rangeNode);
+	printf(", %s", node->variable2);
+}
+void GenLambda(Lambda * node, int isFor) {
+	printf("( ");
+	GenExpressionNode(node->expressionNode, isFor, NULL, NULL);
+	printf(")");
+}
+void GenCreateLambda(CreateLambda * node) {
+	printf("( %d ... %d )", node->constant1, node->constant2);
 }
