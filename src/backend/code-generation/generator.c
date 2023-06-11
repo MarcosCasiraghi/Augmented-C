@@ -376,7 +376,7 @@ void GenSwitchStatementNode(SwitchStatementNode * node) {
 	GenExpressionNode(node->expressionNode);
 	printf(") {\n");
 	GenCodeBlockNode(node->codeBlockNode);
-	printf("}\n");
+	printf("\n}\n");
 }
 
 
@@ -389,7 +389,12 @@ void GenCodeBlockNode(CodeBlockNode * node) {
 			GenSpecialStatementNode(node->specialStatement);
 			break;
 		case ExpressionStatement:
-			GenExpressionNode(node->expressionNode);
+			if( node->expression && node->expressionNode)
+				printf("\n\n\nlos 2 al mismo tiempo\n\n\n");
+			if( node->expression){
+				GenExpressionNode(node->expression);
+			}else if(node->expressionNode )
+				GenExpressionNode(node->expressionNode);
 			break;
 		case ReturnStatement:
 			GenReturnStatementNode(node->returnStatement);
@@ -422,7 +427,7 @@ void GenCodeBlockNode(CodeBlockNode * node) {
 			printf("default:\n");
 			break;
 		case BreakStatement:
-			printf("break;");
+			printf("break;\n");
 			break;
 		default:
 			break;
@@ -431,9 +436,9 @@ void GenCodeBlockNode(CodeBlockNode * node) {
 	if(node->child == HasChild) {
 		GenCodeBlockNode(node->codeBlock);
 	}
-	if(node->type == CaseStatement) {
-		printf("break;\n");
-	}
+	// if(node->type == CaseStatement) {
+	// 	printf("break;\n");
+	// }
 }
 
 void GenFunctionArgNode(FunctionArgNode * node) {
