@@ -14,7 +14,7 @@ const int main(const int argumentCount, const char ** arguments) {
 	// Inicializar estado de la aplicación.
 	state.program = NULL;
 	state.result = 0;
-	state.succeed = false;
+	state.succeed = true;
 
 	//tabla de simbolos
 	symbol_list * list = malloc(sizeof(symbol_list));

@@ -6,11 +6,13 @@ void init_list(symbol_list * list){
     list->size = 0;
 }
 
-bool contains_symbol(symbol_list * list, char * node_name){
+bool contains_symbol(symbol_list * list, char * node_name, bool is_array){
     symbol_node * node = list->first;
     while(node != NULL){
         if( strcmp(node->name, node_name) == 0){
-            return true;
+            if(node->is_array == is_array)
+                return true;
+            return false;
         }
         node = node->next;
     }
@@ -40,7 +42,7 @@ char * generateNewIndex(symbol_list * list){
     char* variable_name = (char*)malloc(sizeof(char) * 3);
     strcpy(variable_name, "a");
 
-    while (contains_symbol(list, variable_name)) {
+    while (contains_symbol(list, variable_name, true) || contains_symbol(list, variable_name, false)) {
         int len = strlen(variable_name);
 
         // If we've reached the end of the alphabet, append two letters

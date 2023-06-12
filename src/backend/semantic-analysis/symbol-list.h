@@ -26,7 +26,7 @@ typedef struct symbol_list{
 
 void init_list( symbol_list * list);
 
-bool contains_symbol(symbol_list * list, char * node_name);
+bool contains_symbol(symbol_list * list, char * node_name, bool is_array);
 
 int add_symbol(symbol_list * list, symbol_node * node);
 

@@ -53,7 +53,7 @@ void yyerror(const char * string) {
 ProgramNode * ProgramAction(StatementNode * statement) {
     ProgramNode * node = malloc(sizeof(ProgramNode));
     node->statementNode = statement;
-    state.succeed = true;
+    // state.succeed = true;
     state.program = node;
     return node;
 }
@@ -105,7 +105,8 @@ SizeNode * SizeVarAction(Variable variableNode){
     sizeNode->variable = variableNode;
 
       //chequeo si existen variable 1 y 2
-    if( !contains_symbol(state.list, variableNode) ){
+    if( !contains_symbol(state.list, variableNode, false) ){
+        state.succeed = false;
         //TODO - handle error
         printf("variable: %s not declared\n", variableNode );
     }
@@ -1520,11 +1521,13 @@ UnboundedParametersNode * UnboundedParametersAction(Variable variable1, SizeNode
     unboundedParametersNode->variable2 = variable2;
 
     //chequeo si existen variable 1 y 2
-    if( !contains_symbol(state.list, variable1) ){
+    if( !contains_symbol(state.list, variable1, true) ){
         //TODO - handle error
-        printf("variable: %s not declared\n", variable1 );
+        state.succeed = false;
+        printf("array: %s not declared\n", variable1 );
     }
-    if( !contains_symbol(state.list, variable2) ){
+    if( !contains_symbol(state.list, variable2, false) && !contains_symbol(state.list, variable2, true) ){
+        state.succeed = false;
         printf("variable: %s not declared\n", variable2 );
     }
 
@@ -1538,11 +1541,13 @@ BoundedParametersNode * BoundedParametersAction(Variable variable1, RangeNode * 
     boundedParametersNode->variable2 = variable2;
 
      //chequeo si existen variable 1 y 2
-    if( !contains_symbol(state.list, variable1) ){
+    if( !contains_symbol(state.list, variable1, true) ){
+        state.succeed = false;
         //TODO - handle error
-        printf("variable: %s not declared\n", variable1 );
+        printf("array: %s not declared\n", variable1 );
     }
-    if( !contains_symbol(state.list, variable2) ){
+    if( !contains_symbol(state.list, variable2, false) && !contains_symbol(state.list, variable2, true)){
+        state.succeed = false;
         printf("variable: %s not declared\n", variable2 );
     }
 
@@ -1582,10 +1587,11 @@ ForeachStatementNode * ForeachStatementAction(Variable variable, SizeNode * size
     node->sizeNode = sizeNode;
     node->consumerFunctionNode = consumerFunctionNode;
 
-    //chequeo si existen variable 1 y 2
-    if( !contains_symbol(state.list, variable) ){
+    //chequeo si existen variable
+    if( !contains_symbol(state.list, variable, true) ){
         //TODO - handle error
-        printf("variable: %s not declared\n", variable );
+        state.succeed = false;
+        printf("array: %s not declared\n", variable );
     }
        
 
@@ -1606,10 +1612,12 @@ CreateStatementNode * CreateStatementAction(Variable variable1, DataType dataTyp
     node->createLambda = createLambda;
 
     //se agrega a symbol list
-    if(contains_symbol(state.list, variable1)){
+    if(contains_symbol(state.list, variable1, true) || contains_symbol(state.list, variable1, false)){
+        state.succeed = false;
+        printf("variable: %s was already declared\n", variable1);
         //TODO - manejo de errores
-    }
-    addToSymbolList(dataType, variable1, false, true, false);
+    }else 
+        addToSymbolList(dataType, variable1, false, true, false);
 
     return node;
 }
@@ -1635,10 +1643,11 @@ ForeachRangeStatementNode * ForeachRangeStatementAction(Variable variable, Range
     node->rangeNode = rangeNode;
     node->consumerFunctionNode = consumerFunctionNode;
 
-      //chequeo si existen variable 1 y 2
-    if( !contains_symbol(state.list, variable) ){
+      //chequeo si existen variable 1
+    if( !contains_symbol(state.list, variable, true) ){
         //TODO - handle error
-        printf("variable: %s not declared\n", variable );
+        state.succeed = false;
+        printf("array: %s not declared\n", variable );
     }
        
     return node;
