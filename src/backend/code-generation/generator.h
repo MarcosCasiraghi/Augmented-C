@@ -7,7 +7,7 @@
 
 void Generator(int result);
 void GenMetaCommandNode(MetaCommandNode * node);
-void GenSizeNode(SizeNode * node);
+void GenSizeNode(SizeNode * node, bool shouldNewLine);
 void GenArrayDerefNode(ArrayDerefNode * node);
 void GenPointerNode(PointerNode * node);
 void GenSingleInitializeNode(SingleInitializeNode * node, int isFor);

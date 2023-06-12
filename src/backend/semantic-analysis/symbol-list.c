@@ -10,7 +10,7 @@ bool contains_symbol(symbol_list * list, char * node_name, bool is_array){
     symbol_node * node = list->first;
     while(node != NULL){
         if( strcmp(node->name, node_name) == 0){
-            if(node->is_array == is_array)
+            if(node->is_array == is_array || node->is_pointer)
                 return true;
             return false;
         }
