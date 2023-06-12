@@ -45,14 +45,11 @@ void GenPointerNode(PointerNode * node){
 void GenSingleInitializeNode(SingleInitializeNode * node, int isFor){
 	if( node->type == AssignSingle) {
 		printf(" = ");
-		GenExpressionNode(node->expressionNode, isFor, "GenSingleInitializeNode", "GenSingleInitializeNode");
+		GenExpressionNode(node->expressionNode, isFor, NULL, NULL);
 	}
-	if(!isFor && node->expressionNode == NULL) {
+	if(!isFor && (node->expressionNode == NULL || node->expressionNode->functionCallNode == NULL)) {
 		printf(";\n");
 		return;
-	}
-	if(!isFor && node->expressionNode->functionCallNode == NULL){
-		printf(";\n");
 	}
 }
 
@@ -185,7 +182,8 @@ void GenAssignmentNode(AssignmentNode * node, int isFor) {
 		return; // error
 	}
 	GenAssignmentType(node->assignmentType);
-	GenExpressionNode(node->expressionNode, isFor, "GenAssignmentNode", "GenAssignmentNode");
+	GenExpressionNode(node->expressionNode, isFor, NULL, NULL);
+	printf(");\n");
 }
 
 void GenFunctionCallNode(FunctionCallNode * node, int isFor, char * arrayName, char * index) {
@@ -324,13 +322,13 @@ void GenExpressionNode(ExpressionNode * node, int isFor, char * variableName, ch
 
 void GenReturnStatementNode(ReturnStatementNode * node) {
 	printf("return ");
-	GenExpressionNode(node->expressionNode, 0, "GenReturnStatementNode", "GenReturnStatementNode");
+	GenExpressionNode(node->expressionNode, 0, NULL, NULL);
 	printf(";\n");
 }
 
 void GenIfStatementNode(IfStatementNode * node) {
 	printf("if (");
-	GenExpressionNode(node->expressionNode, 0, "GenIfStatementNode", "GenIfStatementNode");
+	GenExpressionNode(node->expressionNode, 0, NULL, NULL);
 	printf(") {\n");
 	GenCodeBlockNode(node->codeBlockNode);
 	printf("}\n");
@@ -356,7 +354,7 @@ void GenIfElseStatementNode(IfElseStatementNode * node) {
 
 void GenWhileStatementNode(WhileStatementNode * node) {
 	printf("while(");
-	GenExpressionNode(node->expressionNode, 0, "GenWhileStatementNode", "GenWhileStatementNode");
+	GenExpressionNode(node->expressionNode, 0, NULL, NULL);
 	printf(") {\n");
 	GenCodeBlockNode(node->codeBlockNode);
 	printf("}\n");
@@ -366,7 +364,7 @@ void GenForStatementNode(ForStatementNode * node) {
 	printf("for (");
 	GenDeclarationNode(node->declarationNode, 1);
 	printf("; ");
-	GenExpressionNode(node->firstExpressionNode, 1, "GenForStatementNode", "GenForStatementNode");
+	GenExpressionNode(node->firstExpressionNode, 1, NULL, NULL);
 	printf("; ");
 	if(node->type == withAssignment) {
 		GenAssignmentNode(node->AssignmentNode, 1);
@@ -381,7 +379,7 @@ void GenForStatementNode(ForStatementNode * node) {
 
 void GenSwitchStatementNode(SwitchStatementNode * node) {
 	printf("switch (");
-	GenExpressionNode(node->expressionNode, 0, "GenSwitchStatementNode", "GenSwitchStatementNode");
+	GenExpressionNode(node->expressionNode, 0, NULL, NULL);
 	printf(") {\n");
 	GenCodeBlockNode(node->codeBlockNode);
 	printf("\n}\n");
@@ -398,9 +396,13 @@ void GenCodeBlockNode(CodeBlockNode * node) {
 			break;
 		case ExpressionStatement:
 			if( node->expression){
-				GenExpressionNode(node->expression, 0, "GenCodeBlockNode1", "GenCodeBlockNode");
-			}else if(node->expressionNode )
-				GenExpressionNode(node->expressionNode, 0, "GenCodeBlockNode2", "GenCodeBlockNode2");
+				GenExpressionNode(node->expression, 0, NULL, NULL);
+			}else if(node->expressionNode ){
+				GenExpressionNode(node->expressionNode, 0, NULL, NULL);
+			}
+			if(node->expression->op != functionCall){
+				printf(";\n");
+			}
 			break;
 		case ReturnStatement:
 			GenReturnStatementNode(node->returnStatement);
@@ -423,7 +425,7 @@ void GenCodeBlockNode(CodeBlockNode * node) {
 			break;
 		case CaseStatement:
 			printf("case ");
-			GenExpressionNode(node->expression, 0, "GenCodeBlockNode3", "GenCodeBlockNode3");
+			GenExpressionNode(node->expression, 0, NULL, NULL);
 			printf(":\n");
 			break;
 		case ContinueStatement:
@@ -591,7 +593,7 @@ void GenFilterRangeStatementNode(FilterRangeStatementNode * node) {
 }
 void GenForeachStatementNode(ForeachStatementNode * node) {
 	char * index = generateNewIndex(state.list);
-	printf("for(int %s = 0 ; %s <", index, index);
+	printf("for(int %s = 0 ; %s < ", index, index);
 	GenSizeNode(node->sizeNode);
 	printf(" ; %s++) {\n", index);
 	GenFunctionCallNode(node->consumerFunctionNode->functionCallNode, 0, node->variable, index);
@@ -601,7 +603,7 @@ void GenForeachRangeStatementNode(ForeachRangeStatementNode * node) {
 	char * index = generateNewIndex(state.list);
 	printf("for(int %s = ", index);
 	GenSizeNode(node->rangeNode->sizeNode1);
-	printf(" ; %s <", index);
+	printf(" ; %s < ", index);
 	GenSizeNode(node->rangeNode->sizeNode2);
 	printf(" ; %s++) {\n", index);
 	GenFunctionCallNode(node->consumerFunctionNode->functionCallNode, 0, node->variable, index);
