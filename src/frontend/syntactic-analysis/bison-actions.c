@@ -1606,6 +1606,9 @@ CreateStatementNode * CreateStatementAction(Variable variable1, DataType dataTyp
     node->createLambda = createLambda;
 
     //se agrega a symbol list
+    if(contains_symbol(state.list, variable1)){
+        //TODO - manejo de errores
+    }
     addToSymbolList(dataType, variable1, false, true, false);
 
     return node;

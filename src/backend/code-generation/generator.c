@@ -188,20 +188,20 @@ void GenAssignmentNode(AssignmentNode * node, int isFor) {
 	GenExpressionNode(node->expressionNode, isFor, "GenAssignmentNode", "GenAssignmentNode");
 }
 
-void GenFunctionCallNode(FunctionCallNode * node, int isFor) {
+void GenFunctionCallNode(FunctionCallNode * node, int isFor, char * arrayName, char * index) {
 	printf("%s(", node->Variable);
 	if(node->type == WithArgs) {
-		GenFunctionCallArgNode(node->functionCallArgNode, isFor);
+		GenFunctionCallArgNode(node->functionCallArgNode, 1, arrayName, index);
 	}
 	if(!isFor) printf(");\n");
 	else printf(")");
 }
 
-void GenFunctionCallArgNode(FunctionCallArgNode * node, int isFor) {
-	GenExpressionNode(node->expressionNode, isFor, "GenFunctionCallArgNode", "GenFunctionCallArgNode");
+void GenFunctionCallArgNode(FunctionCallArgNode * node, int isFor, char * arrayName, char * index) {
+	GenExpressionNode(node->expressionNode, isFor, arrayName, index);
 	if(node->type == FunctionCallWithArgs) {
 		printf(", ");
-		GenFunctionCallArgNode(node->functionCallArgNode, isFor);
+		GenFunctionCallArgNode(node->functionCallArgNode, isFor, arrayName, index);
 	}
 }
 
@@ -307,7 +307,7 @@ void GenExpressionNode(ExpressionNode * node, int isFor, char * variableName, ch
 				printf("%s[%s]", variableName, index);
 				break;
 			case functionCall:
-				GenFunctionCallNode(node->functionCallNode, isFor);
+				GenFunctionCallNode(node->functionCallNode, isFor, variableName, index);
 				break;
 			case ArrayDeref:
 				GenArrayDerefNode(node->arrayDerefNode);
@@ -566,7 +566,7 @@ void GenReduceRangeStatementNode(ReduceRangeStatementNode * node) {
 void GenFilterStatementNode(FilterStatementNode * node) {
 	char * index = generateNewIndex(state.list);
 	char * index2 = generateNewIndex(state.list);
-	printf("for(int %s = 0; %s < ", index, index);
+	printf("for(int %s = 0, int %s = 0; %s < ", index, index2, index);
 	GenSizeNode(node->unboundedParametersNode->SizeNode);
 	printf(" ; %s++) {\n", index);
 	printf("if(");
@@ -580,7 +580,7 @@ void GenFilterRangeStatementNode(FilterRangeStatementNode * node) {
 	char * index2 = generateNewIndex(state.list);
 	printf("for(int %s = ", index);
 	GenSizeNode(node->boundedParametersNode->rangeNode->sizeNode1);
-	printf("; %s < ", index);
+	printf(", int %s = 0; %s < ",index2, index);
 	GenSizeNode(node->boundedParametersNode->rangeNode->sizeNode2);
 	printf(" ; %s++) {\n", index);
 	printf("if(");
@@ -594,7 +594,7 @@ void GenForeachStatementNode(ForeachStatementNode * node) {
 	printf("for(int %s = 0 ; %s <", index, index);
 	GenSizeNode(node->sizeNode);
 	printf(" ; %s++) {\n", index);
-	GenFunctionCallNode(node->consumerFunctionNode->functionCallNode, 0);
+	GenFunctionCallNode(node->consumerFunctionNode->functionCallNode, 0, node->variable, index);
 	printf("}\n");
 }
 void GenForeachRangeStatementNode(ForeachRangeStatementNode * node) {
@@ -604,7 +604,7 @@ void GenForeachRangeStatementNode(ForeachRangeStatementNode * node) {
 	printf(" ; %s <", index);
 	GenSizeNode(node->rangeNode->sizeNode2);
 	printf(" ; %s++) {\n", index);
-	GenFunctionCallNode(node->consumerFunctionNode->functionCallNode, 0);
+	GenFunctionCallNode(node->consumerFunctionNode->functionCallNode, 0, node->variable, index);
 	printf("}\n");
 }
 void GenMapStatementNode(MapStatementNode * node) {
@@ -612,7 +612,7 @@ void GenMapStatementNode(MapStatementNode * node) {
 	printf("for(int %s = 0; %s < ", index, index);
 	GenSizeNode(node->unboundedParametersNode->SizeNode);
 	printf(" ; %s++) {\n", index);
-	printf("%s = ", node->unboundedParametersNode->variable2);
+	printf("%s[%s] = ", node->unboundedParametersNode->variable2, index);
 	GenExpressionNode(node->lambda->expressionNode, 0, node->unboundedParametersNode->variable1, index);
 	printf(";\n}\n");
 }
@@ -623,7 +623,7 @@ void GenMapRangeStatementNode(MapRangeStatementNode * node) {
 	printf("; %s < ", index);
 	GenSizeNode(node->boundedParametersNode->rangeNode->sizeNode2);
 	printf(" ; %s++) {\n", index);
-	printf("%s = ", node->boundedParametersNode->variable2);
+	printf("%s[%s] = ", node->boundedParametersNode->variable2, index);
 	GenExpressionNode(node->lambda->expressionNode, 0, node->boundedParametersNode->variable1, index);
 	printf(";\n}\n");
 }
