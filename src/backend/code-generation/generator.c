@@ -596,10 +596,24 @@ void GenForeachRangeStatementNode(ForeachRangeStatementNode * node) {
 
 }
 void GenMapStatementNode(MapStatementNode * node) {
-
+	char * index = generateNewIndex(state.list);
+	printf("for(int %s = 0; %s < ", index, index);
+	GenSizeNode(node->unboundedParametersNode->SizeNode);
+	printf(" ; %s++) {\n", index);
+	printf("%s = ", node->unboundedParametersNode->variable2);
+	GenExpressionNode(node->lambda->expressionNode, 0, node->unboundedParametersNode->variable1, index);
+	printf(";\n}\n");
 }
 void GenMapRangeStatementNode(MapRangeStatementNode * node) {
-
+	char * index = generateNewIndex(state.list);
+	printf("for(int %s = ", index);
+	GenSizeNode(node->boundedParametersNode->rangeNode->sizeNode1);
+	printf("; %s < ", index);
+	GenSizeNode(node->boundedParametersNode->rangeNode->sizeNode2);
+	printf(" ; %s++) {\n", index);
+	printf("%s = ", node->boundedParametersNode->variable2);
+	GenExpressionNode(node->lambda->expressionNode, 0, node->boundedParametersNode->variable1, index);
+	printf(";\n}\n");
 }
 void GenCreateStatementNode(CreateStatementNode * node) {
 	GenDataType(node->dataType);
