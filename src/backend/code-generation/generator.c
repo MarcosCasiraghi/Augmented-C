@@ -602,6 +602,12 @@ void GenMapRangeStatementNode(MapRangeStatementNode * node) {
 
 }
 void GenCreateStatementNode(CreateStatementNode * node) {
+	GenDataType(node->dataType);
+	printf(" %s[%d-%d+1];\n", node->variable1, node->createLambda->constant2, node->createLambda->constant1);
+	char * index = generateNewIndex(state.list);
+	printf("for(int %s = %d; %s < %d ; %s++) {\n", index, node->createLambda->constant1, index, node->createLambda->constant2, index);
+	printf("%s[%s-%d] = %s", node->variable1, index, node->createLambda->constant1, index);
+	printf(";\n}\n");
 
 }
 
