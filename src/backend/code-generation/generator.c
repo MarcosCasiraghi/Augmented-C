@@ -185,7 +185,7 @@ void GenAssignmentNode(AssignmentNode * node, int isFor) {
 	}
 	GenAssignmentType(node->assignmentType);
 	GenExpressionNode(node->expressionNode, isFor, NULL, NULL);
-	printf(");\n");
+	//printf(");\n");
 }
 
 void GenFunctionCallNode(FunctionCallNode * node, int isFor, char * arrayName, char * index) {

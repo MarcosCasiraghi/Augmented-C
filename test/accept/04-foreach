@@ -1,5 +1,6 @@
 
 int main(){
+    int arr1[5];
 	
-<{FOREACH, arr1, 5, {recursive(recursive(printf("%d\n",2), 1))}}>
+    <{FOREACH, arr1, 5, {recursive(recursive(printf("%d\n",2), 1))}}>
 }

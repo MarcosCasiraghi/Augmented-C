@@ -1,4 +1,8 @@
 int main(){
+
+	int array[8];
+
+	int pass[4];
 	
 	<{FILTERRANGE, array, 4, 8, pass, { (@elem > 3) && (@elem < 9) }}>
 }

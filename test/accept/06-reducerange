@@ -1,5 +1,7 @@
 int main(){
-	
-<{REDUCERANGE, arr1, 1, 5, arr2, { @elem / 5 + b } }>
+
+	int arr1[6];
+    int arr2[5];
+    <{REDUCERANGE, arr1, 1, 5, arr2, { @elem / 5 + b } }>
 	
 }

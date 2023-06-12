@@ -1,5 +1,8 @@
 
 int main(){
+
+	int var1[5];
+	int sum = 0;
 	
 	<{REDUCE, var1, 5, sum, { @elem * 3 * a }}>
 }

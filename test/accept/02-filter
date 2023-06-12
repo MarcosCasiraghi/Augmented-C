@@ -1,7 +1,8 @@
 
 
 int main(){
+    int var1[5];
+	int sum = 0;
 	
-<{FILTER, var1, 5, sum, { @elem > 3}}>
-
+    <{FILTER, var1, 5, sum, { @elem > 3}}>
 }

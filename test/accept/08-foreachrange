@@ -1,4 +1,6 @@
 int main(){
-<{FOREACHRANGE, array, 2, 5, {printf("%d <{FILTER, var1, 5, sum, { @elem > 3}}>",2)} }>
+
+    int array[8];
+    <{FOREACHRANGE, array, 2, 5, {printf("%d <{FILTER, var1, 5, sum, { @elem > 3}}>",2)} }>
 	
 }
