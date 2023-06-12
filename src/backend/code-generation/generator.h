@@ -47,8 +47,5 @@ void GenForeachRangeStatementNode(ForeachRangeStatementNode * node);
 void GenMapStatementNode(MapStatementNode * node);
 void GenMapRangeStatementNode(MapRangeStatementNode * node);
 void GenCreateStatementNode(CreateStatementNode * node);
-void GenRangeNode(RangeNode * node);
-void GenConsumerFunctionNode(ConsumerFunctionNode * node, int isFor);
-void GenUnboundedParametersNode(UnboundedParametersNode * node);
-void GenBoundedParametersNode(BoundedParametersNode * node);
+
 #endif
