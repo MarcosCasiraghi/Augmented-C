@@ -590,10 +590,22 @@ void GenFilterRangeStatementNode(FilterRangeStatementNode * node) {
 	printf("}\n");
 }
 void GenForeachStatementNode(ForeachStatementNode * node) {
-
+	char * index = generateNewIndex(state.list);
+	printf("for(int %s = 0 ; %s <", index, index);
+	GenSizeNode(node->sizeNode);
+	printf(" ; %s++) {\n", index);
+	GenFunctionCallNode(node->consumerFunctionNode->functionCallNode, 0);
+	printf("}\n");
 }
 void GenForeachRangeStatementNode(ForeachRangeStatementNode * node) {
-
+	char * index = generateNewIndex(state.list);
+	printf("for(int %s = ", index);
+	GenSizeNode(node->rangeNode->sizeNode1);
+	printf(" ; %s <", index);
+	GenSizeNode(node->rangeNode->sizeNode2);
+	printf(" ; %s++) {\n", index);
+	GenFunctionCallNode(node->consumerFunctionNode->functionCallNode, 0);
+	printf("}\n");
 }
 void GenMapStatementNode(MapStatementNode * node) {
 	char * index = generateNewIndex(state.list);
