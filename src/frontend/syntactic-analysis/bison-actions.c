@@ -74,9 +74,10 @@ void addToSymbolList(DataType dataType, Variable variable, bool is_pointer, bool
     add_symbol(state.list, list_node);
 }
 
-void addToErrorList(char message[MESSAGE_SIZE]){
+void addToErrorList(char message[MESSAGE_SIZE], int lineNumber){
     error_node * node = malloc(sizeof(error_node));
     memcpy(node->message, message, strlen(message));
+    node->lineNumber = lineNumber;
     node->next = NULL;
     add_symbol_to_error_list(state.errors_list, node);
 }
@@ -119,8 +120,8 @@ SizeNode * SizeVarAction(Variable variableNode){
         state.succeed = false;
         //TODO - handle error
         char message[MESSAGE_SIZE] = {'\0'};
-        sprintf(message, "Variable: %s not declared", variableNode);
-        addToErrorList(message);
+        sprintf(message, "Variable: %s not declared in line %d", variableNode, yylineno);
+        addToErrorList(message, yylineno);
     }
 
     return sizeNode;
@@ -1537,14 +1538,14 @@ UnboundedParametersNode * UnboundedParametersAction(Variable variable1, SizeNode
         //TODO - handle error
         state.succeed = false;
         char message[MESSAGE_SIZE] = {'\0'};
-        sprintf(message, "array: %s not declared", variable1 );
-        addToErrorList(message);
+        sprintf(message, "array: %s not declared in line %d", variable1, yylineno );
+        addToErrorList(message, yylineno);
     }
     if( !contains_symbol(state.list, variable2, false) && !contains_symbol(state.list, variable2, true) ){
         state.succeed = false;
         char message[MESSAGE_SIZE] = {'\0'};
-        sprintf(message, "variable: %s not declared", variable2  );
-        addToErrorList(message);
+        sprintf(message, "variable: %s not declared in line %d", variable2, yylineno);
+        addToErrorList(message, yylineno);
     }
 
     return unboundedParametersNode;
@@ -1561,14 +1562,14 @@ BoundedParametersNode * BoundedParametersAction(Variable variable1, RangeNode * 
         state.succeed = false;
         //TODO - handle error
         char message[MESSAGE_SIZE] = {'\0'};
-        sprintf(message, "array: %s not declared", variable1);
-        addToErrorList(message);
+        sprintf(message, "array: %s not declared in line %d", variable1, yylineno);
+        addToErrorList(message, yylineno);
     }
     if( !contains_symbol(state.list, variable2, false) && !contains_symbol(state.list, variable2, true)){
         state.succeed = false;
         char message[MESSAGE_SIZE] = {'\0'};
-        sprintf(message, "variable: %s not declared", variable2 );
-        addToErrorList(message);
+        sprintf(message, "variable: %s not declared in line %d", variable2, yylineno );
+        addToErrorList(message, yylineno);
     }
 
     return boundedParametersNode;
@@ -1612,8 +1613,8 @@ ForeachStatementNode * ForeachStatementAction(Variable variable, SizeNode * size
         //TODO - handle error
         state.succeed = false;
         char message[MESSAGE_SIZE] = {'\0'};
-        sprintf(message, "array: %s not declared", variable);
-        addToErrorList(message);
+        sprintf(message, "array: %s not declared in line %d", variable, yylineno);
+        addToErrorList(message, yylineno);
     }
        
 
@@ -1638,7 +1639,7 @@ CreateStatementNode * CreateStatementAction(Variable variable1, DataType dataTyp
         state.succeed = false;
         char message[MESSAGE_SIZE] = {'\0'};
         sprintf(message, "variable: %s was already declared", variable1);
-        addToErrorList(message);
+        addToErrorList(message, yylineno);
         //TODO - manejo de errores
     }else 
         addToSymbolList(dataType, variable1, false, true, false);
@@ -1672,8 +1673,8 @@ ForeachRangeStatementNode * ForeachRangeStatementAction(Variable variable, Range
         //TODO - handle error
         state.succeed = false;
         char message[MESSAGE_SIZE] = {'\0'};
-        sprintf(message, "array: %s not declared", variable);
-        addToErrorList(message);
+        sprintf(message, "array: %s not declared in line %d", variable, yylineno);
+        addToErrorList(message, yylineno);
     }
        
     return node;

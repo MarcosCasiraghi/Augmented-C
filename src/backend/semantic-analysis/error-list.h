@@ -11,6 +11,7 @@ typedef struct error_node error_node;
 
 struct error_node{
     char message[SIZE];
+    int lineNumber;
     error_node * next;
 };
 
