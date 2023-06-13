@@ -72,8 +72,8 @@ string 			\"{any}*\"
 
 "["				{ return OBRACKET; }
 "]"				{ return CBRACKET; }
-"{"				{ return OBRACE; }
-"}"				{ return CBRACE; }
+"{"				{ return pushScopeAction(); }
+"}"				{ return popScopeAction(); }
 "("				{ return OPAR; }
 ")"				{ return CPAR; } 	
 ","				{ return COMA; }

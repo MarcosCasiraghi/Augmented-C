@@ -6,10 +6,10 @@ void init_list(symbol_list * list){
     list->size = 0;
 }
 
-bool contains_symbol(symbol_list * list, char * node_name, bool is_array){
+bool contains_symbol(symbol_list * list, char * node_name, bool is_array, bool forGenerate){
     symbol_node * node = list->first;
     while(node != NULL){
-        if( strcmp(node->name, node_name) == 0){
+        if( strcmp(node->name, node_name) == 0 && ( forGenerate || is_in_current_scope(state.stack, node->scope))){
             if(node->is_array == is_array || node->is_pointer)
                 return true;
             return false;
@@ -44,7 +44,7 @@ char * generateNewIndex(symbol_list * list){
     char* variable_name = (char*)malloc(sizeof(char) * 3);
     strcpy(variable_name, "a");
 
-    while (contains_symbol(list, variable_name, true) || contains_symbol(list, variable_name, false)) {
+    while (contains_symbol(list, variable_name, true, true) || contains_symbol(list, variable_name, false, true)) {
         int len = strlen(variable_name);
 
         // If we've reached the end of the alphabet, append two letters

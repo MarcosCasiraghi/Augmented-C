@@ -4,6 +4,7 @@
 #include "../../backend/support/shared.h"
 #include "../../backend/semantic-analysis/abstract-syntax-tree.h"
 #include "../../backend/semantic-analysis/symbol-list.h"
+#include "../../backend/semantic-analysis/scope-stack.h"
 
 
 /**

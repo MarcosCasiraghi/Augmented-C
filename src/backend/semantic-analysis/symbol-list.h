@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include "abstract-syntax-tree.h"
 #include <stdlib.h>
+#include "scope-stack.h"
 
 typedef struct symbol_node symbol_node;
 
@@ -15,7 +16,7 @@ struct symbol_node{
     bool is_pointer;
     bool is_array;
     bool is_function;
-    //TODO - agregar scope
+    int scope;
     symbol_node * next;
 };
 
@@ -24,9 +25,11 @@ typedef struct symbol_list{
     size_t size;
 }symbol_list;
 
+#include "../support/shared.h"
+
 void init_list( symbol_list * list);
 
-bool contains_symbol(symbol_list * list, char * node_name, bool is_array);
+bool contains_symbol(symbol_list * list, char * node_name, bool is_array, bool forGenerate);
 
 int add_symbol(symbol_list * list, symbol_node * node);
 

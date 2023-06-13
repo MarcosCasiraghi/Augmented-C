@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include "../../backend/support/shared.h"
 #include "../syntactic-analysis/bison-parser.h"
+#include "../../backend/semantic-analysis/scope-stack.h"
+
 
 /**
  * Se definen las acciones a ejecutar sobre cada patrón hallado mediante el
@@ -34,5 +36,8 @@ token UnknownPatternAction(const char * lexeme, const int length);
 
 // Regla que no hace nada, permite ignorar parte de la entrada.
 void IgnoredPatternAction(const char * lexeme, const int length);
+
+token pushScopeAction();
+token popScopeAction();
 
 #endif

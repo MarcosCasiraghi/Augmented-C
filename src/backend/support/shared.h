@@ -5,6 +5,8 @@
 #include "../semantic-analysis/abstract-syntax-tree.h"
 #include "../semantic-analysis/symbol-list.h"
 #include "../semantic-analysis/error-list.h"
+#include "../semantic-analysis/scope-stack.h"
+
 
 // Descriptor del archivo de entrada que utiliza Bison.
 extern FILE * yyin;
@@ -53,6 +55,8 @@ typedef struct {
 	symbol_list * list;
 
 	error_list * errors_list;
+
+	StackList * stack;
 
 } CompilerState;
 

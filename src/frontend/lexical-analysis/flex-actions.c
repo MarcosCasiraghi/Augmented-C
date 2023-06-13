@@ -65,3 +65,14 @@ token UnknownPatternAction(const char * lexeme, const int length) {
 // 	LogDebug("IgnoredPatternAction: '%s' (length = %d).", lexeme, length);
 // 	// Como no debe hacer nada con el patrón, solo se loguea en consola.
 // }
+
+
+token pushScopeAction(){
+	push(state.stack);
+	return OBRACE;
+}
+
+token popScopeAction(){
+	pop(state.stack);
+	return CBRACE;
+}

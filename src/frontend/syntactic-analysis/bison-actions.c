@@ -71,6 +71,7 @@ void addToSymbolList(DataType dataType, Variable variable, bool is_pointer, bool
     list_node->is_array = is_array;
     list_node->is_function = is_function;
     list_node->next = NULL;
+    list_node->scope = peek(state.stack);
     add_symbol(state.list, list_node);
 }
 
@@ -116,7 +117,7 @@ SizeNode * SizeVarAction(Variable variableNode){
     sizeNode->variable = variableNode;
 
       //chequeo si existen variable 1 y 2
-    if( !contains_symbol(state.list, variableNode, false) ){
+    if( !contains_symbol(state.list, variableNode, false, false) ){
         state.succeed = false;
         //TODO - handle error
         char message[MESSAGE_SIZE] = {'\0'};
@@ -1208,6 +1209,10 @@ FunctionArgNode * PointerFunctionArgAction(DataType dataType, PointerNode * Poin
     node->dataType = dataType;
     node->pointer = Pointer;
     node->variable = variable;
+
+    addToSymbolList(dataType, variable, true, false, false);
+
+
     return node;
 }
 
@@ -1217,6 +1222,9 @@ FunctionArgNode * NoPointerFunctionArgAction(DataType dataType, Variable variabl
     node->dataType = dataType;
     node->pointer = NULL;
     node->variable = variable;
+
+    addToSymbolList(dataType, variable, false, false, false);
+
     return node;
 }
 
@@ -1534,14 +1542,14 @@ UnboundedParametersNode * UnboundedParametersAction(Variable variable1, SizeNode
     unboundedParametersNode->variable2 = variable2;
 
     //chequeo si existen variable 1 y 2
-    if( !contains_symbol(state.list, variable1, true) ){
+    if( !contains_symbol(state.list, variable1, true, false) ){
         //TODO - handle error
         state.succeed = false;
         char message[MESSAGE_SIZE] = {'\0'};
         sprintf(message, "array: %s not declared in line %d", variable1, yylineno );
         addToErrorList(message, yylineno);
     }
-    if( !contains_symbol(state.list, variable2, false) && !contains_symbol(state.list, variable2, true) ){
+    if( !contains_symbol(state.list, variable2, false, false) && !contains_symbol(state.list, variable2, true, false) ){
         state.succeed = false;
         char message[MESSAGE_SIZE] = {'\0'};
         sprintf(message, "variable: %s not declared in line %d", variable2, yylineno);
@@ -1558,14 +1566,14 @@ BoundedParametersNode * BoundedParametersAction(Variable variable1, RangeNode * 
     boundedParametersNode->variable2 = variable2;
 
      //chequeo si existen variable 1 y 2
-    if( !contains_symbol(state.list, variable1, true) ){
+    if( !contains_symbol(state.list, variable1, true, false) ){
         state.succeed = false;
         //TODO - handle error
         char message[MESSAGE_SIZE] = {'\0'};
         sprintf(message, "array: %s not declared in line %d", variable1, yylineno);
         addToErrorList(message, yylineno);
     }
-    if( !contains_symbol(state.list, variable2, false) && !contains_symbol(state.list, variable2, true)){
+    if( !contains_symbol(state.list, variable2, false, false) && !contains_symbol(state.list, variable2, true, false)){
         state.succeed = false;
         char message[MESSAGE_SIZE] = {'\0'};
         sprintf(message, "variable: %s not declared in line %d", variable2, yylineno );
@@ -1609,7 +1617,7 @@ ForeachStatementNode * ForeachStatementAction(Variable variable, SizeNode * size
     node->consumerFunctionNode = consumerFunctionNode;
 
     //chequeo si existen variable
-    if( !contains_symbol(state.list, variable, true) ){
+    if( !contains_symbol(state.list, variable, true, false) ){
         //TODO - handle error
         state.succeed = false;
         char message[MESSAGE_SIZE] = {'\0'};
@@ -1635,7 +1643,7 @@ CreateStatementNode * CreateStatementAction(Variable variable1, DataType dataTyp
     node->createLambda = createLambda;
 
     //se agrega a symbol list
-    if(contains_symbol(state.list, variable1, true) || contains_symbol(state.list, variable1, false)){
+    if(contains_symbol(state.list, variable1, true, false) || contains_symbol(state.list, variable1, false, false)){
         state.succeed = false;
         char message[MESSAGE_SIZE] = {'\0'};
         sprintf(message, "variable: %s was already declared", variable1);
@@ -1669,7 +1677,7 @@ ForeachRangeStatementNode * ForeachRangeStatementAction(Variable variable, Range
     node->consumerFunctionNode = consumerFunctionNode;
 
       //chequeo si existen variable 1
-    if( !contains_symbol(state.list, variable, true) ){
+    if( !contains_symbol(state.list, variable, true, false) ){
         //TODO - handle error
         state.succeed = false;
         char message[MESSAGE_SIZE] = {'\0'};

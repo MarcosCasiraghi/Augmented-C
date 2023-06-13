@@ -35,6 +35,14 @@ const int main(const int argumentCount, const char ** arguments) {
 	}
 	init_error_list(errors_list);
 
+	//pila de scopes
+	StackList * stack = malloc(sizeof(StackList));
+	if( stack == NULL ){
+		//TODO - manejo de error
+	}else{
+		state.stack = stack;
+	}
+	init_stack(stack);
 
 	// Mostrar parámetros recibidos por consola.
 	for (int i = 0; i < argumentCount; ++i) {
