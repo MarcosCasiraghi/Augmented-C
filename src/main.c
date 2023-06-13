@@ -3,6 +3,7 @@
 #include "backend/support/shared.h"
 #include "frontend/syntactic-analysis/bison-parser.h"
 #include "backend/semantic-analysis/symbol-list.h"
+#include "backend/semantic-analysis/error-list.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -25,6 +26,16 @@ const int main(const int argumentCount, const char ** arguments) {
     }
 	init_list(list);
 
+	//lista de errores
+	error_list * errors_list = malloc(sizeof(error_list));
+	if( errors_list == NULL){
+		//TODO - manejo de error
+	}else{
+		state.errors_list = errors_list;
+	}
+	init_error_list(errors_list);
+
+
 	// Mostrar parámetros recibidos por consola.
 	for (int i = 0; i < argumentCount; ++i) {
 		LogInfo("Argumento %d: '%s'", i, arguments[i]);
@@ -44,6 +55,7 @@ const int main(const int argumentCount, const char ** arguments) {
 			}
 			else {
 				LogError("Se produjo un error en la aplicacion.");
+				printErrors(state.errors_list);
 				return -1;
 			}
 			break;

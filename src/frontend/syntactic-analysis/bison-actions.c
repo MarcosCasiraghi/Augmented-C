@@ -1,4 +1,5 @@
 #include "../../backend/semantic-analysis/symbol-list.h"
+#include "../../backend/semantic-analysis/error-list.h"
 #include "../../backend/domain-specific/calculator.h"
 #include "../../backend/support/logger.h"
 #include "bison-actions.h"
@@ -6,6 +7,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
+#define MESSAGE_SIZE 100
 
 /**
  * Implementación de "bison-.h".
@@ -58,7 +61,7 @@ ProgramNode * ProgramAction(StatementNode * statement) {
     return node;
 }
 
-// - - - - - - Add to symbol list - - - - - 
+// - - - - - - Add to list - - - - - 
 
 void addToSymbolList(DataType dataType, Variable variable, bool is_pointer, bool is_array, bool is_function){
     symbol_node * list_node = malloc(sizeof(symbol_node));
@@ -69,6 +72,13 @@ void addToSymbolList(DataType dataType, Variable variable, bool is_pointer, bool
     list_node->is_function = is_function;
     list_node->next = NULL;
     add_symbol(state.list, list_node);
+}
+
+void addToErrorList(char message[MESSAGE_SIZE]){
+    error_node * node = malloc(sizeof(error_node));
+    memcpy(node->message, message, strlen(message));
+    node->next = NULL;
+    add_symbol_to_error_list(state.errors_list, node);
 }
 
 // - - - - - - Includes - - - - - - - - - -
@@ -108,7 +118,9 @@ SizeNode * SizeVarAction(Variable variableNode){
     if( !contains_symbol(state.list, variableNode, false) ){
         state.succeed = false;
         //TODO - handle error
-        printf("variable: %s not declared\n", variableNode );
+        char message[MESSAGE_SIZE] = {'\0'};
+        sprintf(message, "Variable: %s not declared", variableNode);
+        addToErrorList(message);
     }
 
     return sizeNode;
@@ -1524,11 +1536,15 @@ UnboundedParametersNode * UnboundedParametersAction(Variable variable1, SizeNode
     if( !contains_symbol(state.list, variable1, true) ){
         //TODO - handle error
         state.succeed = false;
-        printf("array: %s not declared\n", variable1 );
+        char message[MESSAGE_SIZE] = {'\0'};
+        sprintf(message, "array: %s not declared", variable1 );
+        addToErrorList(message);
     }
     if( !contains_symbol(state.list, variable2, false) && !contains_symbol(state.list, variable2, true) ){
         state.succeed = false;
-        printf("variable: %s not declared\n", variable2 );
+        char message[MESSAGE_SIZE] = {'\0'};
+        sprintf(message, "variable: %s not declared", variable2  );
+        addToErrorList(message);
     }
 
     return unboundedParametersNode;
@@ -1544,11 +1560,15 @@ BoundedParametersNode * BoundedParametersAction(Variable variable1, RangeNode * 
     if( !contains_symbol(state.list, variable1, true) ){
         state.succeed = false;
         //TODO - handle error
-        printf("array: %s not declared\n", variable1 );
+        char message[MESSAGE_SIZE] = {'\0'};
+        sprintf(message, "array: %s not declared", variable1);
+        addToErrorList(message);
     }
     if( !contains_symbol(state.list, variable2, false) && !contains_symbol(state.list, variable2, true)){
         state.succeed = false;
-        printf("variable: %s not declared\n", variable2 );
+        char message[MESSAGE_SIZE] = {'\0'};
+        sprintf(message, "variable: %s not declared", variable2 );
+        addToErrorList(message);
     }
 
     return boundedParametersNode;
@@ -1591,7 +1611,9 @@ ForeachStatementNode * ForeachStatementAction(Variable variable, SizeNode * size
     if( !contains_symbol(state.list, variable, true) ){
         //TODO - handle error
         state.succeed = false;
-        printf("array: %s not declared\n", variable );
+        char message[MESSAGE_SIZE] = {'\0'};
+        sprintf(message, "array: %s not declared", variable);
+        addToErrorList(message);
     }
        
 
@@ -1614,7 +1636,9 @@ CreateStatementNode * CreateStatementAction(Variable variable1, DataType dataTyp
     //se agrega a symbol list
     if(contains_symbol(state.list, variable1, true) || contains_symbol(state.list, variable1, false)){
         state.succeed = false;
-        printf("variable: %s was already declared\n", variable1);
+        char message[MESSAGE_SIZE] = {'\0'};
+        sprintf(message, "variable: %s was already declared", variable1);
+        addToErrorList(message);
         //TODO - manejo de errores
     }else 
         addToSymbolList(dataType, variable1, false, true, false);
@@ -1647,7 +1671,9 @@ ForeachRangeStatementNode * ForeachRangeStatementAction(Variable variable, Range
     if( !contains_symbol(state.list, variable, true) ){
         //TODO - handle error
         state.succeed = false;
-        printf("array: %s not declared\n", variable );
+        char message[MESSAGE_SIZE] = {'\0'};
+        sprintf(message, "array: %s not declared", variable);
+        addToErrorList(message);
     }
        
     return node;

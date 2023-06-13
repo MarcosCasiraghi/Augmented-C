@@ -23,6 +23,7 @@ int add_symbol(symbol_list * list, symbol_node * node){
     symbol_node * list_node = list->first;
     if( list_node == NULL ){
         list->first = node;
+        list->size++;
         return 1;
     }
 
@@ -35,6 +36,7 @@ int add_symbol(symbol_list * list, symbol_node * node){
         list_node = list_node->next;
     }
     list_node->next = node;
+    list->size++;
     return 1;
 }
 
