@@ -70,6 +70,7 @@ const int main(const int argumentCount, const char ** arguments) {
 			}
 			freeProgramNode(state.program);
 			freeSymbolList(state.list);
+			freeErrorList(state.errors_list);
 			break;
 		case 1:
 			LogError("Bison finalizo debido a un error de sintaxis.");

@@ -44,3 +44,14 @@ void printErrors(error_list * error_list){
     }
     printf("%s\n", list_node->message);
 }
+
+void freeErrorList(error_list * list){
+    if( list->first != NULL)
+        freeErrorNode(list->first);
+}
+
+void freeErrorNode( error_node * node){
+    if( node->next != NULL)
+        freeErrorNode(node->next);
+    free(node);
+}

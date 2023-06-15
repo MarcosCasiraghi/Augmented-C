@@ -24,4 +24,7 @@ void init_error_list( error_list * error_list);
 int add_symbol_to_error_list(error_list * error_list, error_node * node);
 void printErrors(error_list * error_list);
 
+void freeErrorList(error_list * list);
+void freeErrorNode( error_node * node);
+
 #endif
