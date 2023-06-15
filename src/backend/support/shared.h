@@ -58,8 +58,7 @@ typedef struct {
 
 	StackList * stack;
 
-	//contador de tabs para generacion de codigo
-	int tabs;
+	FILE * fd;
 
 } CompilerState;
 

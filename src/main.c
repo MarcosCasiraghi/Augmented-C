@@ -17,7 +17,6 @@ const int main(const int argumentCount, const char ** arguments) {
 	state.program = NULL;
 	state.result = 0;
 	state.succeed = true;
-	state.tabs = 0;
 
 	//tabla de simbolos
 	symbol_list * list = malloc(sizeof(symbol_list));
@@ -60,8 +59,21 @@ const int main(const int argumentCount, const char ** arguments) {
 			// inicial de la gramática satisfactoriamente.
 			if (state.succeed) {
 				LogInfo("La compilacion fue exitosa.");
-				// Generator(state.result);
+
+				//Abro un archivo para escribir
+				FILE * fileFD = fopen("code.c", "w+");
+				if( fileFD == NULL ){
+					printf("error al abrir archivo\n");
+					exit(1);
+				}
+				state.fd = fileFD;
+
 				GenProgramNode(state.program);
+
+				//es necesario cerrar el archivo para que despues pueda ser modificado por el linter
+				fclose(state.fd);
+				//se corre el linter sobre el codigo
+				system("clang-format -style=llvm -i code.c");
 			}
 			else {
 				LogError("Se produjo un error en la aplicacion.");
@@ -79,7 +91,6 @@ const int main(const int argumentCount, const char ** arguments) {
 		default:
 			LogError("Error desconocido mientras se ejecutaba el analizador Bison (codigo %d).", result);
 	}
-	// freeProgramNode(state.program);
 	freeSymbolList(state.list);
 	freeErrorList(state.errors_list);
 	freeScopeStack(state.stack);

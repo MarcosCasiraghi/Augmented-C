@@ -58,7 +58,6 @@ ProgramNode * ProgramAction(StatementNode * statement) {
     node->statementNode = statement;
     // state.succeed = true;
     state.program = node;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -95,7 +94,6 @@ MetaCommandNode * StringMetaCommandAction(StringVar string) {
     MetaCommandNode * node = malloc(sizeof(MetaCommandNode));
     node->type = MetaCommandString;
     node->string = string;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -103,7 +101,6 @@ MetaCommandNode * FileNameMetaCommandAction(StringVar fileName) {
     MetaCommandNode * node = malloc(sizeof(MetaCommandNode));
     node->type = MetaCommandFileName;
     node->string = fileName;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -119,7 +116,6 @@ SizeNode * SizeNumConstIntAction(NumConstantIntNode numConstantIntNode){
     sizeNode->type = ConstantSize;
     sizeNode->numConstantIntNode = numConstantIntNode;
     sizeNode->variable = NULL;
-    sizeNode->tabs = state.tabs;
     return sizeNode;
 }
 
@@ -128,7 +124,6 @@ SizeNode * SizeVarAction(Variable variableNode){
     sizeNode->type = VariableSize;
     sizeNode->numConstantIntNode = 0;
     sizeNode->variable = variableNode;
-    sizeNode->tabs = state.tabs;
 
       //chequeo si existen variable 1 y 2
     if( !contains_symbol(state.list, variableNode, false, false) ){
@@ -152,7 +147,6 @@ ArrayDerefNode * ArrayDerefAction(Variable var, SizeNode * sizeNode){
     ArrayDerefNode * arrayDerefNode = malloc(sizeof(ArrayDerefNode));
     arrayDerefNode->variable = var;
     arrayDerefNode->sizeNode = sizeNode;
-    arrayDerefNode->tabs = state.tabs;
     return arrayDerefNode;
 }
 
@@ -167,7 +161,6 @@ void freeArrayDerefNode(ArrayDerefNode * node){
 PointerNode * PointerAction() {
     PointerNode * node = malloc(sizeof(PointerNode));
     node->child = NoChild;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -175,7 +168,6 @@ PointerNode * PointerActionWithChild(PointerNode * pointerNode) {
     PointerNode * node = malloc(sizeof(PointerNode));
     node->child = HasChild;
     node->pointerNode = pointerNode;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -192,7 +184,6 @@ DeclarationNode * DeclarationOfSingleAction(SingleDeclarationNode * singleDeclar
     node->type = SingleDeclaration;
     node->singleDeclarationNode = singleDeclarationNode;
 	node->arrayDeclarationNode = NULL;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -201,7 +192,6 @@ DeclarationNode * DeclarationOfArrayAction(ArrayDeclarationNode * arrayDeclarati
     node->type = ArrayDeclaration;
 	node->singleDeclarationNode = NULL;
     node->arrayDeclarationNode = arrayDeclarationNode;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -223,7 +213,6 @@ SingleDeclarationNode * SingleWithPointerDeclarationAction(PointerNode * pointer
     node->dataType = dataType;
     node->variable = variable;
     node->singleInitializeNode = singleInitializeNode;
-    node->tabs = state.tabs;
     //se agrega a la tabla de simbolos
     addToSymbolList(dataType, variable, true, false, false);
     
@@ -237,7 +226,6 @@ SingleDeclarationNode * SingleWithoutPointerDeclarationAction(DataType dataType,
     node->dataType = dataType;
     node->variable = variable;
     node->singleInitializeNode = singleInitializeNode;
-    node->tabs = state.tabs;
     //se agrega a la tabla de simbolos
     addToSymbolList(dataType, variable, false, false, false);
 
@@ -257,14 +245,12 @@ void freeSingleDeclarationNode(SingleDeclarationNode * node){
 SingleInitializeNode * SingleInitializationWithoutAssignAction() {
     SingleInitializeNode * node = malloc(sizeof(SingleInitializeNode));
     node->type = NoAssign;
-    node->tabs = state.tabs;
     return node;
 }
 SingleInitializeNode * SingleInitializationWithAssignAction(ExpressionNode * expressionNode) {
     SingleInitializeNode * node = malloc(sizeof(SingleInitializeNode));
     node->type = AssignSingle;
     node->expressionNode = expressionNode;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -282,7 +268,6 @@ ArrayDeclarationNode * ArrayDeclarationAction(DataType dataType, Variable variab
     node->variable = variable;
     node->arraySizeNode = arraySizeNode;
     node->arrayInitializeNode = arrayInitializeNode;
-    node->tabs = state.tabs;
     //se agrega a la tabla de simbolos
     addToSymbolList(dataType, variable, false, true, false);
 
@@ -302,7 +287,6 @@ ArraySizeNode * ArraySizeWithoutSizeNorChildrenAction() {
     ArraySizeNode * node = malloc(sizeof(ArraySizeNode));
     node->type = NotSizedSingle;
     node->child = NoChild;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -311,7 +295,6 @@ ArraySizeNode * ArraySizeWithSizeWithoutChildrenAction(NumConstantIntNode number
     node->type = Sized;
     node->child = NoChild;
     node->numberConstant = numberConstant;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -320,7 +303,6 @@ ArraySizeNode * ArraySizeWithoutSizeWithChildrenAction(ArraySizeNode * arraySize
     node->type = NotSizedSingle;
     node->child = HasChild;
     node->arraySizeNode = arraySizeNode;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -330,7 +312,6 @@ ArraySizeNode * ArraySizeWithSizeWithChildrenAction(NumConstantIntNode numberCon
     node->child = HasChild;
     node->numberConstant = numberConstant;
     node->arraySizeNode = arraySizeNode;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -390,14 +371,12 @@ DataType VoidPointerAction() {
 ArrayInitializeNode * ArrayInitializeEmptyAction() {
     ArrayInitializeNode * node = malloc(sizeof(ArrayInitializeNode));
     node->type = Empty;
-    node->tabs = state.tabs;
     return node;
 }
 ArrayInitializeNode * ArrayInitializeWithListAction(ArrayListNode * arrayListNode) {
     ArrayInitializeNode * node = malloc(sizeof(ArrayInitializeNode));
     node->type = WithList;
     node->arrayListNode = arrayListNode;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -413,7 +392,6 @@ ArrayListNode * ArrayListAction(NumConstantIntNode integer) {
     ArrayListNode * node = malloc(sizeof(ArrayListNode));
     node->child = NoChild;
     node->integer = integer;
-    node->tabs = state.tabs;
     return node;
 }
 ArrayListNode * ArrayListManyAction(NumConstantIntNode integer, ArrayListNode * arrayListNode) {
@@ -421,7 +399,6 @@ ArrayListNode * ArrayListManyAction(NumConstantIntNode integer, ArrayListNode * 
     node->child = HasChild;
     node->integer = integer;
     node->arrayListNode = arrayListNode;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -440,7 +417,6 @@ AssignmentNode * AssignmentWithVarAction(Variable var, AssignmentType type, Expr
     assignmentNode->variable = var;
     assignmentNode->expressionNode = expressionNode;
     assignmentNode->arrayDefinitionNode = NULL;
-    assignmentNode->tabs = state.tabs;
     return assignmentNode;
 }
 
@@ -451,7 +427,6 @@ AssignmentNode * AssignmentWithArrayDerefAction(ArrayDerefNode * arrayDerefNode,
     assignmentNode->variable = NULL;
     assignmentNode->expressionNode = expressionNode;
     assignmentNode->arrayDefinitionNode = arrayDerefNode;
-    assignmentNode->tabs = state.tabs;
     return assignmentNode;
 }
 
@@ -471,7 +446,6 @@ FunctionCallNode * WithArgsFunctionCallAction(Variable variable, FunctionCallArg
     functionCallNode->type = WithArgs;
     functionCallNode->Variable = variable;
     functionCallNode->functionCallArgNode = functionCallArgNode;
-    functionCallNode->tabs = state.tabs;
     //chequeo si existe funcion
     // if( !contains_symbol(state.list, variable) ){
     //     //TODO - handle error
@@ -486,7 +460,6 @@ FunctionCallNode * NoArgsFunctionCallAction(Variable variable){
     functionCallNode->type = NoArgs;
     functionCallNode->Variable = variable;
     functionCallNode->functionCallArgNode = NULL;
-    functionCallNode->tabs = state.tabs;
     //chequeo si existe funcion
     // if( !contains_symbol(state.list, variable) ){
     //     //TODO - handle error
@@ -510,7 +483,6 @@ FunctionCallArgNode * WithArgsFunctionCallArgAction(ExpressionNode * expressionN
     node->type = FunctionCallWithArgs;
     node->expressionNode = expressionNode;
     node->functionCallArgNode = functionCallArgNode;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -519,7 +491,6 @@ FunctionCallArgNode * NoArgsFunctionCallArgAction(ExpressionNode * expressionNod
     functionCallArgNode->type = FunctionCallWithNoArgs;
     functionCallArgNode->expressionNode = expressionNode;
     functionCallArgNode->functionCallArgNode = NULL;
-    functionCallArgNode->tabs = state.tabs;
     return functionCallArgNode;
 }
 
@@ -544,7 +515,6 @@ ExpressionNode * AddOpExpressionAction(ExpressionNode * leftExpressionNode, Expr
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -561,7 +531,6 @@ ExpressionNode * SubOpExpressionAction(ExpressionNode * leftExpressionNode, Expr
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -578,7 +547,6 @@ ExpressionNode * MultOpExpressionAction(ExpressionNode * leftExpressionNode, Exp
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -595,7 +563,6 @@ ExpressionNode * DivOpExpressionAction(ExpressionNode * leftExpressionNode, Expr
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -612,7 +579,6 @@ ExpressionNode * ModOpExpressionAction(ExpressionNode * leftExpressionNode, Expr
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -629,7 +595,6 @@ ExpressionNode * IncOpRightExpressionAction(ExpressionNode * leftExpressionNode)
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -646,7 +611,6 @@ ExpressionNode * IncOpLeftExpressionAction(ExpressionNode * rightExpressionNode)
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -663,7 +627,6 @@ ExpressionNode * DecOpRightExpressionAction(ExpressionNode * leftExpressionNode)
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -680,7 +643,6 @@ ExpressionNode * DecOpLeftExpressionAction(ExpressionNode * rightExpressionNode)
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -697,7 +659,6 @@ ExpressionNode * BitNotOpExpressionAction(ExpressionNode * rightExpressionNode){
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -714,7 +675,6 @@ ExpressionNode * BitRightOpExpressionAction(ExpressionNode * leftExpressionNode,
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -731,7 +691,6 @@ ExpressionNode * BitLeftOpExpressionAction(ExpressionNode * leftExpressionNode, 
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -748,7 +707,6 @@ ExpressionNode * BitXorOpExpressionAction(ExpressionNode * leftExpressionNode, E
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -765,7 +723,6 @@ ExpressionNode * BitOrOpExpressionAction(ExpressionNode * leftExpressionNode, Ex
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -782,7 +739,6 @@ ExpressionNode * BitAndOpExpressionAction(ExpressionNode * leftExpressionNode, E
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -799,7 +755,6 @@ ExpressionNode * AndOpExpressionAction(ExpressionNode * leftExpressionNode, Expr
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -816,7 +771,6 @@ ExpressionNode * ParenthesisExpressionAction(ExpressionNode * rightExpressionNod
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -833,7 +787,6 @@ ExpressionNode * OrOpExpressionAction(ExpressionNode * leftExpressionNode, Expre
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -850,7 +803,6 @@ ExpressionNode * NotOpExpressionAction(ExpressionNode * rightExpressionNode){
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -867,7 +819,6 @@ ExpressionNode * EqOpExpressionAction(ExpressionNode * leftExpressionNode, Expre
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -884,7 +835,6 @@ ExpressionNode * GrOpExpressionAction(ExpressionNode * leftExpressionNode, Expre
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -901,7 +851,6 @@ ExpressionNode * GeOpExpressionAction(ExpressionNode * leftExpressionNode, Expre
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -918,7 +867,6 @@ ExpressionNode * LtOpExpressionAction(ExpressionNode * leftExpressionNode, Expre
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -935,7 +883,6 @@ ExpressionNode * LeOpExpressionAction(ExpressionNode * leftExpressionNode, Expre
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -952,7 +899,6 @@ ExpressionNode * NeOpExpressionAction(ExpressionNode * leftExpressionNode, Expre
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -969,7 +915,6 @@ ExpressionNode * variableOpExpressionAction(Variable variable){
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -986,7 +931,6 @@ ExpressionNode * NumConstantFloatOpExpressionAction(NumConstantFloatNode numCons
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -1003,7 +947,6 @@ ExpressionNode * NumConstantIntOpExpressionAction(NumConstantIntNode numConstant
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -1020,7 +963,6 @@ ExpressionNode * SpecialVarOpExpressionAction(SpecialVariable specialVariableNod
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -1037,7 +979,6 @@ ExpressionNode * FunctionCallOpExpressionAction(FunctionCallNode * functionCallN
     expressionNode->functionCallNode = functionCallNode;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -1054,7 +995,6 @@ ExpressionNode * ArrayDerefOpExpressionAction(ArrayDerefNode * arrayDerefNode){
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = arrayDerefNode;
     expressionNode->StringNode = NULL;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -1071,7 +1011,6 @@ ExpressionNode * StringOpExpressionAction(StringVar stringVar){
     expressionNode->functionCallNode = NULL;
     expressionNode->arrayDerefNode = NULL;
     expressionNode->StringNode = stringVar;
-    expressionNode->tabs = state.tabs;
 
     return  expressionNode;
 }
@@ -1099,7 +1038,6 @@ void freeExpressionNode(ExpressionNode * node){
 ReturnStatementNode * ReturnStatementAction(ExpressionNode * expressionNode){
     ReturnStatementNode * returnStatementNode = malloc(sizeof(ReturnStatementNode));
     returnStatementNode->expressionNode = expressionNode;
-    returnStatementNode->tabs = state.tabs;
     return returnStatementNode;
 }
 
@@ -1113,7 +1051,6 @@ IfElseStatementNode * IfWithoutElseStatementAction(IfStatementNode * ifStatement
     ifElseStatementNode->type = withoutElse;
     ifElseStatementNode->ifStatementNode = ifStatementNode;
     ifElseStatementNode->elseStatementNode = NULL;
-    ifElseStatementNode->tabs = state.tabs;
     return ifElseStatementNode;
 }
 
@@ -1122,7 +1059,6 @@ IfElseStatementNode * IfWithElseStatementAction(IfStatementNode * ifStatementNod
     ifElseStatementNode->type = withElse;
     ifElseStatementNode->ifStatementNode = ifStatementNode;
     ifElseStatementNode->elseStatementNode = elseStatementNode;
-    ifElseStatementNode->tabs = state.tabs;
     return ifElseStatementNode;
 }
 
@@ -1137,7 +1073,6 @@ IfStatementNode * IfStatementAction(ExpressionNode * expressionNode, CodeBlockNo
     IfStatementNode * ifStatementNode = malloc(sizeof(IfStatementNode));
     ifStatementNode->expressionNode = expressionNode;
     ifStatementNode->codeBlockNode = codeBlockNode;
-    ifStatementNode->tabs = state.tabs;
     return ifStatementNode;
 }
 
@@ -1150,7 +1085,6 @@ void freeIfStatementNode(IfStatementNode * node){
 ElseStatementNode * ElseStatementAction(CodeBlockNode * codeBlockNode){
     ElseStatementNode * elseStatementNode = malloc(sizeof(ElseStatementNode));
     elseStatementNode->codeBlockNode = codeBlockNode;
-    elseStatementNode->tabs = state.tabs;
     return elseStatementNode;
 }
 
@@ -1163,7 +1097,6 @@ WhileStatementNode * WhileStatementAction(ExpressionNode * expressionNode, CodeB
     WhileStatementNode * whileStatementNode = malloc(sizeof(WhileStatementNode));
     whileStatementNode->expressionNode = expressionNode;
     whileStatementNode->codeBlockNode = codeBlockNode;
-    whileStatementNode->tabs = state.tabs;
     return whileStatementNode;
 }
 
@@ -1181,7 +1114,6 @@ ForStatementNode * ForStatementWithAssigmentAction(DeclarationNode * declaration
     forStatementNode->expressionNode = NULL;
     forStatementNode->codeBlockNode = codeBlockNode;
     forStatementNode->AssignmentNode = assignmentNode;
-    forStatementNode->tabs = state.tabs;
     return forStatementNode;
 }
 
@@ -1193,7 +1125,6 @@ ForStatementNode * ForStatementWithExpressionAction(DeclarationNode * declaratio
     forStatementNode->expressionNode = secondExpressionNode;
     forStatementNode->codeBlockNode = codeBlockNode;
     forStatementNode->AssignmentNode = NULL;
-    forStatementNode->tabs = state.tabs;
     return forStatementNode;
 }
 
@@ -1212,7 +1143,6 @@ SwitchStatementNode * SwitchStatementAction(ExpressionNode * expressionNode, Cod
     SwitchStatementNode * switchStatementNode = malloc(sizeof(SwitchStatementNode));
     switchStatementNode->expressionNode = expressionNode;
     switchStatementNode->codeBlockNode = codeBlockNode;
-    switchStatementNode->tabs = state.tabs;
     return switchStatementNode;
 }
 
@@ -1230,7 +1160,6 @@ CodeBlockNode * DeclarationCodeBlockAction(DeclarationNode * declarationNode) {
     node->child = NoChild;
     node->type = DeclarationStatement;
     node->declarationNode = declarationNode;
-    node->tabs = state.tabs;
     return node;
 }
 CodeBlockNode * SpecialStatementCodeBlockAction(SpecialStatementNode * specialStatement) {
@@ -1238,7 +1167,6 @@ CodeBlockNode * SpecialStatementCodeBlockAction(SpecialStatementNode * specialSt
     node->child = NoChild;
     node->type = SpecialStatement;
     node->specialStatement = specialStatement;
-    node->tabs = state.tabs;
     return node;
 }
 CodeBlockNode * ExpressionCodeBlockAction(ExpressionNode * expression) {
@@ -1246,7 +1174,6 @@ CodeBlockNode * ExpressionCodeBlockAction(ExpressionNode * expression) {
     node->child = NoChild;
     node->type = ExpressionStatement;
     node->expressionNode = expression;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -1255,7 +1182,6 @@ CodeBlockNode * ReturnCodeBlockAction(ReturnStatementNode * returnStatementNode)
     node->child = NoChild;
     node->type = ReturnStatement;
     node->returnStatement = returnStatementNode;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -1264,7 +1190,6 @@ CodeBlockNode * IfElseCodeBlockAction(IfElseStatementNode * ifElse) {
     node->child = NoChild;
     node->type = IfElseStatement;
     node->ifElse = ifElse;
-    node->tabs = state.tabs;
     return node;
 }
 CodeBlockNode * ForCodeBlockAction(ForStatementNode * forStatement) {
@@ -1272,7 +1197,6 @@ CodeBlockNode * ForCodeBlockAction(ForStatementNode * forStatement) {
     node->child = NoChild;
     node->type = ForStatement;
     node->forStatement = forStatement;
-    node->tabs = state.tabs;
     return node;
 }
 CodeBlockNode * WhileCodeBlockAction(WhileStatementNode * whileStatement) {
@@ -1280,7 +1204,6 @@ CodeBlockNode * WhileCodeBlockAction(WhileStatementNode * whileStatement) {
     node->child = NoChild;
     node->type = WhileStatement;
     node->whileStatement = whileStatement;
-    node->tabs = state.tabs;
     return node;
 }
 CodeBlockNode * SwitchCodeBlockAction(SwitchStatementNode * switchStatement) {
@@ -1288,7 +1211,6 @@ CodeBlockNode * SwitchCodeBlockAction(SwitchStatementNode * switchStatement) {
     node->child = NoChild;
     node->type = SwitchStatement;
     node->switchStatement = switchStatement;
-    node->tabs = state.tabs;
     return node;
 }
 CodeBlockNode * AssignmentCodeBlockAction(AssignmentNode * assingment) {
@@ -1296,7 +1218,6 @@ CodeBlockNode * AssignmentCodeBlockAction(AssignmentNode * assingment) {
     node->child = NoChild;
     node->type = AssignmentStatement;
     node->assingment = assingment;
-    node->tabs = state.tabs;
     return node;
 }
 CodeBlockNode * ContinueCodeBlockAction(CodeBlockNode * codeBlock) {
@@ -1304,7 +1225,6 @@ CodeBlockNode * ContinueCodeBlockAction(CodeBlockNode * codeBlock) {
     node->child = HasChild;
     node->type = ContinueStatement;
     node->codeBlock = codeBlock;
-    node->tabs = state.tabs;
     return node;
 }
 CodeBlockNode * BreakCodeBlockAction(CodeBlockNode * codeBlock) {
@@ -1312,7 +1232,6 @@ CodeBlockNode * BreakCodeBlockAction(CodeBlockNode * codeBlock) {
     node->child = HasChild;
     node->type = BreakStatement;
     node->codeBlock = codeBlock;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -1321,7 +1240,6 @@ CodeBlockNode * ContinueAction() {
     node->child = NoChild;
     node->type = ContinueStatement;
     node->codeBlock = NULL;
-    node->tabs = state.tabs;
     return node;
 }
 CodeBlockNode * BreakAction() {
@@ -1329,7 +1247,6 @@ CodeBlockNode * BreakAction() {
     node->child = NoChild;
     node->type = BreakStatement;
     node->codeBlock = NULL;
-    node->tabs = state.tabs;
     return node;
 }
 CodeBlockNode * CaseCodeBlockAction(ExpressionNode * expression, CodeBlockNode * codeBlock) {
@@ -1338,7 +1255,6 @@ CodeBlockNode * CaseCodeBlockAction(ExpressionNode * expression, CodeBlockNode *
     node->type = CaseStatement;
     node->expression = expression;
     node->codeBlock = codeBlock;
-    node->tabs = state.tabs;
     return node;
 }
 CodeBlockNode * DefaultCaseCodeBlockAction(CodeBlockNode * codeBlock) {
@@ -1347,7 +1263,6 @@ CodeBlockNode * DefaultCaseCodeBlockAction(CodeBlockNode * codeBlock) {
     node->type = DefaultCaseStatement;
     node->expression = NULL;
     node->codeBlock = codeBlock;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -1357,7 +1272,6 @@ CodeBlockNode * DeclarationCodeBlockActionWithChild(DeclarationNode * declaratio
     node->type = DeclarationStatement;
     node->declarationNode = declarationNode;
     node->codeBlock = codeBlock;
-    node->tabs = state.tabs;
     return node;
 }
 CodeBlockNode * SpecialStatementCodeBlockActionWithChild(SpecialStatementNode * specialStatement, CodeBlockNode * codeBlock) {
@@ -1366,7 +1280,6 @@ CodeBlockNode * SpecialStatementCodeBlockActionWithChild(SpecialStatementNode * 
     node->type = SpecialStatement;
     node->specialStatement = specialStatement;
     node->codeBlock = codeBlock;
-    node->tabs = state.tabs;
     return node;
 }
 CodeBlockNode * ExpressionCodeBlockActionWithChild(ExpressionNode * expression, CodeBlockNode * codeBlock) {
@@ -1375,7 +1288,6 @@ CodeBlockNode * ExpressionCodeBlockActionWithChild(ExpressionNode * expression, 
     node->type = ExpressionStatement;
     node->expression = expression;
     node->codeBlock = codeBlock;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -1385,7 +1297,6 @@ CodeBlockNode * ReturnCodeBlockActionWithChild(ReturnStatementNode * returnState
     node->type = ReturnStatement;
     node->returnStatement = returnStatementNode;
     node->codeBlock = codeBlock;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -1395,7 +1306,6 @@ CodeBlockNode * IfElseCodeBlockActionWithChild(IfElseStatementNode * ifElse, Cod
     node->type = IfElseStatement;
     node->ifElse = ifElse;
     node->codeBlock = codeBlock;
-    node->tabs = state.tabs;
     return node;
 }
 CodeBlockNode * ForCodeBlockActionWithChild(ForStatementNode * forStatement, CodeBlockNode * codeBlock) {
@@ -1404,7 +1314,6 @@ CodeBlockNode * ForCodeBlockActionWithChild(ForStatementNode * forStatement, Cod
     node->type = ForStatement;
     node->forStatement = forStatement;
     node->codeBlock = codeBlock;
-    node->tabs = state.tabs;
     return node;
 }
 CodeBlockNode * WhileCodeBlockActionWithChild(WhileStatementNode * whileStatement, CodeBlockNode * codeBlock) {
@@ -1413,7 +1322,6 @@ CodeBlockNode * WhileCodeBlockActionWithChild(WhileStatementNode * whileStatemen
     node->type = WhileStatement;
     node->whileStatement = whileStatement;
     node->codeBlock = codeBlock;
-    node->tabs = state.tabs;
     return node;
 }
 CodeBlockNode * SwitchCodeBlockActionWithChild(SwitchStatementNode * switchStatement, CodeBlockNode * codeBlock) {
@@ -1422,7 +1330,6 @@ CodeBlockNode * SwitchCodeBlockActionWithChild(SwitchStatementNode * switchState
     node->type = SwitchStatement;
     node->switchStatement = switchStatement;
     node->codeBlock = codeBlock;
-    node->tabs = state.tabs;
     return node;
 }
 CodeBlockNode * AssignmentCodeBlockActionWithChild(AssignmentNode * assingment, CodeBlockNode * codeBlock) {
@@ -1431,7 +1338,6 @@ CodeBlockNode * AssignmentCodeBlockActionWithChild(AssignmentNode * assingment, 
     node->type = AssignmentStatement;
     node->assingment = assingment;
     node->codeBlock = codeBlock;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -1469,7 +1375,6 @@ FunctionArgNode * PointerFunctionArgAction(DataType dataType, PointerNode * Poin
     node->dataType = dataType;
     node->pointer = Pointer;
     node->variable = variable;
-    node->tabs = state.tabs;
 
     addToSymbolList(dataType, variable, true, false, false);
 
@@ -1483,7 +1388,6 @@ FunctionArgNode * NoPointerFunctionArgAction(DataType dataType, Variable variabl
     node->dataType = dataType;
     node->pointer = NULL;
     node->variable = variable;
-    node->tabs = state.tabs;
 
     addToSymbolList(dataType, variable, false, false, false);
 
@@ -1502,7 +1406,6 @@ FunctionArgsNode * SingleFunctionArgsAction(FunctionArgNode * functionArgNode) {
     node->type = single;
     node->functionArgNode = functionArgNode;
     node->functionArgsNode = NULL;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -1511,7 +1414,6 @@ FunctionArgsNode * MultipleFunctionArgsAction(FunctionArgNode * functionArgNode,
     node->type = multiple;
     node->functionArgNode = functionArgNode;
     node->functionArgsNode = functionArgsNode;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -1531,7 +1433,6 @@ FunctionDeclarationNode* FunctionDeclarationNoArgsAction(DataType functionType, 
     node->variable = variable;
     node->codeBlock = codeBlock;
     node->functionArgs = NULL;
-    node->tabs = state.tabs;
 
     //se agrega a la tabla de simbolos
     addToSymbolList(functionType, variable, false, false, true);
@@ -1546,7 +1447,6 @@ FunctionDeclarationNode* FunctionDeclarationWithArgsAction(DataType functionType
     node->variable = variable;
     node->codeBlock = codeBlock;
     node->functionArgs = functionArgs;
-    node->tabs = state.tabs;
 
     //se agrega a la tabla de simbolos
     addToSymbolList(functionType, variable, false, false, true);
@@ -1561,7 +1461,6 @@ FunctionDeclarationNode* VoidFunctionDeclarationAction(Variable variable, CodeBl
     node->variable = variable;
     node->codeBlock = codeBlock;
     node->functionArgs = NULL;
-    node->tabs = state.tabs;
 
     //se agrega a la tabla de simbolos
     addToSymbolList(Void, variable, false, false, true);
@@ -1576,7 +1475,6 @@ FunctionDeclarationNode* VoidFunctionDeclarationWithArgsAction(Variable variable
     node->variable = variable;
     node->codeBlock = codeBlock;
     node->functionArgs = functionArgs;
-    node->tabs = state.tabs;
 
     //se agrega a la tabla de simbolos
     addToSymbolList(Void, variable, false, false, true);
@@ -1603,7 +1501,6 @@ StatementNode * MetacommandWithStatementNodeAction(StatementNode * statementNode
     node->metacommand = metaCommandNode;
     node->functionDeclarationNode = NULL;
     node->declarationNode = NULL;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -1615,7 +1512,6 @@ StatementNode * FunctionDeclarationWithStatementNodeAction(StatementNode * state
     node->metacommand = NULL;
     node->functionDeclarationNode = functionDeclarationNode;
     node->declarationNode = NULL;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -1627,7 +1523,6 @@ StatementNode * DeclarationWithStatementNodeAction(StatementNode * statementNode
     node->metacommand = NULL;
     node->functionDeclarationNode = NULL;
     node->declarationNode = declarationNode;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -1639,7 +1534,6 @@ StatementNode * MetaCommandNodeAction(MetaCommandNode * metaCommandNode) {
     node->metacommand = metaCommandNode;
     node->functionDeclarationNode = NULL;
     node->declarationNode = NULL;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -1651,8 +1545,7 @@ StatementNode * FunctionDeclarationNodeAction(FunctionDeclarationNode * function
     node->metacommand = NULL;
     node->functionDeclarationNode = functionDeclarationNode;
     node->declarationNode = NULL;
-    node->tabs = state.tabs;
-    return node;
+   return node;
 }
 
 StatementNode * DeclarationStatementNodeAction(DeclarationNode *declarationNode) {
@@ -1663,7 +1556,6 @@ StatementNode * DeclarationStatementNodeAction(DeclarationNode *declarationNode)
     node->metacommand = NULL;
     node->functionDeclarationNode = NULL;
     node->declarationNode = declarationNode;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -1684,7 +1576,6 @@ void freeStatementNode(StatementNode * node){
 SpecialStatementNode * specialStatementAction(SelectorNode * selectorNode) {
     SpecialStatementNode * node = malloc(sizeof(SpecialStatementNode));
     node->selectorNode = selectorNode;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -1707,7 +1598,6 @@ SelectorNode * ReduceStatementSelectorAction(ReduceStatementNode * reduceStateme
     node->filterRangeStatement = NULL;
     node->foreachRangeStatement = NULL;
     node->mapRangeStatement = NULL;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -1723,7 +1613,6 @@ SelectorNode * FilterStatementSelectorAction(FilterStatementNode * filterStateme
     node->filterRangeStatement = NULL;
     node->foreachRangeStatement = NULL;
     node->mapRangeStatement = NULL;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -1739,7 +1628,6 @@ SelectorNode * ForeachStatementSelectorAction(ForeachStatementNode * foreachStat
     node->filterRangeStatement = NULL;
     node->foreachRangeStatement = NULL;
     node->mapRangeStatement = NULL;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -1755,7 +1643,6 @@ SelectorNode * MapStatementSelectorAction(MapStatementNode * mapStatementNode) {
     node->filterRangeStatement = NULL;
     node->foreachRangeStatement = NULL;
     node->mapRangeStatement = NULL;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -1771,7 +1658,6 @@ SelectorNode * CreateStatementSelectorAction(CreateStatementNode * createStateme
     node->filterRangeStatement = NULL;
     node->foreachRangeStatement = NULL;
     node->mapRangeStatement = NULL;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -1787,7 +1673,6 @@ SelectorNode * ReduceRangeStatementSelectorAction(ReduceRangeStatementNode * red
     node->filterRangeStatement = NULL;
     node->foreachRangeStatement = NULL;
     node->mapRangeStatement = NULL;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -1803,7 +1688,6 @@ SelectorNode * FilterRangeStatementSelectorAction(FilterRangeStatementNode * fil
     node->reduceRangeStatement = NULL;
     node->foreachRangeStatement = NULL;
     node->mapRangeStatement = NULL;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -1819,7 +1703,6 @@ SelectorNode * ForeachRangeStatementSelectorAction(ForeachRangeStatementNode * f
     node->reduceRangeStatement = NULL;
     node->filterRangeStatement = NULL;
     node->mapRangeStatement = NULL;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -1835,7 +1718,6 @@ SelectorNode * MapRangeStatementSelectorAction(MapRangeStatementNode * mapRangeS
     node->reduceRangeStatement = NULL;
     node->filterRangeStatement = NULL;
     node->foreachRangeStatement = NULL;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -1867,7 +1749,6 @@ RangeNode * RangeAction(SizeNode * sizeNode1, SizeNode * sizeNode2){
     RangeNode * rangeNode = malloc(sizeof(RangeNode));
     rangeNode->sizeNode1 = sizeNode1;
     rangeNode->sizeNode2 = sizeNode2;
-    rangeNode->tabs = state.tabs;
     return rangeNode;
 }
 
@@ -1880,7 +1761,6 @@ void freeRangeNode(RangeNode * node){
 ConsumerFunctionNode * ConsumerFunctionAction(FunctionCallNode * functionCallNode){
     ConsumerFunctionNode * consumerFunctionNode = malloc(sizeof(ConsumerFunctionNode));
     consumerFunctionNode->functionCallNode = functionCallNode;
-    consumerFunctionNode->tabs = state.tabs;
     return consumerFunctionNode;
 }
 
@@ -1894,7 +1774,6 @@ UnboundedParametersNode * UnboundedParametersAction(Variable variable1, SizeNode
     unboundedParametersNode->variable1 = variable1;
     unboundedParametersNode->SizeNode = sizeNode;
     unboundedParametersNode->variable2 = variable2;
-    unboundedParametersNode->tabs = state.tabs;
     //chequeo si existen variable 1 y 2
     if( !contains_symbol(state.list, variable1, true, false) ){
         //TODO - handle error
@@ -1925,7 +1804,6 @@ BoundedParametersNode * BoundedParametersAction(Variable variable1, RangeNode * 
     boundedParametersNode->variable1 = variable1;
     boundedParametersNode->rangeNode = rangeNode;
     boundedParametersNode->variable2 = variable2;
-    boundedParametersNode->tabs = state.tabs;
      //chequeo si existen variable 1 y 2
     if( !contains_symbol(state.list, variable1, true, false) ){
         state.succeed = false;
@@ -1954,7 +1832,6 @@ void freeBoundedParametersNode(BoundedParametersNode * node){
 Lambda * LambdaAction(ExpressionNode * expressionNode) {
     Lambda * node = malloc(sizeof(Lambda));
     node->expressionNode = expressionNode;
-    node->tabs = state.tabs;    
     return node;
 }
 
@@ -1967,7 +1844,6 @@ CreateLambda * CreateLambdaAction(NumConstantIntNode constant1, NumConstantIntNo
     CreateLambda * node = malloc(sizeof(CreateLambda));
     node->constant1 = constant1;
     node->constant2 = constant2;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -1980,7 +1856,6 @@ ReduceStatementNode * ReduceStatementAction(UnboundedParametersNode * unboundedP
     ReduceStatementNode * node = malloc(sizeof(ReduceStatementNode));
     node->unboundedParametersNode = unboundedParametersNode;
     node->lambda = lambda;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -1994,7 +1869,6 @@ FilterStatementNode * FilterStatementAction(UnboundedParametersNode * unboundedP
     FilterStatementNode * node = malloc(sizeof(FilterStatementNode));
     node->unboundedParametersNode = unboundedParametersNode;
     node->lambda = lambda;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -2009,7 +1883,6 @@ ForeachStatementNode * ForeachStatementAction(Variable variable, SizeNode * size
     node->variable = variable;
     node->sizeNode = sizeNode;
     node->consumerFunctionNode = consumerFunctionNode;
-    node->tabs = state.tabs;
     //chequeo si existen variable
     if( !contains_symbol(state.list, variable, true, false) ){
         state.succeed = false;
@@ -2031,7 +1904,6 @@ MapStatementNode * MapStatementAction(UnboundedParametersNode * unboundedParamet
     MapStatementNode * node = malloc(sizeof(MapStatementNode));
     node->unboundedParametersNode = unboundedParametersNode;
     node->lambda = lambda;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -2046,7 +1918,6 @@ CreateStatementNode * CreateStatementAction(Variable variable1, DataType dataTyp
     node->variable1 = variable1;
     node->dataType = dataType;
     node->createLambda = createLambda;
-    node->tabs = state.tabs;
     //se agrega a symbol list
     if(contains_symbol(state.list, variable1, true, false) || contains_symbol(state.list, variable1, false, false)){
         state.succeed = false;
@@ -2069,7 +1940,6 @@ ReduceRangeStatementNode * ReduceRangeStatementAction(BoundedParametersNode * bo
     ReduceRangeStatementNode * node = malloc(sizeof(ReduceRangeStatementNode));
     node->boundedParametersNode = boundedParametersNode;
     node->lambda = lambda;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -2084,7 +1954,6 @@ FilterRangeStatementNode * FilterRangeStatementAction(BoundedParametersNode * bo
     FilterRangeStatementNode * node = malloc(sizeof(FilterRangeStatementNode));
     node->boundedParametersNode = boundedParametersNode;
     node->lambda = lambda;
-    node->tabs = state.tabs;
     return node;
 }
 
@@ -2099,7 +1968,6 @@ ForeachRangeStatementNode * ForeachRangeStatementAction(Variable variable, Range
     node->variable = variable;
     node->rangeNode = rangeNode;
     node->consumerFunctionNode = consumerFunctionNode;
-    node->tabs = state.tabs;
 
       //chequeo si existen variable
     if( !contains_symbol(state.list, variable, true, false) ){
@@ -2123,7 +1991,6 @@ MapRangeStatementNode * MapRangeStatementAction(BoundedParametersNode * boundedP
     MapRangeStatementNode * node = malloc(sizeof(MapRangeStatementNode));
     node->boundedParametersNode = boundedParametersNode;
     node->lambda = lambda;
-    node->tabs = state.tabs;
     return node;
 }
 

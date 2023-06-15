@@ -10,9 +10,9 @@ bool contains_symbol(symbol_list * list, char * node_name, bool is_array, bool f
     symbol_node * node = list->first;
     while(node != NULL){
         if( strcmp(node->name, node_name) == 0 && ( forGenerate || is_in_current_scope(state.stack, node->scope))){
-            if(node->is_array == is_array || node->is_pointer)
+            if(node->is_array == is_array || node->is_pointer){
                 return true;
-            return false;
+            }  
         }
         node = node->next;
     }
@@ -28,11 +28,6 @@ int add_symbol(symbol_list * list, symbol_node * node){
     }
 
     while( list_node->next != NULL ){
-        if( strcmp(list_node->name, node->name) == 0){
-            //la variable ya existe
-            //TODO - manejo de errores
-            return 0;
-        }
         list_node = list_node->next;
     }
     list_node->next = node;
