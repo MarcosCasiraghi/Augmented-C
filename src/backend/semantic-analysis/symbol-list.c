@@ -70,3 +70,17 @@ char * generateNewIndex(symbol_list * list){
     add_symbol(list, node);
     return variable_name;
 }
+
+
+void freeSymbolList(symbol_list * list){
+    if( list->first != NULL)
+        freeSymbolNode(list->first);
+}
+
+void freeSymbolNode(symbol_node * node){
+    if( node->next != NULL)
+        freeSymbolNode(node->next);
+    //no es necesario liberar el nombre pues es el mismo de la variable del nodo que ya se libera
+    // free(node->name);
+    free(node);
+}

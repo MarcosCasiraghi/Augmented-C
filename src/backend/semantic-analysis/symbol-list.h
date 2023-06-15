@@ -35,4 +35,7 @@ int add_symbol(symbol_list * list, symbol_node * node);
 
 char * generateNewIndex(symbol_list * list);
 
+void freeSymbolList(symbol_list * list);
+void freeSymbolNode(symbol_node * node);
+
 #endif
