@@ -69,9 +69,6 @@ const int main(const int argumentCount, const char ** arguments) {
 				return -1;
 			}
 			freeProgramNode(state.program);
-			freeSymbolList(state.list);
-			freeErrorList(state.errors_list);
-			freeScopeStack(state.stack);
 			break;
 		case 1:
 			LogError("Bison finalizo debido a un error de sintaxis.");
@@ -82,6 +79,10 @@ const int main(const int argumentCount, const char ** arguments) {
 		default:
 			LogError("Error desconocido mientras se ejecutaba el analizador Bison (codigo %d).", result);
 	}
+	// freeProgramNode(state.program);
+	freeSymbolList(state.list);
+	freeErrorList(state.errors_list);
+	freeScopeStack(state.stack);
 	LogInfo("Fin.");
 	return result;
 }

@@ -180,7 +180,7 @@ PointerNode * PointerActionWithChild(PointerNode * pointerNode) {
 }
 
 void freePointerNode(PointerNode * node){
-    if( node->child == HasChild)
+    if( node->pointerNode != NULL)
         freePointerNode(node->pointerNode);
     free(node);
 }
@@ -206,9 +206,9 @@ DeclarationNode * DeclarationOfArrayAction(ArrayDeclarationNode * arrayDeclarati
 }
 
 void freeDeclarationNode(DeclarationNode * node){
-    if( node->type == SingleDeclaration)
+    if( node->singleDeclarationNode != NULL)
         freeSingleDeclarationNode(node->singleDeclarationNode);
-    else
+    if( node->arrayDeclarationNode != NULL)
         freeArrayDeclarationNode(node->arrayDeclarationNode);
     free(node);
 }
@@ -245,7 +245,7 @@ SingleDeclarationNode * SingleWithoutPointerDeclarationAction(DataType dataType,
 }
 
 void freeSingleDeclarationNode(SingleDeclarationNode * node){
-    if( node->type == SingleWithPointer)
+    if( node->pointer != NULL)
         freePointerNode(node->pointer);
     free(node->variable);
     freeSingleInitializeNode(node->singleInitializeNode);
@@ -269,7 +269,7 @@ SingleInitializeNode * SingleInitializationWithAssignAction(ExpressionNode * exp
 }
 
 void freeSingleInitializeNode(SingleInitializeNode * node){
-    if( node->type == AssignSingle)
+    if( node->expressionNode != NULL)
         freeExpressionNode(node->expressionNode);
     free(node);
 }
@@ -335,7 +335,7 @@ ArraySizeNode * ArraySizeWithSizeWithChildrenAction(NumConstantIntNode numberCon
 }
 
 void freeArraySizeNode( ArraySizeNode * node){
-    if(node->child == HasChild)
+    if(node->arraySizeNode != NULL)
         freeArraySizeNode(node->arraySizeNode);
     free(node);
 }
@@ -402,7 +402,7 @@ ArrayInitializeNode * ArrayInitializeWithListAction(ArrayListNode * arrayListNod
 }
 
 void freeArrayInitializeNode(ArrayInitializeNode * node){
-    if( node->type == WithList)
+    if( node->arrayListNode != NULL)
         freeArrayListNode(node->arrayListNode);
     free(node);
 }
@@ -426,7 +426,7 @@ ArrayListNode * ArrayListManyAction(NumConstantIntNode integer, ArrayListNode * 
 }
 
 void freeArrayListNode(ArrayListNode * node){
-    if(node->child == HasChild)
+    if(node->arrayListNode != NULL)
         freeArrayListNode(node->arrayListNode);
     free(node);
 }
@@ -456,9 +456,9 @@ AssignmentNode * AssignmentWithArrayDerefAction(ArrayDerefNode * arrayDerefNode,
 }
 
 void freeAssignmentNode(AssignmentNode * node){
-    if( node->withType == withVar)
+    if( node->variable != NULL)
         free(node->variable);
-    if( node->withType == withArrayDeref)
+    if( node->arrayDefinitionNode != NULL)
         freeArrayDerefNode(node->arrayDefinitionNode);
     freeExpressionNode(node->expressionNode);
     free(node);
@@ -499,7 +499,7 @@ FunctionCallNode * NoArgsFunctionCallAction(Variable variable){
 }
 
 void freeFunctionCallNode(FunctionCallNode * node){
-    if( node->type == WithArgs )
+    if( node->functionCallArgNode != NULL )
         freeFunctionCallArgNode(node->functionCallArgNode);
     free(node->Variable);
     free(node);
@@ -524,7 +524,7 @@ FunctionCallArgNode * NoArgsFunctionCallArgAction(ExpressionNode * expressionNod
 }
 
 void freeFunctionCallArgNode(FunctionCallArgNode * node){
-    if( node->type == FunctionCallWithArgs)
+    if( node->functionCallArgNode != NULL)
         freeFunctionCallArgNode(node->functionCallArgNode);
     freeExpressionNode(node->expressionNode);
     free(node);
@@ -1127,7 +1127,7 @@ IfElseStatementNode * IfWithElseStatementAction(IfStatementNode * ifStatementNod
 }
 
 void freeIfElseStatementNode(IfElseStatementNode * node){
-    if( node->type == withElse )
+    if( node->elseStatementNode != NULL )
         freeElseStatementNode(node->elseStatementNode);
     freeIfStatementNode(node->ifStatementNode);
     free(node);
@@ -1201,9 +1201,9 @@ void freeForStatementNode(ForStatementNode * node){
     freeDeclarationNode(node->declarationNode);
     freeExpressionNode(node->firstExpressionNode);
     freeCodeBlockNode(node->codeBlockNode);
-    if( node->type == withAssignment)
+    if( node->AssignmentNode != NULL)
         freeAssignmentNode(node->AssignmentNode);
-    if( node->type == withExpression)
+    if( node->expressionNode != NULL)
         freeExpressionNode(node->expressionNode);
     free(node);
 }
