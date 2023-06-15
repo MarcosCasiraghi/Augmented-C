@@ -12,20 +12,31 @@ void Generator(int result) {
 	LogInfo("El resultado de la expresion computada es: '%d'.", result);
 }
 
+//despues de cada \n se debe llamar a esta funcion para que meta los tabs necesarios
+void printTabs(int tabs){
+	for( int i = 0 ; i < tabs ; i++){
+		printf("\t");
+	}
+}
+
 void GenMetaCommandNode(MetaCommandNode * node){
 	printf("#include ");
 	if( node->type == MetaCommandString){
 		printf("\"%s\"\n", node->string);
+		printTabs(node->tabs);
 	}else {
 		printf("<%s>\n", node->string);
+		printTabs(node->tabs);
 	}	
 }
 
 void GenSizeNode(SizeNode * node, bool shouldNewLine){
 	if (node->type == VariableSize ){
 		printf("%s", node->variable);
-		if(shouldNewLine)
+		if(shouldNewLine){
 			printf("\n");
+			printTabs(node->tabs);
+		}
 	}else{
 		printf("%d", node->numConstantIntNode);
 	}
@@ -51,6 +62,7 @@ void GenSingleInitializeNode(SingleInitializeNode * node, int isFor){
 	}
 	if(!isFor && (node->expressionNode == NULL || node->expressionNode->functionCallNode == NULL)) {
 		printf(";\n");
+		printTabs(node->tabs);
 		return;
 	}
 }
@@ -103,6 +115,7 @@ void GenArrayInitializeNode(ArrayInitializeNode * node){
 		printf("}");
 	}
 	printf(";\n");
+	printTabs(node->tabs);
 }
 
 void GenArrayListNode(ArrayListNode * node){
@@ -193,7 +206,10 @@ void GenFunctionCallNode(FunctionCallNode * node, int isFor, char * arrayName, c
 	if(node->type == WithArgs) {
 		GenFunctionCallArgNode(node->functionCallArgNode, 1, arrayName, index);
 	}
-	if(!isFor) printf(");\n");
+	if(!isFor){
+		printf(");\n");
+		printTabs(node->tabs);
+	} 
 	else printf(")");
 }
 
@@ -326,20 +342,25 @@ void GenReturnStatementNode(ReturnStatementNode * node) {
 	printf("return ");
 	GenExpressionNode(node->expressionNode, 0, NULL, NULL);
 	printf(";\n");
+	printTabs(node->tabs);
 }
 
 void GenIfStatementNode(IfStatementNode * node) {
 	printf("if (");
 	GenExpressionNode(node->expressionNode, 0, NULL, NULL);
 	printf(") {\n");
+	printTabs(node->tabs+1);
 	GenCodeBlockNode(node->codeBlockNode);
 	printf("}\n");
+	printTabs(node->tabs);
 }
 
 void GenElseStatementNode(ElseStatementNode * node) {
 	printf("else {\n");
+	printTabs(node->tabs+1);
 	GenCodeBlockNode(node->codeBlockNode);
 	printf("}\n");
+	printTabs(node->tabs);
 }
 
 //
@@ -358,8 +379,10 @@ void GenWhileStatementNode(WhileStatementNode * node) {
 	printf("while(");
 	GenExpressionNode(node->expressionNode, 0, NULL, NULL);
 	printf(") {\n");
+	printTabs(node->tabs+1);
 	GenCodeBlockNode(node->codeBlockNode);
 	printf("}\n");
+	printTabs(node->tabs);
 }
 
 void GenForStatementNode(ForStatementNode * node) {
@@ -375,16 +398,22 @@ void GenForStatementNode(ForStatementNode * node) {
 		GenExpressionNode(node->expressionNode, 1, NULL, NULL);
 	}
 	printf(") {\n");
+	printTabs(node->tabs+1);
 	GenCodeBlockNode(node->codeBlockNode);
 	printf("}\n");
+	printTabs(node->tabs);
 }
 
 void GenSwitchStatementNode(SwitchStatementNode * node) {
 	printf("switch (");
 	GenExpressionNode(node->expressionNode, 0, NULL, NULL);
 	printf(") {\n");
+	printTabs(node->tabs);
 	GenCodeBlockNode(node->codeBlockNode);
-	printf("\n}\n");
+	printf("\n");
+	printTabs(node->tabs);
+	printf("}\n");
+	printTabs(node->tabs);
 }
 
 
@@ -404,6 +433,7 @@ void GenCodeBlockNode(CodeBlockNode * node) {
 			}
 			if((node->expression && node->expression->op != functionCall) || (node->expressionNode && node->expressionNode->op != functionCall)){
 				printf(";\n");
+				printTabs(node->tabs);
 			}
 			break;
 		case ReturnStatement:
@@ -424,20 +454,25 @@ void GenCodeBlockNode(CodeBlockNode * node) {
 		case AssignmentStatement:
 			GenAssignmentNode(node->assingment, 0);
 			printf(";\n");
+			printTabs(node->tabs);
 			break;
 		case CaseStatement:
 			printf("case ");
 			GenExpressionNode(node->expression, 0, NULL, NULL);
 			printf(":\n");
+			printTabs(node->tabs+1);
 			break;
 		case ContinueStatement:
 			printf("continue;\n");
+			printTabs(node->tabs);
 			break;
 		case DefaultCaseStatement:
 			printf("default:\n");
+			printTabs(node->tabs);
 			break;
 		case BreakStatement:
 			printf("break;\n");
+			printTabs(node->tabs);
 			break;
 		default:
 			break;
@@ -469,20 +504,25 @@ void GenFunctionDeclarationNode(FunctionDeclarationNode * node) {
 	if(node->type == FunctionDeclarationNoArgs) {
 		GenDataType(node->functionType);
 		printf("%s() {\n", node->variable);
+		printTabs(node->tabs+1);
 	} else if(node->type == FunctionDeclarationWithArgs) {
 		GenDataType(node->functionType);
 		printf("%s(", node->variable);
 		GenFunctionArgsNode(node->functionArgs);
 		printf(") {\n");
+		printTabs(node->tabs+1);
 	} else if(node->type == FunctionDeclarationNoArgsVoid) {
 		printf("void %s() {\n", node->variable);
+		printTabs(node->tabs+1);
 	} else {
 		printf("void %s(", node->variable);
 		GenFunctionArgsNode(node->functionArgs);
 		printf(") {\n");
+		printTabs(node->tabs+1);
 	}
 	GenCodeBlockNode(node->codeBlock);
 	printf("}\n");
+	printTabs(node->tabs);
 }
 
 void GenStatementNode(StatementNode * node) {
@@ -552,9 +592,13 @@ void GenReduceStatementNode(ReduceStatementNode * node) {
 	printf("for(int %s = 0; %s < ", index, index);
 	GenSizeNode(node->unboundedParametersNode->SizeNode, 0);
 	printf(" ; %s++) {\n", index);
+	printTabs(node->tabs+1);
 	printf("%s = ", node->unboundedParametersNode->variable2);
 	GenExpressionNode(node->lambda->expressionNode, 0, node->unboundedParametersNode->variable1, index);
-	printf(";\n}\n");
+	printf(";\n");
+	printTabs(node->tabs);
+	printf("}\n");
+	printTabs(node->tabs);
 }
 void GenReduceRangeStatementNode(ReduceRangeStatementNode * node) {
 	char * index = generateNewIndex(state.list);
@@ -563,9 +607,13 @@ void GenReduceRangeStatementNode(ReduceRangeStatementNode * node) {
 	printf("; %s < ", index);
 	GenSizeNode(node->boundedParametersNode->rangeNode->sizeNode2, 0);
 	printf(" ; %s++) {\n", index);
+	printTabs(node->tabs+1);
 	printf("%s = ", node->boundedParametersNode->variable2);
 	GenExpressionNode(node->lambda->expressionNode, 0, node->boundedParametersNode->variable1, index);
-	printf(";\n}\n");
+	printf(";\n");
+	printTabs(node->tabs);
+	printf("}\n");
+	printTabs(node->tabs);
 }
 void GenFilterStatementNode(FilterStatementNode * node) {
 	char * index = generateNewIndex(state.list);
@@ -573,11 +621,15 @@ void GenFilterStatementNode(FilterStatementNode * node) {
 	printf("for(int %s = 0, int %s = 0; %s < ", index, index2, index);
 	GenSizeNode(node->unboundedParametersNode->SizeNode, 0);
 	printf(" ; %s++) {\n", index);
+	printTabs(node->tabs+1);
 	printf("if(");
 	GenExpressionNode(node->lambda->expressionNode, 0, node->unboundedParametersNode->variable1, index);
 	printf(") {\n");
+	printTabs(node->tabs+1);
 	printf("%s[%s++] = %s[%s];\n", node->unboundedParametersNode->variable2, index2, node->unboundedParametersNode->variable1, index);
+	printTabs(node->tabs);
 	printf("}\n");
+	printTabs(node->tabs);
 }
 void GenFilterRangeStatementNode(FilterRangeStatementNode * node) {
 	char * index = generateNewIndex(state.list);
@@ -587,19 +639,25 @@ void GenFilterRangeStatementNode(FilterRangeStatementNode * node) {
 	printf(", int %s = 0; %s < ",index2, index);
 	GenSizeNode(node->boundedParametersNode->rangeNode->sizeNode2, 0);
 	printf(" ; %s++) {\n", index);
+	printTabs(node->tabs+1);
 	printf("if(");
 	GenExpressionNode(node->lambda->expressionNode, 0, node->boundedParametersNode->variable1, index);
 	printf(") {\n");
+	printTabs(node->tabs+1);
 	printf("%s[%s++] = %s[%s];\n", node->boundedParametersNode->variable2, index2, node->boundedParametersNode->variable1, index);
+	printTabs(node->tabs);
 	printf("}\n");
+	printTabs(node->tabs);
 }
 void GenForeachStatementNode(ForeachStatementNode * node) {
 	char * index = generateNewIndex(state.list);
 	printf("for(int %s = 0 ; %s < ", index, index);
 	GenSizeNode(node->sizeNode, 0);
 	printf(" ; %s++) {\n", index);
+	printTabs(node->tabs+1);
 	GenFunctionCallNode(node->consumerFunctionNode->functionCallNode, 0, node->variable, index);
 	printf("}\n");
+	printTabs(node->tabs);
 }
 void GenForeachRangeStatementNode(ForeachRangeStatementNode * node) {
 	char * index = generateNewIndex(state.list);
@@ -608,17 +666,23 @@ void GenForeachRangeStatementNode(ForeachRangeStatementNode * node) {
 	printf(" ; %s < ", index);
 	GenSizeNode(node->rangeNode->sizeNode2, 0);
 	printf(" ; %s++) {\n", index);
+	printTabs(node->tabs+1);
 	GenFunctionCallNode(node->consumerFunctionNode->functionCallNode, 0, node->variable, index);
 	printf("}\n");
+	printTabs(node->tabs);
 }
 void GenMapStatementNode(MapStatementNode * node) {
 	char * index = generateNewIndex(state.list);
 	printf("for(int %s = 0; %s < ", index, index);
 	GenSizeNode(node->unboundedParametersNode->SizeNode, 0);
 	printf(" ; %s++) {\n", index);
+	printTabs(node->tabs+1);
 	printf("%s[%s] = ", node->unboundedParametersNode->variable2, index);
 	GenExpressionNode(node->lambda->expressionNode, 0, node->unboundedParametersNode->variable1, index);
-	printf(";\n}\n");
+	printf(";\n");
+	printTabs(node->tabs);
+	printf("}\n");
+	printTabs(node->tabs);
 }
 void GenMapRangeStatementNode(MapRangeStatementNode * node) {
 	char * index = generateNewIndex(state.list);
@@ -627,17 +691,26 @@ void GenMapRangeStatementNode(MapRangeStatementNode * node) {
 	printf("; %s < ", index);
 	GenSizeNode(node->boundedParametersNode->rangeNode->sizeNode2, 0);
 	printf(" ; %s++) {\n", index);
+	printTabs(node->tabs+1);
 	printf("%s[%s] = ", node->boundedParametersNode->variable2, index);
 	GenExpressionNode(node->lambda->expressionNode, 0, node->boundedParametersNode->variable1, index);
-	printf(";\n}\n");
+	printf(";\n");
+	printTabs(node->tabs);
+	printf("}\n");
+	printTabs(node->tabs);
 }
 void GenCreateStatementNode(CreateStatementNode * node) {
 	GenDataType(node->dataType);
 	printf(" %s[%d-%d+1];\n", node->variable1, node->createLambda->constant2, node->createLambda->constant1);
+	printTabs(node->tabs);
 	char * index = generateNewIndex(state.list);
 	printf("for(int %s = %d; %s < %d ; %s++) {\n", index, node->createLambda->constant1, index, node->createLambda->constant2, index);
+	printTabs(node->tabs+1);
 	printf("%s[%s-%d] = %s", node->variable1, index, node->createLambda->constant1, index);
-	printf(";\n}\n");
+	printf(";\n");
+	printTabs(node->tabs);
+	printf("}\n");
+	printTabs(node->tabs);
 
 }
 

@@ -6,6 +6,9 @@
 #include "../semantic-analysis/symbol-list.h"
 
 void Generator(int result);
+
+void printTabs(int tabs);
+
 void GenMetaCommandNode(MetaCommandNode * node);
 void GenSizeNode(SizeNode * node, bool shouldNewLine);
 void GenArrayDerefNode(ArrayDerefNode * node);

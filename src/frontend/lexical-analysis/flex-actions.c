@@ -69,10 +69,12 @@ token UnknownPatternAction(const char * lexeme, const int length) {
 
 token pushScopeAction(){
 	push(state.stack);
+	state.tabs++;
 	return OBRACE;
 }
 
 token popScopeAction(){
 	pop(state.stack);
+	state.tabs--;
 	return CBRACE;
 }

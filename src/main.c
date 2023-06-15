@@ -16,6 +16,7 @@ const int main(const int argumentCount, const char ** arguments) {
 	state.program = NULL;
 	state.result = 0;
 	state.succeed = true;
+	state.tabs = 0;
 
 	//tabla de simbolos
 	symbol_list * list = malloc(sizeof(symbol_list));

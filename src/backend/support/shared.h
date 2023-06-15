@@ -58,6 +58,9 @@ typedef struct {
 
 	StackList * stack;
 
+	//contador de tabs para generacion de codigo
+	int tabs;
+
 } CompilerState;
 
 // El estado se define e inicializa en el archivo "main.c".
