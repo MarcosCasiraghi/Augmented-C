@@ -2,6 +2,7 @@
 #include "backend/support/logger.h"
 #include "backend/support/shared.h"
 #include "frontend/syntactic-analysis/bison-parser.h"
+#include "frontend/syntactic-analysis/bison-actions.h"
 #include "backend/semantic-analysis/symbol-list.h"
 #include "backend/semantic-analysis/error-list.h"
 #include <stdio.h>
@@ -67,6 +68,7 @@ const int main(const int argumentCount, const char ** arguments) {
 				printErrors(state.errors_list);
 				return -1;
 			}
+			freeProgramNode(state.program);
 			break;
 		case 1:
 			LogError("Bison finalizo debido a un error de sintaxis.");

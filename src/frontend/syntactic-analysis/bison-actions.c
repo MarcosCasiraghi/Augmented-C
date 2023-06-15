@@ -62,6 +62,11 @@ ProgramNode * ProgramAction(StatementNode * statement) {
     return node;
 }
 
+void freeProgramNode(ProgramNode * node){
+    freeStatementNode(node->statementNode);
+    free(node);
+}
+
 // - - - - - - Add to list - - - - - 
 
 void addToSymbolList(DataType dataType, Variable variable, bool is_pointer, bool is_array, bool is_function){
@@ -102,6 +107,11 @@ MetaCommandNode * FileNameMetaCommandAction(StringVar fileName) {
     return node;
 }
 
+void freeMetaCommandNode(MetaCommandNode * node){
+    free(node->string);
+    free(node);
+}
+
 // - - - - - - Dereferencing  - - - - - -
 
 SizeNode * SizeNumConstIntAction(NumConstantIntNode numConstantIntNode){
@@ -132,12 +142,24 @@ SizeNode * SizeVarAction(Variable variableNode){
     return sizeNode;
 }
 
+void freeSizeNode(SizeNode * node){
+    if( node->variable != NULL)
+        free(node->variable);
+    free(node);
+}
+
 ArrayDerefNode * ArrayDerefAction(Variable var, SizeNode * sizeNode){
     ArrayDerefNode * arrayDerefNode = malloc(sizeof(ArrayDerefNode));
     arrayDerefNode->variable = var;
     arrayDerefNode->sizeNode = sizeNode;
     arrayDerefNode->tabs = state.tabs;
     return arrayDerefNode;
+}
+
+void freeArrayDerefNode(ArrayDerefNode * node){
+    freeSizeNode(node->sizeNode);
+    free(node->variable);
+    free(node);
 }
 
 // - - - - - - Pointer - - - - - -
@@ -155,6 +177,12 @@ PointerNode * PointerActionWithChild(PointerNode * pointerNode) {
     node->pointerNode = pointerNode;
     node->tabs = state.tabs;
     return node;
+}
+
+void freePointerNode(PointerNode * node){
+    if( node->child == HasChild)
+        freePointerNode(node->pointerNode);
+    free(node);
 }
 
 // - - - - - - Declaration - - - - - -
@@ -175,6 +203,14 @@ DeclarationNode * DeclarationOfArrayAction(ArrayDeclarationNode * arrayDeclarati
     node->arrayDeclarationNode = arrayDeclarationNode;
     node->tabs = state.tabs;
     return node;
+}
+
+void freeDeclarationNode(DeclarationNode * node){
+    if( node->type == SingleDeclaration)
+        freeSingleDeclarationNode(node->singleDeclarationNode);
+    else
+        freeArrayDeclarationNode(node->arrayDeclarationNode);
+    free(node);
 }
 
 
@@ -208,6 +244,14 @@ SingleDeclarationNode * SingleWithoutPointerDeclarationAction(DataType dataType,
     return node;
 }
 
+void freeSingleDeclarationNode(SingleDeclarationNode * node){
+    if( node->type == SingleWithPointer)
+        freePointerNode(node->pointer);
+    free(node->variable);
+    freeSingleInitializeNode(node->singleInitializeNode);
+    free(node);
+}
+
 // - - - - - - Single Initialization - - - - - -
 
 SingleInitializeNode * SingleInitializationWithoutAssignAction() {
@@ -224,6 +268,12 @@ SingleInitializeNode * SingleInitializationWithAssignAction(ExpressionNode * exp
     return node;
 }
 
+void freeSingleInitializeNode(SingleInitializeNode * node){
+    if( node->type == AssignSingle)
+        freeExpressionNode(node->expressionNode);
+    free(node);
+}
+
 // - - - - - - Array Declaration - - - - - -
 
 ArrayDeclarationNode * ArrayDeclarationAction(DataType dataType, Variable variable, ArraySizeNode * arraySizeNode, ArrayInitializeNode * arrayInitializeNode) {
@@ -237,6 +287,13 @@ ArrayDeclarationNode * ArrayDeclarationAction(DataType dataType, Variable variab
     addToSymbolList(dataType, variable, false, true, false);
 
     return node;
+}
+
+void freeArrayDeclarationNode(ArrayDeclarationNode * node){
+    free(node->variable);
+    freeArraySizeNode(node->arraySizeNode);
+    freeArrayInitializeNode(node->arrayInitializeNode);
+    free(node);
 }
 
 // - - - - - - Array Size - - - - - -
@@ -270,11 +327,17 @@ ArraySizeNode * ArraySizeWithoutSizeWithChildrenAction(ArraySizeNode * arraySize
 ArraySizeNode * ArraySizeWithSizeWithChildrenAction(NumConstantIntNode numberConstant, ArraySizeNode * arraySizeNode) {
     ArraySizeNode * node = malloc(sizeof(ArraySizeNode));
     node->type = Sized;
-    node->child = NoChild;
+    node->child = HasChild;
     node->numberConstant = numberConstant;
     node->arraySizeNode = arraySizeNode;
     node->tabs = state.tabs;
     return node;
+}
+
+void freeArraySizeNode( ArraySizeNode * node){
+    if(node->child == HasChild)
+        freeArraySizeNode(node->arraySizeNode);
+    free(node);
 }
 
 // - - - - - - Assignment Type  - - - - - -
@@ -338,6 +401,12 @@ ArrayInitializeNode * ArrayInitializeWithListAction(ArrayListNode * arrayListNod
     return node;
 }
 
+void freeArrayInitializeNode(ArrayInitializeNode * node){
+    if( node->type == WithList)
+        freeArrayListNode(node->arrayListNode);
+    free(node);
+}
+
 // - - - - - - Array Initialize List - - - - - -
 
 ArrayListNode * ArrayListAction(NumConstantIntNode integer) {
@@ -354,6 +423,12 @@ ArrayListNode * ArrayListManyAction(NumConstantIntNode integer, ArrayListNode * 
     node->arrayListNode = arrayListNode;
     node->tabs = state.tabs;
     return node;
+}
+
+void freeArrayListNode(ArrayListNode * node){
+    if(node->child == HasChild)
+        freeArrayListNode(node->arrayListNode);
+    free(node);
 }
 
 // - - - - - - Assignment - - - - - -
@@ -378,6 +453,15 @@ AssignmentNode * AssignmentWithArrayDerefAction(ArrayDerefNode * arrayDerefNode,
     assignmentNode->arrayDefinitionNode = arrayDerefNode;
     assignmentNode->tabs = state.tabs;
     return assignmentNode;
+}
+
+void freeAssignmentNode(AssignmentNode * node){
+    if( node->withType == withVar)
+        free(node->variable);
+    if( node->withType == withArrayDeref)
+        freeArrayDerefNode(node->arrayDefinitionNode);
+    freeExpressionNode(node->expressionNode);
+    free(node);
 }
 
 // - - - - - - Function Call - - - - - - - - - -
@@ -414,6 +498,13 @@ FunctionCallNode * NoArgsFunctionCallAction(Variable variable){
     return functionCallNode;
 }
 
+void freeFunctionCallNode(FunctionCallNode * node){
+    if( node->type == WithArgs )
+        freeFunctionCallArgNode(node->functionCallArgNode);
+    free(node->Variable);
+    free(node);
+}
+
 FunctionCallArgNode * WithArgsFunctionCallArgAction(ExpressionNode * expressionNode, FunctionCallArgNode * functionCallArgNode){
     FunctionCallArgNode * node = malloc(sizeof(FunctionCallArgNode));
     node->type = FunctionCallWithArgs;
@@ -430,6 +521,13 @@ FunctionCallArgNode * NoArgsFunctionCallArgAction(ExpressionNode * expressionNod
     functionCallArgNode->functionCallArgNode = NULL;
     functionCallArgNode->tabs = state.tabs;
     return functionCallArgNode;
+}
+
+void freeFunctionCallArgNode(FunctionCallArgNode * node){
+    if( node->type == FunctionCallWithArgs)
+        freeFunctionCallArgNode(node->functionCallArgNode);
+    freeExpressionNode(node->expressionNode);
+    free(node);
 }
 
 // - - - - - - Expression - - - - - -
@@ -978,6 +1076,24 @@ ExpressionNode * StringOpExpressionAction(StringVar stringVar){
     return  expressionNode;
 }
 
+void freeExpressionNode(ExpressionNode * node){
+    if( node->leftExpressionNode != NULL)
+        freeExpressionNode(node->leftExpressionNode);
+    if( node->rightExpressionNode != NULL)
+        freeExpressionNode(node->rightExpressionNode);
+    if( node->Variable != NULL)
+        free(node->Variable);
+    if( node->numConstantFloatNode != NULL)
+        free(node->numConstantFloatNode);
+    if( node->functionCallNode != NULL)
+        freeFunctionCallNode(node->functionCallNode);
+    if( node->arrayDerefNode != NULL)
+        freeArrayDerefNode(node->arrayDerefNode);
+    if( node->StringNode != NULL)
+        free(node->StringNode);
+    free(node);
+}
+
 // - - - - - - Scope Code  - - - - - -
 
 ReturnStatementNode * ReturnStatementAction(ExpressionNode * expressionNode){
@@ -985,6 +1101,11 @@ ReturnStatementNode * ReturnStatementAction(ExpressionNode * expressionNode){
     returnStatementNode->expressionNode = expressionNode;
     returnStatementNode->tabs = state.tabs;
     return returnStatementNode;
+}
+
+void freeReturnStatementNode(ReturnStatementNode * node){
+    freeExpressionNode(node->expressionNode);
+    free(node);
 }
 
 IfElseStatementNode * IfWithoutElseStatementAction(IfStatementNode * ifStatementNode){
@@ -1005,12 +1126,25 @@ IfElseStatementNode * IfWithElseStatementAction(IfStatementNode * ifStatementNod
     return ifElseStatementNode;
 }
 
+void freeIfElseStatementNode(IfElseStatementNode * node){
+    if( node->type == withElse )
+        freeElseStatementNode(node->elseStatementNode);
+    freeIfStatementNode(node->ifStatementNode);
+    free(node);
+}
+
 IfStatementNode * IfStatementAction(ExpressionNode * expressionNode, CodeBlockNode * codeBlockNode){
     IfStatementNode * ifStatementNode = malloc(sizeof(IfStatementNode));
     ifStatementNode->expressionNode = expressionNode;
     ifStatementNode->codeBlockNode = codeBlockNode;
     ifStatementNode->tabs = state.tabs;
     return ifStatementNode;
+}
+
+void freeIfStatementNode(IfStatementNode * node){
+    freeExpressionNode(node->expressionNode);
+    freeCodeBlockNode(node->codeBlockNode);
+    free(node);
 }
 
 ElseStatementNode * ElseStatementAction(CodeBlockNode * codeBlockNode){
@@ -1020,12 +1154,23 @@ ElseStatementNode * ElseStatementAction(CodeBlockNode * codeBlockNode){
     return elseStatementNode;
 }
 
+void freeElseStatementNode(ElseStatementNode * node){
+    freeCodeBlockNode(node->codeBlockNode);
+    free(node);
+}
+
 WhileStatementNode * WhileStatementAction(ExpressionNode * expressionNode, CodeBlockNode * codeBlockNode){
     WhileStatementNode * whileStatementNode = malloc(sizeof(WhileStatementNode));
     whileStatementNode->expressionNode = expressionNode;
     whileStatementNode->codeBlockNode = codeBlockNode;
     whileStatementNode->tabs = state.tabs;
     return whileStatementNode;
+}
+
+void freeWhileStatementNode(WhileStatementNode * node){
+    freeExpressionNode(node->expressionNode);
+    freeCodeBlockNode(node->codeBlockNode);
+    free(node);
 }
 
 ForStatementNode * ForStatementWithAssigmentAction(DeclarationNode * declarationNode, ExpressionNode * firstExpressionNode, AssignmentNode * assignmentNode, CodeBlockNode * codeBlockNode ){
@@ -1052,12 +1197,29 @@ ForStatementNode * ForStatementWithExpressionAction(DeclarationNode * declaratio
     return forStatementNode;
 }
 
+void freeForStatementNode(ForStatementNode * node){
+    freeDeclarationNode(node->declarationNode);
+    freeExpressionNode(node->firstExpressionNode);
+    freeCodeBlockNode(node->codeBlockNode);
+    if( node->type == withAssignment)
+        freeAssignmentNode(node->AssignmentNode);
+    if( node->type == withExpression)
+        freeExpressionNode(node->expressionNode);
+    free(node);
+}
+
 SwitchStatementNode * SwitchStatementAction(ExpressionNode * expressionNode, CodeBlockNode * codeBlockNode){
     SwitchStatementNode * switchStatementNode = malloc(sizeof(SwitchStatementNode));
     switchStatementNode->expressionNode = expressionNode;
     switchStatementNode->codeBlockNode = codeBlockNode;
     switchStatementNode->tabs = state.tabs;
     return switchStatementNode;
+}
+
+void freeSwitchStatementNode(SwitchStatementNode * node){
+    freeExpressionNode(node->expressionNode);
+    freeCodeBlockNode(node->codeBlockNode);
+    free(node);
 }
 
 // - - - - - - Code Block - - - - - -
@@ -1273,6 +1435,32 @@ CodeBlockNode * AssignmentCodeBlockActionWithChild(AssignmentNode * assingment, 
     return node;
 }
 
+void freeCodeBlockNode(CodeBlockNode * node){
+    if( node->declarationNode != NULL )
+        freeDeclarationNode(node->declarationNode);
+    if( node->specialStatement != NULL)
+        freeSpecialStatementNode(node->specialStatement);
+    if( node->expression != NULL)
+        freeExpressionNode(node->expression);
+    if( node->returnStatement != NULL)
+        freeReturnStatementNode(node->returnStatement);
+    if( node->ifElse != NULL)
+        freeIfElseStatementNode(node->ifElse);
+    if( node->forStatement != NULL)
+        freeForStatementNode(node->forStatement);
+    if( node->whileStatement != NULL)
+        freeWhileStatementNode(node->whileStatement);
+    if( node->switchStatement != NULL)
+        freeSwitchStatementNode(node->switchStatement);
+    if( node->assingment != NULL)
+        freeAssignmentNode(node->assingment);
+    if( node->expressionNode != NULL)
+        freeExpressionNode(node->expressionNode);
+    if( node->codeBlock != NULL)
+        freeCodeBlockNode(node->codeBlock);
+    free(node);
+}
+
 // - - - - - - Function Args - - - - - - - - - -
 
 FunctionArgNode * PointerFunctionArgAction(DataType dataType, PointerNode * Pointer, Variable variable) {
@@ -1302,6 +1490,13 @@ FunctionArgNode * NoPointerFunctionArgAction(DataType dataType, Variable variabl
     return node;
 }
 
+void freeFunctionArgNode(FunctionArgNode * node){
+    if( node->pointer != NULL)
+        freePointerNode(node->pointer);
+    free(node->variable);
+    free(node);
+}
+
 FunctionArgsNode * SingleFunctionArgsAction(FunctionArgNode * functionArgNode) {
     FunctionArgsNode * node = malloc(sizeof(FunctionArgsNode));
     node->type = single;
@@ -1318,6 +1513,13 @@ FunctionArgsNode * MultipleFunctionArgsAction(FunctionArgNode * functionArgNode,
     node->functionArgsNode = functionArgsNode;
     node->tabs = state.tabs;
     return node;
+}
+
+void freeFunctionArgsNode(FunctionArgsNode * node){
+    if( node->functionArgsNode != NULL)
+        freeFunctionArgsNode(node->functionArgsNode);
+    freeFunctionArgNode(node->functionArgNode);
+    free(node);
 }
 
 // - - - - - - Function Declaration - - - - - -
@@ -1380,6 +1582,14 @@ FunctionDeclarationNode* VoidFunctionDeclarationWithArgsAction(Variable variable
     addToSymbolList(Void, variable, false, false, true);
 
     return node;
+}
+
+void freeFunctionDeclarationNode(FunctionDeclarationNode * node){
+    free(node->variable);
+    freeCodeBlockNode(node->codeBlock);
+    if( node->functionArgs != NULL)
+        freeFunctionArgsNode(node->functionArgs);
+    free(node);
 }
 
 
@@ -1457,7 +1667,17 @@ StatementNode * DeclarationStatementNodeAction(DeclarationNode *declarationNode)
     return node;
 }
 
-
+void freeStatementNode(StatementNode * node){
+    if( node->metacommand != NULL)
+        freeMetaCommandNode(node->metacommand);
+    if( node->functionDeclarationNode != NULL)
+        freeFunctionDeclarationNode(node->functionDeclarationNode);
+    if( node->declarationNode != NULL)
+        freeDeclarationNode(node->declarationNode);
+    if( node->statement != NULL)
+        freeStatementNode(node->statement);
+    free(node);
+}
 
 /* = = = = = = =  SPECIAL STATEMENT ACTIONS  = = = = = = = */
 
@@ -1466,6 +1686,11 @@ SpecialStatementNode * specialStatementAction(SelectorNode * selectorNode) {
     node->selectorNode = selectorNode;
     node->tabs = state.tabs;
     return node;
+}
+
+void freeSpecialStatementNode(SpecialStatementNode * node){
+    freeSelectorNode(node->selectorNode);
+    free(node);
 }
 
 // - - - - - - Special Statement Selector - - - - - - - - - - - -
@@ -1614,6 +1839,28 @@ SelectorNode * MapRangeStatementSelectorAction(MapRangeStatementNode * mapRangeS
     return node;
 }
 
+void freeSelectorNode(SelectorNode * node){
+    if( node->reduceStatement != NULL)
+        freeReduceStatementNode(node->reduceStatement);
+    if(node->filterStatement != NULL)
+        freeFilterStatementNode(node->filterStatement);
+    if( node->foreachStatement != NULL)
+        freeForeachStatementNode(node->foreachStatement);
+    if( node->mapStatement != NULL)
+        freeMapStatementNode(node->mapStatement);
+    if( node->createStatement != NULL)
+        freeCreateStatementNode(node->createStatement);
+    if( node->reduceRangeStatement != NULL)
+        freeReduceRangeStatementNode(node->reduceRangeStatement);
+    if( node->filterRangeStatement != NULL)
+        freeFilterRangeStatementNode(node->filterRangeStatement);
+    if( node->foreachRangeStatement != NULL)
+        freeForeachRangeStatementNode(node->foreachRangeStatement);
+    if( node->mapRangeStatement != NULL)
+        freeMapRangeStatementNode(node->mapRangeStatement);
+    free(node);
+}
+
 // - - - - - - Lambda Expressions - - - - - - -
 
 RangeNode * RangeAction(SizeNode * sizeNode1, SizeNode * sizeNode2){
@@ -1624,11 +1871,22 @@ RangeNode * RangeAction(SizeNode * sizeNode1, SizeNode * sizeNode2){
     return rangeNode;
 }
 
+void freeRangeNode(RangeNode * node){
+    freeSizeNode(node->sizeNode1);
+    freeSizeNode(node->sizeNode2);
+    free(node);
+}
+
 ConsumerFunctionNode * ConsumerFunctionAction(FunctionCallNode * functionCallNode){
     ConsumerFunctionNode * consumerFunctionNode = malloc(sizeof(ConsumerFunctionNode));
     consumerFunctionNode->functionCallNode = functionCallNode;
     consumerFunctionNode->tabs = state.tabs;
     return consumerFunctionNode;
+}
+
+void freeConsumerFunctionNode(ConsumerFunctionNode * node){
+    freeFunctionCallNode(node->functionCallNode);
+    free(node);
 }
 
 UnboundedParametersNode * UnboundedParametersAction(Variable variable1, SizeNode * sizeNode, Variable variable2 ){
@@ -1655,6 +1913,13 @@ UnboundedParametersNode * UnboundedParametersAction(Variable variable1, SizeNode
     return unboundedParametersNode;
 }
 
+void freeUnboundedParametersNode(UnboundedParametersNode * node){
+    free(node->variable1);
+    free(node->variable2);
+    freeSizeNode(node->SizeNode);
+    free(node);
+}
+
 BoundedParametersNode * BoundedParametersAction(Variable variable1, RangeNode * rangeNode, Variable variable2){
     BoundedParametersNode * boundedParametersNode = malloc(sizeof(BoundedParametersNode));
     boundedParametersNode->variable1 = variable1;
@@ -1679,18 +1944,35 @@ BoundedParametersNode * BoundedParametersAction(Variable variable1, RangeNode * 
     return boundedParametersNode;
 }
 
+void freeBoundedParametersNode(BoundedParametersNode * node){
+    free(node->variable1);
+    free(node->variable2);
+    freeRangeNode(node->rangeNode);
+    free(node);
+}
+
 Lambda * LambdaAction(ExpressionNode * expressionNode) {
     Lambda * node = malloc(sizeof(Lambda));
     node->expressionNode = expressionNode;
     node->tabs = state.tabs;    
     return node;
 }
+
+void freeLambda(Lambda * lambda){
+    freeExpressionNode(lambda->expressionNode);
+    free(lambda);
+}
+
 CreateLambda * CreateLambdaAction(NumConstantIntNode constant1, NumConstantIntNode constant2) {
     CreateLambda * node = malloc(sizeof(CreateLambda));
     node->constant1 = constant1;
     node->constant2 = constant2;
     node->tabs = state.tabs;
     return node;
+}
+
+void freeCreateLambda(CreateLambda * lambda){
+    free(lambda);
 }
 
 // - - - - - - Special Statements - - - - - - -
@@ -1702,12 +1984,24 @@ ReduceStatementNode * ReduceStatementAction(UnboundedParametersNode * unboundedP
     return node;
 }
 
+void freeReduceStatementNode(ReduceStatementNode * node){
+    freeUnboundedParametersNode(node->unboundedParametersNode);
+    freeLambda(node->lambda);
+    free(node);
+}
+
 FilterStatementNode * FilterStatementAction(UnboundedParametersNode * unboundedParametersNode, Lambda * lambda) {
     FilterStatementNode * node = malloc(sizeof(FilterStatementNode));
     node->unboundedParametersNode = unboundedParametersNode;
     node->lambda = lambda;
     node->tabs = state.tabs;
     return node;
+}
+
+void freeFilterStatementNode(FilterStatementNode * node){
+    freeUnboundedParametersNode(node->unboundedParametersNode);
+    freeLambda(node->lambda);
+    free(node);
 }
 
 ForeachStatementNode * ForeachStatementAction(Variable variable, SizeNode * sizeNode, ConsumerFunctionNode * consumerFunctionNode) {
@@ -1718,15 +2012,19 @@ ForeachStatementNode * ForeachStatementAction(Variable variable, SizeNode * size
     node->tabs = state.tabs;
     //chequeo si existen variable
     if( !contains_symbol(state.list, variable, true, false) ){
-        //TODO - handle error
         state.succeed = false;
         char message[MESSAGE_SIZE] = {'\0'};
         sprintf(message, "array: %s not declared in line %d", variable, yylineno);
         addToErrorList(message, yylineno);
     }
-       
-
     return node;
+}
+
+void freeForeachStatementNode(ForeachStatementNode * node){
+    free(node->variable);
+    freeSizeNode(node->sizeNode);
+    freeConsumerFunctionNode(node->consumerFunctionNode);
+    free(node);
 }
 
 MapStatementNode * MapStatementAction(UnboundedParametersNode * unboundedParametersNode, Lambda * lambda) {
@@ -1735,6 +2033,12 @@ MapStatementNode * MapStatementAction(UnboundedParametersNode * unboundedParamet
     node->lambda = lambda;
     node->tabs = state.tabs;
     return node;
+}
+
+void freeMapStatementNode(MapStatementNode * node){
+    freeUnboundedParametersNode(node->unboundedParametersNode);
+    freeLambda(node->lambda);
+    free(node);
 }
 
 CreateStatementNode * CreateStatementAction(Variable variable1, DataType dataType, CreateLambda * createLambda) {
@@ -1749,11 +2053,16 @@ CreateStatementNode * CreateStatementAction(Variable variable1, DataType dataTyp
         char message[MESSAGE_SIZE] = {'\0'};
         sprintf(message, "variable: %s was already declared", variable1);
         addToErrorList(message, yylineno);
-        //TODO - manejo de errores
     }else 
         addToSymbolList(dataType, variable1, false, true, false);
 
     return node;
+}
+
+void freeCreateStatementNode(CreateStatementNode * node){
+    free(node->variable1);
+    freeCreateLambda(node->createLambda);
+    free(node);
 }
 
 ReduceRangeStatementNode * ReduceRangeStatementAction(BoundedParametersNode * boundedParametersNode, Lambda * lambda) {
@@ -1762,6 +2071,12 @@ ReduceRangeStatementNode * ReduceRangeStatementAction(BoundedParametersNode * bo
     node->lambda = lambda;
     node->tabs = state.tabs;
     return node;
+}
+
+void freeReduceRangeStatementNode(ReduceRangeStatementNode * node){
+    freeBoundedParametersNode(node->boundedParametersNode);
+    freeLambda(node->lambda);
+    free(node);
 }
 
 
@@ -1773,6 +2088,12 @@ FilterRangeStatementNode * FilterRangeStatementAction(BoundedParametersNode * bo
     return node;
 }
 
+void freeFilterRangeStatementNode(FilterRangeStatementNode * node){
+    freeBoundedParametersNode(node->boundedParametersNode);
+    freeLambda(node->lambda);
+    free(node);
+}
+
 ForeachRangeStatementNode * ForeachRangeStatementAction(Variable variable, RangeNode * rangeNode, ConsumerFunctionNode * consumerFunctionNode) {
     ForeachRangeStatementNode * node = malloc(sizeof(ForeachRangeStatementNode));
     node->variable = variable;
@@ -1780,9 +2101,8 @@ ForeachRangeStatementNode * ForeachRangeStatementAction(Variable variable, Range
     node->consumerFunctionNode = consumerFunctionNode;
     node->tabs = state.tabs;
 
-      //chequeo si existen variable 1
+      //chequeo si existen variable
     if( !contains_symbol(state.list, variable, true, false) ){
-        //TODO - handle error
         state.succeed = false;
         char message[MESSAGE_SIZE] = {'\0'};
         sprintf(message, "array: %s not declared in line %d", variable, yylineno);
@@ -1790,6 +2110,13 @@ ForeachRangeStatementNode * ForeachRangeStatementAction(Variable variable, Range
     }
        
     return node;
+}
+
+void freeForeachRangeStatementNode(ForeachRangeStatementNode * node){
+    free(node->variable);
+    freeRangeNode(node->rangeNode);
+    freeConsumerFunctionNode(node->consumerFunctionNode);
+    free(node);
 }
 
 MapRangeStatementNode * MapRangeStatementAction(BoundedParametersNode * boundedParametersNode, Lambda * lambda) {
@@ -1800,7 +2127,11 @@ MapRangeStatementNode * MapRangeStatementAction(BoundedParametersNode * boundedP
     return node;
 }
 
-
+void freeMapRangeStatementNode(MapRangeStatementNode * node){
+    freeBoundedParametersNode(node->boundedParametersNode);
+    freeLambda(node->lambda);
+    free(node);
+}
 
 /* = = = = = = =  FREE FUNCTIONS  = = = = = = = */
 

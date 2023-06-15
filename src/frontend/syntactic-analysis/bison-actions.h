@@ -200,4 +200,52 @@ FunctionArgsNode * MultipleFunctionArgsAction(FunctionArgNode * functionArgNode,
 CodeBlockNode * AssignmentCodeBlockActionWithChild(AssignmentNode * assingment, CodeBlockNode * codeBlock);
 CodeBlockNode * AssignmentCodeBlockAction(AssignmentNode * assingment);
 
+
+//Free
+void freeProgramNode(ProgramNode * node);
+void freeMetaCommandNode(MetaCommandNode * node);
+void freeSizeNode(SizeNode * node);
+void freeArrayDerefNode(ArrayDerefNode * node);
+void freePointerNode(PointerNode * node);
+void freeDeclarationNode(DeclarationNode * node);
+void freeSingleDeclarationNode(SingleDeclarationNode * node);
+void freeSingleInitializeNode(SingleInitializeNode * node);
+void freeArrayDeclarationNode(ArrayDeclarationNode * node);
+void freeArraySizeNode( ArraySizeNode * node);
+void freeArrayInitializeNode(ArrayInitializeNode * node);
+void freeArrayListNode(ArrayListNode * node);
+void freeAssignmentNode(AssignmentNode * node);
+void freeFunctionCallNode(FunctionCallNode * node);
+void freeFunctionCallArgNode(FunctionCallArgNode * node);
+void freeExpressionNode(ExpressionNode * node);
+void freeReturnStatementNode(ReturnStatementNode * node);
+void freeIfElseStatementNode(IfElseStatementNode * node);
+void freeIfStatementNode(IfStatementNode * node);
+void freeElseStatementNode(ElseStatementNode * node);
+void freeWhileStatementNode(WhileStatementNode * node);
+void freeForStatementNode(ForStatementNode * node);
+void freeSwitchStatementNode(SwitchStatementNode * node);
+void freeCodeBlockNode(CodeBlockNode * node);
+void freeFunctionArgNode(FunctionArgNode * node);
+void freeFunctionArgsNode(FunctionArgsNode * node);
+void freeFunctionDeclarationNode(FunctionDeclarationNode * node);
+void freeStatementNode(StatementNode * node);
+void freeSpecialStatementNode(SpecialStatementNode * node);
+void freeSelectorNode(SelectorNode * node);
+void freeRangeNode(RangeNode * node);
+void freeConsumerFunctionNode(ConsumerFunctionNode * node);
+void freeUnboundedParametersNode(UnboundedParametersNode * node);
+void freeBoundedParametersNode(BoundedParametersNode * node);
+void freeLambda(Lambda * lambda);
+void freeCreateLambda(CreateLambda * lambda);
+void freeReduceStatementNode(ReduceStatementNode * node);
+void freeFilterStatementNode(FilterStatementNode * node);
+void freeForeachStatementNode(ForeachStatementNode * node);
+void freeMapStatementNode(MapStatementNode * node);
+void freeCreateStatementNode(CreateStatementNode * node);
+void freeReduceRangeStatementNode(ReduceRangeStatementNode * node);
+void freeFilterRangeStatementNode(FilterRangeStatementNode * node);
+void freeForeachRangeStatementNode(ForeachRangeStatementNode * node);
+void freeMapRangeStatementNode(MapRangeStatementNode * node);
+
 #endif
