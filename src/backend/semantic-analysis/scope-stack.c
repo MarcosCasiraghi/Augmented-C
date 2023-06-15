@@ -54,3 +54,14 @@ bool is_in_current_scope(StackList * stack, int scope){
     return false;
 }
 
+void freeScopeStack(StackList * stack){
+    if( stack->first != NULL)
+        freeScopeNode(stack->first);
+}
+
+void freeScopeNode(StackNode * node){
+    if(node->next != NULL)
+        freeScopeNode(node->next);
+    free(node);
+}
+

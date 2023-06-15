@@ -25,5 +25,8 @@ bool is_stack_empty(StackList * stack);
 int peek(StackList * stack);
 bool is_in_current_scope(StackList * stack, int scope);
 
+void freeScopeStack(StackList * stack);
+void freeScopeNode(StackNode * node);
+
 
 #endif
