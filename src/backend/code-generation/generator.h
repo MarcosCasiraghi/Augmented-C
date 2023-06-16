@@ -6,7 +6,7 @@
 #include "../semantic-analysis/symbol-list.h"
 
 void GenMetaCommandNode(MetaCommandNode * node);
-void GenSizeNode(SizeNode * node, bool shouldNewLine);
+void GenSizeNode(SizeNode * node);
 void GenArrayDerefNode(ArrayDerefNode * node);
 void GenPointerNode(PointerNode * node);
 void GenSingleInitializeNode(SingleInitializeNode * node, int isFor);

@@ -79,6 +79,7 @@ para aplicar cierta funcion a cada elemento del arreglo. Tiene que pasarse una f
 
 Cada una de estas ultimas 4 funciones se pueden ejecutar para un cierto rango.
 Se invocan con: NOMBRERANGE y en vez de recibir un tamaño, se recibe el indice de inicio y el indice de fin.
+Para el correcto funcionamiento del compilador es necesario que se pase el menor indice primero.
 
 
 ## Limitaciones

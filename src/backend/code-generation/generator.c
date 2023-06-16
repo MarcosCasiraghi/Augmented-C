@@ -19,13 +19,9 @@ void GenMetaCommandNode(MetaCommandNode * node){
 	}	
 }
 
-void GenSizeNode(SizeNode * node, bool shouldNewLine){
+void GenSizeNode(SizeNode * node){
 	if (node->type == VariableSize ){
 		fprintf(state.fd,"%s", node->variable);
-		if(shouldNewLine){
-			fprintf(state.fd,"");
-			
-		}
 	}else{
 		fprintf(state.fd,"%d", node->numConstantIntNode);
 	}
@@ -33,7 +29,7 @@ void GenSizeNode(SizeNode * node, bool shouldNewLine){
 
 void GenArrayDerefNode(ArrayDerefNode * node){
 	fprintf(state.fd,"%s[", node->variable);
-	GenSizeNode(node->sizeNode, 0);
+	GenSizeNode(node->sizeNode);
 	fprintf(state.fd,"]");
 }
 
@@ -187,7 +183,6 @@ void GenAssignmentNode(AssignmentNode * node, int isFor) {
 	}
 	GenAssignmentType(node->assignmentType);
 	GenExpressionNode(node->expressionNode, isFor, NULL, NULL);
-	//fprintf(state.fd,");");
 }
 
 void GenFunctionCallNode(FunctionCallNode * node, int isFor, char * arrayName, char * index) {
@@ -579,7 +574,7 @@ void GenSelectorNode(SelectorNode * node) {
 void GenReduceStatementNode(ReduceStatementNode * node) {
 	char * index = generateNewIndex(state.list);
 	fprintf(state.fd,"for(int %s = 0; %s < ", index, index);
-	GenSizeNode(node->unboundedParametersNode->SizeNode, 0);
+	GenSizeNode(node->unboundedParametersNode->SizeNode);
 	fprintf(state.fd," ; %s++) {", index);
 	
 	fprintf(state.fd,"%s = ", node->unboundedParametersNode->variable2);
@@ -592,9 +587,9 @@ void GenReduceStatementNode(ReduceStatementNode * node) {
 void GenReduceRangeStatementNode(ReduceRangeStatementNode * node) {
 	char * index = generateNewIndex(state.list);
 	fprintf(state.fd,"for(int %s = ", index);
-	GenSizeNode(node->boundedParametersNode->rangeNode->sizeNode1, 0);
+	GenSizeNode(node->boundedParametersNode->rangeNode->sizeNode1);
 	fprintf(state.fd,"; %s < ", index);
-	GenSizeNode(node->boundedParametersNode->rangeNode->sizeNode2, 0);
+	GenSizeNode(node->boundedParametersNode->rangeNode->sizeNode2);
 	fprintf(state.fd," ; %s++) {", index);
 	
 	fprintf(state.fd,"%s = ", node->boundedParametersNode->variable2);
@@ -608,7 +603,7 @@ void GenFilterStatementNode(FilterStatementNode * node) {
 	char * index = generateNewIndex(state.list);
 	char * index2 = generateNewIndex(state.list);
 	fprintf(state.fd,"for(int %s = 0, %s = 0; %s < ", index, index2, index);
-	GenSizeNode(node->unboundedParametersNode->SizeNode, 0);
+	GenSizeNode(node->unboundedParametersNode->SizeNode);
 	fprintf(state.fd," ; %s++) {", index);
 	
 	fprintf(state.fd,"if(");
@@ -624,9 +619,9 @@ void GenFilterRangeStatementNode(FilterRangeStatementNode * node) {
 	char * index = generateNewIndex(state.list);
 	char * index2 = generateNewIndex(state.list);
 	fprintf(state.fd,"for(int %s = ", index);
-	GenSizeNode(node->boundedParametersNode->rangeNode->sizeNode1, 0);
-	fprintf(state.fd,", int %s = 0; %s < ",index2, index);
-	GenSizeNode(node->boundedParametersNode->rangeNode->sizeNode2, 0);
+	GenSizeNode(node->boundedParametersNode->rangeNode->sizeNode1);
+	fprintf(state.fd,", %s = 0; %s < ",index2, index);
+	GenSizeNode(node->boundedParametersNode->rangeNode->sizeNode2);
 	fprintf(state.fd," ; %s++) {", index);
 	
 	fprintf(state.fd,"if(");
@@ -641,7 +636,7 @@ void GenFilterRangeStatementNode(FilterRangeStatementNode * node) {
 void GenForeachStatementNode(ForeachStatementNode * node) {
 	char * index = generateNewIndex(state.list);
 	fprintf(state.fd,"for(int %s = 0 ; %s < ", index, index);
-	GenSizeNode(node->sizeNode, 0);
+	GenSizeNode(node->sizeNode);
 	fprintf(state.fd," ; %s++) {", index);
 	
 	GenFunctionCallNode(node->consumerFunctionNode->functionCallNode, 0, node->variable, index);
@@ -651,9 +646,9 @@ void GenForeachStatementNode(ForeachStatementNode * node) {
 void GenForeachRangeStatementNode(ForeachRangeStatementNode * node) {
 	char * index = generateNewIndex(state.list);
 	fprintf(state.fd,"for(int %s = ", index);
-	GenSizeNode(node->rangeNode->sizeNode1, 0);
+	GenSizeNode(node->rangeNode->sizeNode1);
 	fprintf(state.fd," ; %s < ", index);
-	GenSizeNode(node->rangeNode->sizeNode2, 0);
+	GenSizeNode(node->rangeNode->sizeNode2);
 	fprintf(state.fd," ; %s++) {", index);
 	
 	GenFunctionCallNode(node->consumerFunctionNode->functionCallNode, 0, node->variable, index);
@@ -663,7 +658,7 @@ void GenForeachRangeStatementNode(ForeachRangeStatementNode * node) {
 void GenMapStatementNode(MapStatementNode * node) {
 	char * index = generateNewIndex(state.list);
 	fprintf(state.fd,"for(int %s = 0; %s < ", index, index);
-	GenSizeNode(node->unboundedParametersNode->SizeNode, 0);
+	GenSizeNode(node->unboundedParametersNode->SizeNode);
 	fprintf(state.fd," ; %s++) {", index);
 	
 	fprintf(state.fd,"%s[%s] = ", node->unboundedParametersNode->variable2, index);
@@ -676,9 +671,9 @@ void GenMapStatementNode(MapStatementNode * node) {
 void GenMapRangeStatementNode(MapRangeStatementNode * node) {
 	char * index = generateNewIndex(state.list);
 	fprintf(state.fd,"for(int %s = ", index);
-	GenSizeNode(node->boundedParametersNode->rangeNode->sizeNode1, 0);
+	GenSizeNode(node->boundedParametersNode->rangeNode->sizeNode1);
 	fprintf(state.fd,"; %s < ", index);
-	GenSizeNode(node->boundedParametersNode->rangeNode->sizeNode2, 0);
+	GenSizeNode(node->boundedParametersNode->rangeNode->sizeNode2);
 	fprintf(state.fd," ; %s++) {", index);
 	
 	fprintf(state.fd,"%s[%s] = ", node->boundedParametersNode->variable2, index);

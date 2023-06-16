@@ -100,7 +100,7 @@ SizeNode * SizeVarAction(Variable variableNode){
     sizeNode->numConstantIntNode = 0;
     sizeNode->variable = variableNode;
 
-      //chequeo si existen variable 1 y 2
+      //chequeo si existen variable
     if( !contains_symbol(state.list, variableNode, false, false) ){
         state.succeed = false;
         char message[MESSAGE_SIZE] = {'\0'};
@@ -1711,6 +1711,15 @@ RangeNode * RangeAction(SizeNode * sizeNode1, SizeNode * sizeNode2){
     RangeNode * rangeNode = malloc(sizeof(RangeNode));
     rangeNode->sizeNode1 = sizeNode1;
     rangeNode->sizeNode2 = sizeNode2;
+
+    //agregar chequeo de que primer indice no sea mayor o igual al segundo
+    if( sizeNode1->type == ConstantSize && sizeNode2->type == ConstantSize && sizeNode1->numConstantIntNode >= sizeNode2->numConstantIntNode){
+        state.succeed = false;
+        char message[MESSAGE_SIZE] = {'\0'};
+        sprintf(message, "el primer indice debe ser menor al segundo para las declaraciones de RANGE en linea %d", yylineno );
+        addToErrorList(message, yylineno);
+    }
+
     return rangeNode;
 }
 
