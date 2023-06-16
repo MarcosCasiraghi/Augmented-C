@@ -19,7 +19,7 @@ user@machine:path/ $ chmod u+x --recursive script
 user@machine:path/ $ script/build.sh
 ```
 
-## Troubleshooting
+## Posible Error
 
 Existe la posibilidad de que obtenga un error del estilo: "/bin/bash^M: bad interpreter: No such file or directory".
 Si es el caso, ejecute:
@@ -34,7 +34,7 @@ user@machine:path/ $ sed -i -e 's/\r$//' ./script/*.sh
 user@machine:path/ $ script/start.sh program_file
 ```
 
-## Testing
+## Testeo
 
 ```bash
 user@machine:path/ $ script/test.sh
@@ -49,13 +49,14 @@ user@machine:path/ $ script/test-clang.sh
 ## Casos válidos
 
 1) El compilador acepta declaracion de funciones (como main()) y llamados.
-2) El compilador acepta declaraciones de variables y asignaciones (incluye arreglos).
-3) Se aceptan bloques if-else (necesariamente tiene que tener {}).
-4) Se aceptan ciclos for/while.
-5) Se aceptan bloques switch.
-6) Se acpetan #include's.
+2) Las funciones aceptan que tengan como parametros variables y punteros.
+3) El compilador acepta declaraciones de variables y asignaciones (incluye arreglos).
+4) Se aceptan bloques if-else (necesariamente tiene que tener {}).
+5) Se aceptan ciclos for/while.
+6) Se aceptan bloques switch.
+7) Se aceptan #include's.
 
-## Special Statement
+## Declaración Especial
 Nuestra aumento de C se particuliza con poder reconocer una lineas para ahorrar trabajo al programador.
 
 Estas tienen el siguiente formato:
