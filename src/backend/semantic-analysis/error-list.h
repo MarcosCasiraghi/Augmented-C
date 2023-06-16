@@ -5,7 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define SIZE 100
+#define SIZE 256
 
 typedef struct error_node error_node;
 

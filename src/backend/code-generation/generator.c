@@ -694,12 +694,17 @@ void GenMapRangeStatementNode(MapRangeStatementNode * node) {
 }
 void GenCreateStatementNode(CreateStatementNode * node) {
 	GenDataType(node->dataType);
-	fprintf(state.fd," %s[%d-%d+1];", node->variable1, node->createLambda->constant2, node->createLambda->constant1);
-	
 	char * index = generateNewIndex(state.list);
-	fprintf(state.fd,"for(int %s = %d; %s < %d ; %s++) {", index, node->createLambda->constant1, index, node->createLambda->constant2, index);
+	if( node->createLambda->isLower){
+		fprintf(state.fd," %s[%d-%d+1];", node->variable1, node->createLambda->constant2, node->createLambda->constant1);
+		fprintf(state.fd,"for(int %s = %d; %s <= %d ; %s++) {", index, node->createLambda->constant1, index, node->createLambda->constant2, index);
+		fprintf(state.fd,"%s[%s-%d] = %s", node->variable1, index, node->createLambda->constant1, index);
+	}else{
+		fprintf(state.fd," %s[%d-%d+1];", node->variable1, node->createLambda->constant1, node->createLambda->constant2);
+		fprintf(state.fd,"for(int %s = %d; %s >= %d ; %s--) {", index, node->createLambda->constant1, index, node->createLambda->constant2, index);
+		fprintf(state.fd,"%s[%d-%s] = %s", node->variable1, node->createLambda->constant1, index, index);
+	}
 	
-	fprintf(state.fd,"%s[%s-%d] = %s", node->variable1, index, node->createLambda->constant1, index);
 	fprintf(state.fd,";");
 	
 	fprintf(state.fd,"}");

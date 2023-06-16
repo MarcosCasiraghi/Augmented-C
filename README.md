@@ -1,5 +1,5 @@
 # Augmented-C
- A compiler to augment C programming language.
+ Un compilador para aumentar el lenguaje de programación de C.
 
 ## Requerimientos
 

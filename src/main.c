@@ -21,28 +21,28 @@ const int main(const int argumentCount, const char ** arguments) {
 	//tabla de simbolos
 	symbol_list * list = malloc(sizeof(symbol_list));
     if( list == NULL ){
-        //TODO - manejo de error
-    }else{
-        state.list = list;
+        LogError("No se pudo reservar memoria para la aplicacion");
+		return -1;
     }
-	init_list(list);
+    state.list = list;
+    init_list(list);
 
 	//lista de errores
 	error_list * errors_list = malloc(sizeof(error_list));
 	if( errors_list == NULL){
-		//TODO - manejo de error
-	}else{
-		state.errors_list = errors_list;
+		LogError("No se pudo reservar memoria para la aplicacion");
+		return -1;
 	}
+	state.errors_list = errors_list;
 	init_error_list(errors_list);
 
 	//pila de scopes
 	StackList * stack = malloc(sizeof(StackList));
 	if( stack == NULL ){
-		//TODO - manejo de error
-	}else{
-		state.stack = stack;
+		LogError("No se pudo reservar memoria para la aplicacion");
+		return -1;
 	}
+	state.stack = stack;
 	init_stack(stack);
 
 	// Mostrar parámetros recibidos por consola.
@@ -74,6 +74,8 @@ const int main(const int argumentCount, const char ** arguments) {
 				fclose(state.fd);
 				//se corre el linter sobre el codigo
 				system("clang-format -style=llvm -i code.c");
+
+				LogInfo("En el archivo \"code.c\" está el código final");
 			}
 			else {
 				LogError("Se produjo un error en la aplicacion.");

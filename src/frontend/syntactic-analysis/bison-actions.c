@@ -8,7 +8,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define MESSAGE_SIZE 100
+#define MESSAGE_SIZE 256
 
 /**
  * Implementación de "bison-.h".
@@ -128,9 +128,8 @@ SizeNode * SizeVarAction(Variable variableNode){
       //chequeo si existen variable 1 y 2
     if( !contains_symbol(state.list, variableNode, false, false) ){
         state.succeed = false;
-        //TODO - handle error
         char message[MESSAGE_SIZE] = {'\0'};
-        sprintf(message, "Variable: %s not declared in line %d", variableNode, yylineno);
+        sprintf(message, "variable: %s no declarada en linea %d", variableNode, yylineno);
         addToErrorList(message, yylineno);
     }
 
@@ -446,11 +445,6 @@ FunctionCallNode * WithArgsFunctionCallAction(Variable variable, FunctionCallArg
     functionCallNode->type = WithArgs;
     functionCallNode->Variable = variable;
     functionCallNode->functionCallArgNode = functionCallArgNode;
-    //chequeo si existe funcion
-    // if( !contains_symbol(state.list, variable) ){
-    //     //TODO - handle error
-    //     printf("function: %s not declared\n", variable );
-    // }
 
     return functionCallNode;
 }
@@ -460,13 +454,6 @@ FunctionCallNode * NoArgsFunctionCallAction(Variable variable){
     functionCallNode->type = NoArgs;
     functionCallNode->Variable = variable;
     functionCallNode->functionCallArgNode = NULL;
-    //chequeo si existe funcion
-    // if( !contains_symbol(state.list, variable) ){
-    //     //TODO - handle error
-    //     //tal vez no hacer este chequeo porque se podrian llegar a llamar
-    //     //funciones de otro lado - como printf
-    //     printf("function: %s not declared\n", variable );
-    // }
 
     return functionCallNode;
 }
@@ -1776,16 +1763,15 @@ UnboundedParametersNode * UnboundedParametersAction(Variable variable1, SizeNode
     unboundedParametersNode->variable2 = variable2;
     //chequeo si existen variable 1 y 2
     if( !contains_symbol(state.list, variable1, true, false) ){
-        //TODO - handle error
         state.succeed = false;
         char message[MESSAGE_SIZE] = {'\0'};
-        sprintf(message, "array: %s not declared in line %d", variable1, yylineno );
+        sprintf(message, "arreglo: %s no declarado en linea %d", variable1, yylineno );
         addToErrorList(message, yylineno);
     }
     if( !contains_symbol(state.list, variable2, false, false) && !contains_symbol(state.list, variable2, true, false) ){
         state.succeed = false;
         char message[MESSAGE_SIZE] = {'\0'};
-        sprintf(message, "variable: %s not declared in line %d", variable2, yylineno);
+        sprintf(message, "variable: %s no declarado en linea %d", variable2, yylineno);
         addToErrorList(message, yylineno);
     }
 
@@ -1807,15 +1793,14 @@ BoundedParametersNode * BoundedParametersAction(Variable variable1, RangeNode * 
      //chequeo si existen variable 1 y 2
     if( !contains_symbol(state.list, variable1, true, false) ){
         state.succeed = false;
-        //TODO - handle error
         char message[MESSAGE_SIZE] = {'\0'};
-        sprintf(message, "array: %s not declared in line %d", variable1, yylineno);
+        sprintf(message, "arreglo: %s no declarado en linea %d", variable1, yylineno);
         addToErrorList(message, yylineno);
     }
     if( !contains_symbol(state.list, variable2, false, false) && !contains_symbol(state.list, variable2, true, false)){
         state.succeed = false;
         char message[MESSAGE_SIZE] = {'\0'};
-        sprintf(message, "variable: %s not declared in line %d", variable2, yylineno );
+        sprintf(message, "variable: %s no declarado en linea %d", variable2, yylineno );
         addToErrorList(message, yylineno);
     }
 
@@ -1844,6 +1829,15 @@ CreateLambda * CreateLambdaAction(NumConstantIntNode constant1, NumConstantIntNo
     CreateLambda * node = malloc(sizeof(CreateLambda));
     node->constant1 = constant1;
     node->constant2 = constant2;
+    node->isLower = constant1 < constant2;
+
+    //chequeo de error
+    if( constant1 == constant2){
+        state.succeed = false;
+        char message[MESSAGE_SIZE] = {'\0'};
+        sprintf(message, "CREATE-STATEMENT: Para crear el arreglo es necesario que los numeros sean distintos en linea %d", yylineno);
+        addToErrorList(message, yylineno);
+    }
     return node;
 }
 
@@ -1887,7 +1881,7 @@ ForeachStatementNode * ForeachStatementAction(Variable variable, SizeNode * size
     if( !contains_symbol(state.list, variable, true, false) ){
         state.succeed = false;
         char message[MESSAGE_SIZE] = {'\0'};
-        sprintf(message, "array: %s not declared in line %d", variable, yylineno);
+        sprintf(message, "arreglo: %s no declarado en linea %d", variable, yylineno);
         addToErrorList(message, yylineno);
     }
     return node;
@@ -1973,7 +1967,7 @@ ForeachRangeStatementNode * ForeachRangeStatementAction(Variable variable, Range
     if( !contains_symbol(state.list, variable, true, false) ){
         state.succeed = false;
         char message[MESSAGE_SIZE] = {'\0'};
-        sprintf(message, "array: %s not declared in line %d", variable, yylineno);
+        sprintf(message, "arreglo: %s no declarado en linea %d", variable, yylineno);
         addToErrorList(message, yylineno);
     }
        
@@ -1999,173 +1993,3 @@ void freeMapRangeStatementNode(MapRangeStatementNode * node){
     freeLambda(node->lambda);
     free(node);
 }
-
-/* = = = = = = =  FREE FUNCTIONS  = = = = = = = */
-
-// - - - - - - Free Includes - - - - - - - - 
-/*
-void freeMetaCommandNode(MetaCommandNode * node) {
-	free(node);
-}
-
-// - - - - - - Free Dereferencing - - - - - -
-
-void freeSizeNode(SizeNode * node) {
-	free(node->variable);
-	free(node->numConstantIntNode);
-	free(node);
-}
-
-void freeArrayDerefNode(ArrayDerefNode * node) {
-	freeSizeNode(node->sizeNode);
-	free(node->variable);
-	free(node);
-}
-
-// - - - - - - Free Pointer - - - - - - - - -
-
-void freePointerNode(PointerNode * node) {
-	if(node->pointerNode != NULL)
-		freePointerNode(node->pointerNode);
-	free(node);
-}
-
-// - - - - - - Free Declaration - - - - - - -
-
-void freeDeclarationNode(DeclarationNode * node) {
-	if(node->singleDeclarationNode != NULL)
-		//freeSingleDeclarationNode(node->singleDeclarationNode); TODO
-	if(node->arrayDeclarationNode != NULL)
-		//freeArrayDeclarationNode(node->arrayDeclarationNode); TODO
-	free(node);
-}
-
-// - - - - - - Free Single Declaration - - - -
-
-void freeSingleDeclarationNode(SingleDeclarationNode * node) {
-	free(node->variable);
-	freePointerNode(node->pointer);
-	//freeSingleInitializeNode(node->singleInitializeNode);  TODO
-	free(node);
-}
-
-// - - - - - - Free Lambdas - - - - - - - - -
-
-void freeLambda(Lambda * node) {
-    free(node->expressionNode);
-    free(node);
-}
-
-void freeCreateLambda(CreateLambda * node) {
-    free(node->constant1);
-    free(node->constant2);
-    free(node);
-}
-
-// - - - - - - Free Selector - - - - - - - - -
-
-void freeReduceStatementNode(ReduceStatementNode * node) {
-    free(node->variable1);
-    free(node->size);
-    free(node->variable2);
-    freeLambda(node->lambda);
-    free(node);
-}
-
-void freeFilterStatementNode(FilterStatementNode * node) {
-    free(node->variable1);
-    free(node->size);
-    free(node->variable2);
-    freeLambda(node->lambda);
-    free(node);
-}
-
-void freeForeachStatementNode(ForeachStatementNode * node) {
-    free(node->variable1);
-    free(node->size);
-    // freeFunctionCallNode(node->functionCallNode);  TODO: DESCOMENTAR
-    free(node);
-}
-
-void freeMapStatementNode(MapStatementNode * node) {
-    free(node->variable1);
-    free(node->size);
-    free(node->variable2);
-    freeLambda(node->lambda);
-    free(node);
-}
-
-void freeCreateStatementNode(CreateStatementNode * node) {
-    free(node->variable1);
-    free(node);
-}
-
-void freeReduceRangeStatementNode(ReduceRangeStatementNode * node) {
-    free(node->variable1);
-    free(node->size1);
-    free(node->variable2);
-    free(node->size2);
-    freeLambda(node->lambda);
-    free(node);
-}
-
-void freeFilterRangeStatementNode(FilterRangeStatementNode * node) {
-    free(node->variable1);
-    free(node->size1);
-    free(node->size2);
-    free(node->variable2);
-    freeLambda(node->lambda);
-    free(node);
-}
-
-void freeForeachRangeStatementNode(ForeachRangeStatementNode * node) {
-    free(node->variable1);
-    free(node->size1);
-    free(node->size1);
-    //freeFunctionCallNode(node->functionCallNode); TODO: DESCOMENTAR
-    free(node);
-}
-
-void freeMapRangeStatementNode(MapRangeStatementNode * node) {
-    free(node->variable1);
-    free(node->size1);
-    free(node->size2);
-    free(node->variable2);
-    freeLambda(node->lambda);
-    free(node);
-}
-
-void freeSelectorNode(SelectorNode * node) {
-    switch (node->selectorNodeType) {
-        case ReduceStatement:
-            freeReduceStatementNode(node->reduceStatement);
-            break;
-        case FilterStatement:
-            freeFilterStatementNode(node->filterStatement);
-            break;
-        case ForeachStatement:
-            freeForeachStatementNode(node->foreachStatement);
-            break;
-        case MapStatement:
-            freeMapStatementNode(node->mapStatement);
-            break;
-        case CreateStatement:
-            freeCreateStatementNode(node->createStatement);
-            break;
-        case ReduceRangeStatement:
-            freeReduceRangeStatementNode(node->reduceRangeStatement);
-            break;
-        case FilterRangeStatement:
-            freeFilterRangeStatementNode(node->filterRangeStatement);
-            break;
-        case ForeachRangeStatement:
-            freeForeachRangeStatementNode(node->foreachRangeStatement);
-            break;
-        case MapRangeStatement:
-            freeMapRangeStatementNode(node->mapRangeStatement);
-            break;
-    }
-    free(node);
-}
-*/
-

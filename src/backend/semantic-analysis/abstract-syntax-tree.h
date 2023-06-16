@@ -1,6 +1,8 @@
 #ifndef ABSTRACT_SYNTAX_TREE_HEADER
 #define ABSTRACT_SYNTAX_TREE_HEADER
 
+#include <stdbool.h>
+
 /**
 * En caso de que un no-terminal ("Factor" en este caso), posea más de una
 * regla de producción asociada, se crea además de la estructura un enumerado
@@ -472,7 +474,8 @@ typedef struct Lambda {
 typedef struct CreateLambda {
     NumConstantIntNode constant1;
     NumConstantIntNode constant2;     // el ... es obviado
-    
+
+    bool isLower;
 } CreateLambda;
 
 typedef struct ReduceStatementNode {
