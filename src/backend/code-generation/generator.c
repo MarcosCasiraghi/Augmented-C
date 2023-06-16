@@ -8,10 +8,6 @@ static void GenDataType(DataType dataType);
  * Implementación de "generator.h".
  */
 
-void Generator(int result) {
-	LogInfo("El resultado de la expresion computada es: '%d'.", result);
-}
-
 void GenMetaCommandNode(MetaCommandNode * node){
 	fprintf(state.fd,"#include ");
 	if( node->type == MetaCommandString){

@@ -19,6 +19,7 @@ ProgramNode * ProgramAction(StatementNode * statement);
 
 // ADD TO SYMBOL TABLE
 void addToSymbolList(DataType dataType, Variable variable, bool is_pointer, bool is_array, bool is_function);
+void addToErrorList(char message[], int lineNumber);
 
 //AUGMENTED-C
 RangeNode * RangeAction(SizeNode * sizeNode1, SizeNode * sizeNode2);
