@@ -59,23 +59,25 @@ user@machine:path/ $ script/test-clang.sh
 Nuestra aumento de C se particuliza con poder reconocer una lineas para ahorrar trabajo al programador.
 
 Estas tienen el siguiente formato:
+
 <{CREATE, nombre_array, data_type, { number...number } }>   
 para crear un array ya inicializado con valores secuenciales.
+Ambos numeros tienen que ser positivos y distintos.
 
-<{FILTER, nombre_array1, size, nombre_array2, { "expresion booleana a cumplir"  } }>
-para filtrar a otro arreglo a partir de una condicion. Adentro de la expresion con @elem se refiere al elemento del arreglo1 en cada iteracion. Size puede ser pasado como una variable.
+<{FILTER, nombre_arreglo1, tamaño, nombre_arreglo2, { "expresión booleana a cumplir"  } }>
+para filtrar a arreglo2 a partir de una condicion. Adentro de la expresion con @elem se referencia al elemento del arreglo1 en cada iteración. "tamaño" puede ser pasado como una variable.
 
-<{MAP, nombre_array1, size, nombre_array2, { "expresion a ejecutar" } }>
-para mapear los elementos de un arreglo a otro con cierta transformacion. Se usa @elem nuevamente.
+<{MAP, nombre_arreglo1, tamaño, nombre_arreglo2, { "expresión a ejecutar" } }>
+para mapear los elementos de un arreglo a otro con cierta transformacion. Se puede referenciar a @elem.
 
-<{REDUCE, nombre_array, size, variable, { "expresion que se le asigna a variable" } }>
-para reducir los elementos de un arreglo a una variable. Para mantener el valor de la variable, deberia ser utilizada en cada iteracion.
+<{REDUCE, nombre_arreglo, tamaño, variable, { "expresión que se le asigna a variable" } }>
+para reducir los elementos de un arreglo a una variable. Para mantener el valor de la variable en cada iteración, debe ser utilizada en la expresión. Se puede referenciar a @elem.
 
 <{FOREACH, nombre_array, size, { "llamado a funcion" } }>
-para aplicar cierta funcion a cada elemento del arreglo. Tiene que pasarse una funcion.
+para aplicar cierta funcion a cada elemento del arreglo. Tiene que pasarse una funcion. Se puede referenciar a @elem.
 
 Cada una de estas ultimas 4 funciones se pueden ejecutar para un cierto rango.
-Se invocan con: NOMBRERANGE y en vez de recibir un size, se recibe el indice de inicio y el indice de fin.
+Se invocan con: NOMBRERANGE y en vez de recibir un tamaño, se recibe el indice de inicio y el indice de fin.
 
 
 ## Limitaciones
