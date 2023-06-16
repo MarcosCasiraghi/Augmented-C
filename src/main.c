@@ -72,9 +72,6 @@ const int main(const int argumentCount, const char ** arguments) {
 
 				//es necesario cerrar el archivo para que despues pueda ser modificado por el linter
 				fclose(state.fd);
-				//se corre el linter sobre el codigo
-				system("clang-format -style=llvm -i code.c");
-
 				LogInfo("En el archivo \"code.c\" está el código final");
 			}
 			else {
