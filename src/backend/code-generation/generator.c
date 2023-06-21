@@ -394,7 +394,6 @@ void GenSwitchStatementNode(SwitchStatementNode * node) {
 	fprintf(state.fd,") {");
 	
 	GenCodeBlockNode(node->codeBlockNode);
-	fprintf(state.fd,"");
 	
 	fprintf(state.fd,"}");
 	
