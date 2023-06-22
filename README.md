@@ -10,7 +10,7 @@ Para construir el compilador, se requieren las siguientes dependencias:
 * [Flex v2.6.4](https://github.com/westes/flex)
 * [GCC v11.1.0](https://gcc.gnu.org/)
 * [Make v4.3](https://www.gnu.org/software/make/)
-
+* [Clang Format v10.0.0](https://clang.llvm.org/docs/ClangFormat.html)
 
 ## Construcción
 
@@ -33,6 +33,8 @@ user@machine:path/ $ sed -i -e 's/\r$//' ./script/*.sh
 ```bash
 user@machine:path/ $ script/start.sh program_file
 ```
+Esto genera un archivo code.c, en donde se encuentra el codigo generado y formateado por el clang-format.
+
 
 ## Testeo
 
@@ -89,8 +91,7 @@ Para el correcto funcionamiento del compilador es necesario que se pase el menor
 3) No acepta creacion de structs.
 4) No acepta definicion de nuevos tipos de datos (typedef).
 5) No se permite casteos explicitos.
-6) No permite puteros a funciones.
-7) No permite asignaciones de tipo: int a = 4, b = 2, c, ni creacion de multiples variables en una linea
-8) No acepta asignacion con operadores de bitshift. Ejemplo: var &= 2  o var >>= 2
-9) No se permite creacion de arreglos del estilo: char * argv[]. Se debe hacer de esta forma: char ** argv.
+6) No permite asignaciones de tipo: int a = 4, b = 2, c, ni creacion de multiples variables en una linea
+7) No acepta asignacion con operadores de bitshift. Ejemplo: var &= 2  o var >>= 2
+8) No se permite creacion de arreglos del estilo: char * argv[]. Se debe hacer de esta forma: char ** argv.
 
